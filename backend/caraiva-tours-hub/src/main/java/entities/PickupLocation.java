@@ -5,10 +5,9 @@ import jakarta.persistence.*;
 import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Objects;
 
 @Entity
-@Table(name= "pickup_location")
+@Table(name = "pickup_location")
 public class PickupLocation implements Serializable {
 
     @Serial
@@ -16,12 +15,19 @@ public class PickupLocation implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name= "pickup_id")
+    @Column(name = "pickup_id")
     private Long id;
 
+    @Column(name = "cep", length = 9)
     private String cep;
+
+    @Column(name = "location_name", nullable = false, length = 150)
     private String locationName;
+
+    @Column(name = "reference_point", length = 255)
     private String referencePoint;
+
+    @Column(name = "applied_pickup_fee", nullable = false, precision = 10, scale = 2)
     private BigDecimal appliedPickupFee = BigDecimal.ZERO;
 
     public PickupLocation() {}
@@ -30,7 +36,7 @@ public class PickupLocation implements Serializable {
         this.cep = cep;
         this.locationName = locationName;
         this.referencePoint = referencePoint;
-        this.appliedPickupFee = appliedPickupFee;
+        this.appliedPickupFee = appliedPickupFee != null ? appliedPickupFee : BigDecimal.ZERO;
     }
 
     public Long getId() {
@@ -75,13 +81,14 @@ public class PickupLocation implements Serializable {
 
     @Override
     public boolean equals(Object o) {
+        if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PickupLocation that = (PickupLocation) o;
-        return Objects.equals(id, that.id);
+        return id != null && id.equals(that.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id);
+        return getClass().hashCode();
     }
 }

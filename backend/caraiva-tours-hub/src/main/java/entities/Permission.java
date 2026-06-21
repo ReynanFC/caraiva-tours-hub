@@ -2,6 +2,8 @@ package entities;
 
 import entities.enums.UserRole;
 import jakarta.persistence.*;
+import org.jspecify.annotations.Nullable;
+import org.springframework.security.core.GrantedAuthority;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -9,8 +11,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name= "permission")
-public class Permission implements Serializable {
-
+public class Permission implements Serializable, GrantedAuthority {
     @Serial
     private static final long serialVersionUID = 1L;
 
@@ -18,6 +19,7 @@ public class Permission implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name= "permission_id")
     private Long id;
+
     private UserRole role;
 
     public Permission() {}
@@ -40,6 +42,11 @@ public class Permission implements Serializable {
 
     public void setRole(UserRole role) {
         this.role = role;
+    }
+
+    @Override
+    public @Nullable String getAuthority() {
+        return this.role.name();
     }
 
     @Override
