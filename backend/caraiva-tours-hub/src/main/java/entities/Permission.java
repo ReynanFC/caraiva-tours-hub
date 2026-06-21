@@ -2,6 +2,8 @@ package entities;
 
 import entities.enums.UserRole;
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -20,6 +22,9 @@ public class Permission implements Serializable, GrantedAuthority {
     @Column(name= "permission_id")
     private Long id;
 
+    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Column(name="role", nullable=false)
     private UserRole role;
 
     public Permission() {}
