@@ -1,0 +1,103 @@
+########################################
+# Maven / Java
+########################################
+
+target/
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+.mvn/wrapper/maven-wrapper.jar
+
+########################################
+# IDEs
+########################################
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Spring Tool Suite (STS)
+.apt_generated
+.factorypath
+.project
+.classpath
+.settings/
+.springBeans
+.sts4-cache
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# VS Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/mcp.json
+
+# Cloud9
+.c9/
+
+########################################
+# Node.js / Front-end
+########################################
+
+node_modules/
+npm-debug.log
+yarn-error.log
+
+########################################
+# Angular
+########################################
+
+.angular/cache/
+out-tsc/
+
+########################################
+# Build & Temporary Files
+########################################
+
+dist/
+tmp/
+coverage/
+.history/
+.sass-cache/
+connect.lock
+libpeerconnection.log
+testem.log
+typings/
+__screenshots__/
+bazel-out/
+
+########################################
+# Environment Variables & Local Config
+########################################
+
+.env
+.env.local
+application-local.yml
+application-local.properties
+
+########################################
+# System Files
+########################################
+
+.DS_Store
+Thumbs.db
+
+########################################
+# Misc
+########################################
+
+HELP.md
+*.launch

@@ -1,3 +1,18 @@
 spring:
   application:
     name: caraiva-tours-hub
+
+  profiles:
+    active: dev
+
+app:
+  security:
+    jwt:
+      token:
+        secret-key: ${JWT_SECRET_KEY}
+        expire-length: 3600000
+
+spring-doc:
+  paths-to-match: /api/**/v1/**
+  swagger-ui:
+    use-root-path: true
