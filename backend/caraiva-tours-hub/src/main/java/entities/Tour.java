@@ -45,7 +45,7 @@ public class Tour implements Serializable {
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(name="commission_type", nullable=false)
-    private CommissionType commissionType;
+    private CommissionType commissionType = CommissionType.PERCENTAGE; // default
 
     @Column(name="commission_value", precision = 10, scale = 2, nullable = false)
     private BigDecimal commissionValue;
