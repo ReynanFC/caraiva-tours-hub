@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "category_tour")
@@ -19,6 +21,9 @@ public class CategoryTour implements Serializable {
 
     @Column(name = "name", unique = true, nullable = false, length = 100)
     private String name;
+
+    @OneToMany(mappedBy = "categoryTour")
+    private Set<Tour> tours = new HashSet<>();
 
     public CategoryTour() {}
 
@@ -40,6 +45,16 @@ public class CategoryTour implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void addTour(Tour tour) {
+        this.tours.add(tour);
+        tour.setCategoryTour(this);
+    }
+
+    public void removeTour(Tour tour) {
+        this.tours.remove(tour);
+        tour.setCategoryTour(null);
     }
 
     @Override

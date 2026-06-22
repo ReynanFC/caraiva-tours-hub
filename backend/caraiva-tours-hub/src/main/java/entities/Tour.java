@@ -1,0 +1,73 @@
+package entities;
+
+import entities.enums.CommissionType;
+import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
+import java.io.Serial;
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.time.Duration;
+
+@Entity
+@Table(name="tour")
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+public class Tour implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="tour_id")
+    @EqualsAndHashCode.Include
+    private Long id;
+
+    @Column(name="name", nullable=false, unique=true, length = 150)
+    private String name;
+
+    @Column(name="description",  nullable=false, columnDefinition = "TEXT")
+    private String description;
+
+    @Column(name="base_price_per_person", nullable = false, precision = 10, scale = 2)
+    private BigDecimal basePricePerPerson;
+
+    @Column(name="promo_price_per_person", precision = 10, scale = 2)
+    private BigDecimal promoPricePerPerson;
+
+    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Column(name="commission_type", nullable=false)
+    private CommissionType commissionType;
+
+    @Column(name="commission_value", precision = 10, scale = 2, nullable = false)
+    private BigDecimal commissionValue;
+
+    @Column(name="duration", nullable=false, columnDefinition = "INTERVAL")
+    private Duration duration;
+
+    @Column(name="available", nullable=false)
+    private boolean available;
+
+    @Column(name="image_url")
+    private String imageUrl;
+
+    @Column(name="is_combo")
+    private boolean isCombo;
+
+    @Column(name="is_promotional")
+    private boolean isPromotional;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="category_id", nullable = false)
+    private CategoryTour categoryTour;
+
+    // public BigDecimal calculateEmployeeCommission(Booking booking) {}
+}

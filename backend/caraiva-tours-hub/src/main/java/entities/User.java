@@ -1,9 +1,8 @@
 package entities;
 
-import entities.enums.UserRole;
 import jakarta.persistence.*;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -12,11 +11,16 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 @Entity
 @Table(name= "users")
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class User implements Serializable, UserDetails {
 
     @Serial
@@ -25,6 +29,7 @@ public class User implements Serializable, UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="user_id")
+    @EqualsAndHashCode.Include
     private Long id;
 
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -63,89 +68,7 @@ public class User implements Serializable, UserDetails {
     )
     private List<Permission> permission;
 
-    public User() {}
-
-    public User(String userName, String fullName, String email, String password) {
-        this.userName = userName;
-        this.fullName = fullName;
-        this.email = email;
-        this.password = password;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public UUID getExternalUserId() {
-        return externalUserId;
-    }
-
-    public void setExternalUserId(UUID externalUserId) {
-        this.externalUserId = externalUserId;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getPixKey() {
-        return pixKey;
-    }
-
-    public void setPixKey(String pixKey) {
-        this.pixKey = pixKey;
-    }
-
-    public void setCredentialsNonExpired(boolean credentialsNonExpired) {
-        this.credentialsNonExpired = credentialsNonExpired;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public List<Permission> getPermission() {
-        return permission;
-    }
-
     public String getRole() {
-
         if (permission == null || permission.isEmpty()) {
             return null;
         }
@@ -155,11 +78,6 @@ public class User implements Serializable, UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return this.permission;
-    }
-
-    @Override
-    public @Nullable String getPassword() {
-        return this.password;
     }
 
     @Override
@@ -175,17 +93,5 @@ public class User implements Serializable, UserDetails {
     @Override
     public boolean isCredentialsNonExpired() {
         return this.credentialsNonExpired;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        User user = (User) o;
-        return Objects.equals(id, user.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(id);
     }
 }
