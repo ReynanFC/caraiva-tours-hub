@@ -6,11 +6,16 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name="booking")
@@ -24,6 +29,10 @@ public class Booking implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
+
+    private static final String DEPOSIT_PERCENTAGE = "0.20";
+
+    private final Logger logger = LoggerFactory.getLogger(Booking.class);
 
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
@@ -67,12 +76,22 @@ public class Booking implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name= "pickup_id", nullable=false)
     private PickupLocation pickupLocation;
-    // groupmembers, payments and status histories
+
+    @OneToMany(mappedBy = "booking")
+    private Set<GroupMember> groupMembers = new HashSet<>();
+    //payments and status histories
 
     public BigDecimal calculateTotalPrice() {return null;}
     public BigDecimal calculateRequiredDeposit(){return null;}
     public BigDecimal getRemainingBalance(){return null;}
-    public void addGroupMember(GroupMember member) {
 
+    public void addGroupMember(GroupMember member) {
+        this.groupMembers.add(member);
+        member.setBooking(this);
+    }
+
+    public void removeGroupMember(GroupMember member) {
+        this.groupMembers.remove(member);
+        member.setBooking(null);
     }
 }
