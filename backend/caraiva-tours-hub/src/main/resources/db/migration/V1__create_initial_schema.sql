@@ -100,7 +100,7 @@ CREATE TABLE payment (
     booking_id BIGINT NOT NULL
 );
 
-CREATE TABLE refund_request (
+        CREATE TABLE refund_request (
     refund_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     reason VARCHAR(255) NOT NULL,
     refund_status refund_status_enum NOT NULL DEFAULT 'PENDING',
