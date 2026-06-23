@@ -84,6 +84,7 @@ CREATE TABLE booking (
      manual_discount NUMERIC(10,2) DEFAULT 0.00 CHECK(manual_discount <= total_price_snapshot),
      total_price_snapshot NUMERIC(10,2) NOT NULL CHECK(total_price_snapshot > 0),
      unit_price_snapshot NUMERIC(10,2) NOT NULL CHECK(unit_price_snapshot > 0),
+     commission_snapshot NUMERIC(10,2) NOT NULL DEFAULT 0.00 CHECK(commission_snapshot >= 0),
      current_status booking_status_enum NOT NULL DEFAULT 'PENDING_RECEIPT',
      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
      tour_id BIGINT NOT NULL,
