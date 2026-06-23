@@ -6,7 +6,9 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name="client")
@@ -32,6 +34,9 @@ public class Client implements Serializable {
     @CreationTimestamp
     @Column(name="created_at", nullable = false)
     private LocalDateTime createdAt;
+
+    @OneToMany(mappedBy = "client")
+    private Set<Booking> bookings = new HashSet<>();
 
     public Client() {}
 
@@ -79,6 +84,15 @@ public class Client implements Serializable {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public Set<Booking> getBookings() {
+        return bookings;
+    }
+
+    public void addBooking(Booking booking) {
+        bookings.add(booking);
+        booking.setClient(this);
     }
 
     @Override

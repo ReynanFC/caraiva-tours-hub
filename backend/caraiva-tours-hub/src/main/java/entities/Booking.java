@@ -1,13 +1,12 @@
 package entities;
 
+import entities.embeddable.FinancialSnapshot;
 import entities.enums.BookingStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -31,8 +30,7 @@ public class Booking implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private static final String DEPOSIT_PERCENTAGE = "0.20";
-
-    private final Logger logger = LoggerFactory.getLogger(Booking.class);
+    private static final int ORGANIZER_COUNT = 1;
 
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
@@ -43,14 +41,8 @@ public class Booking implements Serializable {
     @Column(name="custom_schedule",  nullable=false)
     private LocalDateTime customSchedule;
 
-    @Column(name="manual_discount", precision = 10, scale = 2)
-    private BigDecimal manualDiscount = BigDecimal.ZERO;
-
-    @Column(name="total_price_snapshot", precision = 10, scale = 2, nullable = false)
-    private BigDecimal totalPriceSnapshot;
-
-    @Column(name="unit_price_snapshot", precision = 10, scale = 2, nullable = false)
-    private BigDecimal unitPriceSnapShot;
+    @Embedded
+    private FinancialSnapshot financialData;
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
@@ -77,13 +69,46 @@ public class Booking implements Serializable {
     @JoinColumn(name= "pickup_id", nullable=false)
     private PickupLocation pickupLocation;
 
+    @Setter(AccessLevel.NONE)
     @OneToMany(mappedBy = "booking")
     private Set<GroupMember> groupMembers = new HashSet<>();
-    //payments and status histories
 
-    public BigDecimal calculateTotalPrice() {return null;}
-    public BigDecimal calculateRequiredDeposit(){return null;}
-    public BigDecimal getRemainingBalance(){return null;}
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "payment_id")
+    private Payment payment;
+
+    @Setter(AccessLevel.NONE)
+    @OneToMany(mappedBy = "booking", cascade = CascadeType.PERSIST)
+    private Set<StatusHistory> statusHistory = new HashSet<>();
+
+    public BigDecimal calculateTotalPrice() {
+        BigDecimal baseTotal = financialData.totalPrice().subtract(financialData.manualDiscount());
+
+        if (!pickupLocation.getAppliedPickupFee().equals(BigDecimal.ZERO)) {
+            return baseTotal.add(pickupLocation.getAppliedPickupFee());
+        }
+
+        return baseTotal;
+    }
+
+    public BigDecimal calculateRequiredDeposit() {
+        return calculateTotalPrice().multiply(new BigDecimal(DEPOSIT_PERCENTAGE))
+                .setScale(2, RoundingMode.HALF_UP);
+    }
+
+    public void updateFinancials(BigDecimal unitPrice, int participants, BigDecimal discount) {
+        BigDecimal total = unitPrice.multiply(BigDecimal.valueOf(participants));
+        BigDecimal commissionPerPerson = tour.calculateCommissionPerPerson(unitPrice);
+
+        BigDecimal totalCommission = commissionPerPerson.multiply(BigDecimal.valueOf(participants))
+                .setScale(2, RoundingMode.HALF_UP);
+
+        financialData = new FinancialSnapshot(unitPrice, total, totalCommission, discount);
+    }
+
+    public static int calculateTotalParticipants(int membersCount) {
+        return membersCount + ORGANIZER_COUNT;
+    }
 
     public void addGroupMember(GroupMember member) {
         this.groupMembers.add(member);
@@ -94,4 +119,10 @@ public class Booking implements Serializable {
         this.groupMembers.remove(member);
         member.setBooking(null);
     }
+
+    public void addStatusHistory(StatusHistory status) {
+        statusHistory.add(status);
+        status.setBooking(this);
+    }
+
 }

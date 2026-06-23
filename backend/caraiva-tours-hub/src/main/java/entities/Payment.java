@@ -31,7 +31,7 @@ public class Payment implements Serializable {
     @Column(name="paid_at", nullable = false)
     private LocalDateTime paidAt;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "payment")
     private Booking booking;
 
     public Payment() {}

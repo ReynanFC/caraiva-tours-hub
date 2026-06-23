@@ -1,5 +1,6 @@
 package entities;
 
+import entities.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -9,9 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 @Table(name= "users")
@@ -45,10 +44,10 @@ public class User implements Serializable, UserDetails {
     @Column(name="email", length = 100, unique = true, nullable = false)
     private String email;
 
-    @Column(name="password",  length = 255,  nullable = false)
+    @Column(name="password",  nullable = false)
     private String password;
 
-    @Column(name="pix_key",  length = 255)
+    @Column(name="pix_key")
     private String pixKey;
 
     @Column(name="credentials_non_expired", nullable = false)
@@ -61,37 +60,61 @@ public class User implements Serializable, UserDetails {
     @Column(name="created_at", nullable = false)
     private LocalDateTime createdAt;
 
+    @Setter(AccessLevel.NONE)
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "_user_permission",
+    @JoinTable(name = "user_permission",
             joinColumns = {@JoinColumn (name = "user_id")},
             inverseJoinColumns = {@JoinColumn (name = "permission_id")}
     )
     private List<Permission> permission;
 
-    public String getRole() {
-        if (permission == null || permission.isEmpty()) {
-            return null;
-        }
-        return permission.get(0).getRole().name();
+    @Setter(AccessLevel.NONE)
+    @OneToMany(mappedBy = "attendant")
+    private Set<Booking> bookings = new HashSet<>();
+
+    @Setter(AccessLevel.NONE)
+    @OneToMany(mappedBy = "user")
+    private Set<StatusHistory> historyChange = new HashSet<>();
+
+
+    public void addBooking(Booking booking) {
+        this.bookings.add(booking);
+        booking.setAttendant(this);
+    }
+
+    public void addHistoryChange(StatusHistory statusHistory) {
+        historyChange.add(statusHistory);
+        statusHistory.setUser(this);
+    }
+
+
+    public boolean isAdmin() {
+        return this.getAuthorities().stream()
+                .anyMatch(authority -> authority.equals(UserRole.ADMIN));
+    }
+
+    public void setRole(Permission role) {
+        permission = new ArrayList<>();
+        permission.add(role);
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.permission;
+        return permission;
     }
 
     @Override
     public String getUsername() {
-        return this.userName;
+        return userName;
     }
 
     @Override
     public boolean isEnabled() {
-        return this.enabled;
+        return enabled;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return this.credentialsNonExpired;
+        return credentialsNonExpired;
     }
 }

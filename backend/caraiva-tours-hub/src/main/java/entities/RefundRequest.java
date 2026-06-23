@@ -35,12 +35,16 @@ public class RefundRequest implements Serializable {
     @Column(name="requested_at", nullable=false)
     private LocalDateTime requestedAt;
 
-    @CreationTimestamp
     @Column(name="requested_at", nullable=false)
     private LocalDateTime resolvedAt;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "booking_id", nullable = false)
     private Booking booking;
-    private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "resolved_by_user_id", nullable = false)
+    private User resolvedByUser;
 
     public RefundRequest() {}
 
@@ -48,7 +52,7 @@ public class RefundRequest implements Serializable {
         this.reason = reason;
         this.refundStatus = refundStatus;
         this.booking = booking;
-        this.user = user;
+        this.resolvedByUser = user;
     }
 
     public Long getId() {
@@ -99,12 +103,12 @@ public class RefundRequest implements Serializable {
         this.booking = booking;
     }
 
-    public User getUser() {
-        return user;
+    public User getResolvedByUser() {
+        return resolvedByUser;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setResolvedByUser(User user) {
+        this.resolvedByUser = user;
     }
 
     @Override
