@@ -1,4 +1,4 @@
-package com.caraivatours.hub.user;
+package com.caraivatours.hub.user.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -27,10 +27,8 @@ public record UserRegistrationDTO(
    String password,
 
    @Size(max = 255)
-   String pixKey
-) {
-    public UserRegistrationDTO {
-        userName = userName != null ? userName.trim() : null;
-        fullName = fullName != null ? fullName.trim() : null;
-    }
-}
+   String pixKey,
+
+   @NotBlank
+   String role
+) {}
