@@ -22,10 +22,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.time.Instant;
-import java.util.Base64;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class JwtTokenProvider {
@@ -127,6 +124,16 @@ public class JwtTokenProvider {
 
         String cleanedToken = bearerToken.substring(BEARER_PREFIX.length());
         return Optional.of(cleanedToken);
+    }
+
+    public boolean validateToken(String token) {
+        try {
+            decodedToken(token);
+            logger.debug("Token validation succeeded");
+            return true;
+        } catch (InvalidJwtAuthenticationException e) {
+            return false;
+        }
     }
 
     private DecodedJWT decodedToken(String token) {
