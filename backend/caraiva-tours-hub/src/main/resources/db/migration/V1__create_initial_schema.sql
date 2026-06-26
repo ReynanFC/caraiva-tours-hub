@@ -40,7 +40,6 @@ CREATE TABLE users (
      email VARCHAR(100) UNIQUE NOT NULL,
      pix_key VARCHAR(255),
      password VARCHAR(255) NOT NULL,
-     credentials_non_expired BOOLEAN DEFAULT TRUE NOT NULL,
      enabled BOOLEAN DEFAULT TRUE NOT NULL,
      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
 );

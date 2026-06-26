@@ -17,7 +17,6 @@ public interface UserMapper {
     @Mapping(target = "externalUserId", ignore = true)
     @Mapping(target = "password", ignore = true)
     @Mapping(target = "pixKey", ignore = true)
-    @Mapping(target = "credentialsNonExpired", constant = "true")
     @Mapping(target = "permission", ignore = true)
     @Mapping(target = "bookings", ignore = true)
     @Mapping(target = "historyChange", ignore = true)

@@ -53,9 +53,6 @@ public class User implements Serializable, UserDetails {
     @Column(name="pix_key")
     private String pixKey;
 
-    @Column(name="credentials_non_expired", nullable = false)
-    private boolean credentialsNonExpired;
-
     @Column(name="enabled", nullable = false)
     private boolean enabled;
 
@@ -116,8 +113,4 @@ public class User implements Serializable, UserDetails {
         return enabled;
     }
 
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return credentialsNonExpired;
-    }
 }
