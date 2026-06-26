@@ -1,5 +1,6 @@
 package com.caraivatours.hub.shared.exceptions.handler;
 
+import com.caraivatours.hub.shared.exceptions.EmailAlreadyExistsException;
 import com.caraivatours.hub.shared.exceptions.InvalidAuthorizationHeaderException;
 import com.caraivatours.hub.shared.exceptions.InvalidJwtAuthenticationException;
 import com.caraivatours.hub.shared.exceptions.ResourceNotFoundException;
@@ -103,6 +104,16 @@ public class GlobalExceptionHandler {
             HttpServletRequest request
     ) {
 
+        return ResponseEntity
+                .status(getStatus(exception))
+                .body(buildError(exception.getMessage(), request));
+    }
+
+    @ExceptionHandler(EmailAlreadyExistsException.class)
+    public ResponseEntity<StandardError> handleEmailAlreadyExistsException(
+            EmailAlreadyExistsException exception,
+            HttpServletRequest request
+    ) {
         return ResponseEntity
                 .status(getStatus(exception))
                 .body(buildError(exception.getMessage(), request));
