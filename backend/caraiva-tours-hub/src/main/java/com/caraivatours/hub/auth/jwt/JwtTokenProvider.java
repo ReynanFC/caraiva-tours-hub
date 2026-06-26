@@ -7,7 +7,6 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.caraivatours.hub.auth.dto.TokenDTO;
 import com.caraivatours.hub.auth.entity.enums.UserRole;
-import com.caraivatours.hub.shared.exceptions.InvalidAuthorizationHeaderException;
 import com.caraivatours.hub.shared.exceptions.InvalidJwtAuthenticationException;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
@@ -72,12 +71,10 @@ public class JwtTokenProvider {
     }
 
     public TokenDTO createRefreshToken(String refreshToken) {
-        if (!isValidBearerToken(refreshToken)) {
+        if (!StringUtils.hasText(refreshToken)) {
             logger.warn("Refresh token request rejected: missing or malformed Authorization header");
-            throw new InvalidAuthorizationHeaderException("Refresh token must start with 'Bearer '");
+            throw new InvalidJwtAuthenticationException("Refresh token is missing");
         }
-
-        refreshToken = refreshToken.substring(BEARER_PREFIX.length());
 
         try {
             JWTVerifier verifier = JWT.require(algorithm).build();

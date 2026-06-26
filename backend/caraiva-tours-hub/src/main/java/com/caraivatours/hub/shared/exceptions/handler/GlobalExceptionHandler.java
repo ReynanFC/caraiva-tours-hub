@@ -1,16 +1,15 @@
 package com.caraivatours.hub.shared.exceptions.handler;
 
 import com.caraivatours.hub.shared.exceptions.EmailAlreadyExistsException;
-import com.caraivatours.hub.shared.exceptions.InvalidAuthorizationHeaderException;
 import com.caraivatours.hub.shared.exceptions.InvalidJwtAuthenticationException;
 import com.caraivatours.hub.shared.exceptions.ResourceNotFoundException;
 import com.caraivatours.hub.shared.exceptions.model.StandardError;
 import com.caraivatours.hub.shared.exceptions.model.ValidationError;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -98,14 +97,14 @@ public class GlobalExceptionHandler {
                 .body(buildError("Access denied", request));
     }
 
-    @ExceptionHandler(InvalidAuthorizationHeaderException.class)
-    public ResponseEntity<StandardError> handleInvalidAuthorizationHeaderException(
-            InvalidAuthorizationHeaderException exception,
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<StandardError> handleBadCredentialsException(
+            BadCredentialsException exception,
             HttpServletRequest request
     ) {
 
         return ResponseEntity
-                .status(getStatus(exception))
+                .status(HttpStatus.UNAUTHORIZED)
                 .body(buildError(exception.getMessage(), request));
     }
 

@@ -5,7 +5,13 @@ server:
 cors:
   originPatterns: http://localhost:4200
 
+app:
+  security:
+    cookie:
+      secure: false
+
 spring:
+
   datasource:
     driver-class-name: org.postgresql.Driver
     url: ${DB_URL}
