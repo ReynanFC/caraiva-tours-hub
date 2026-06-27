@@ -10,8 +10,8 @@ import com.caraivatours.hub.auth.entity.enums.UserRole;
 import com.caraivatours.hub.shared.exceptions.InvalidJwtAuthenticationException;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -20,19 +20,24 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.time.Duration;
 import java.time.Instant;
-import java.util.*;
+import java.util.Base64;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
+@Slf4j
 @Service
+@RequiredArgsConstructor
 public class JwtTokenProvider {
-
-    private static final Logger logger = LoggerFactory.getLogger(JwtTokenProvider.class);
 
     private static final String CLAIM_USER_ID = "userId";
     private static final String CLAIM_ROLE = "role";
     private static final String CLAIM_TYPE = "type";
     private static final String TYPE_ACCESS = "access";
     private static final String TYPE_REFRESH = "refresh";
+    private static final int TEMP_REFRESH = 3;
     private static final String BEARER_PREFIX = "Bearer ";
 
     @Value("${app.security.jwt.token.secret-key}")
@@ -41,60 +46,58 @@ public class JwtTokenProvider {
     @Value("${app.security.jwt.token.expire-length}")
     private long validityInMilliseconds;
 
+    private final RefreshTokenStore tokenStore;
+
     private Algorithm algorithm;
+    private JWTVerifier verifier;
 
     @PostConstruct
     protected void init() {
-        secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
-        algorithm = Algorithm.HMAC256(secretKey.getBytes());
-        logger.debug("JwtTokenProvider initialized, access token validity: {} ms", validityInMilliseconds);
+        byte[] encodedKey = Base64.getEncoder().encode(secretKey.getBytes());
+        this.algorithm = Algorithm.HMAC256(encodedKey);
+        this.verifier = JWT.require(algorithm).build();
+
+        log.debug("JwtTokenProvider initialized. Access token validity: {} ms", validityInMilliseconds);
     }
 
     public TokenDTO createAccessToken(UserRole role, UUID uuid, Long id) {
-
         Instant now = Instant.now();
         Instant accessValidity = now.plusMillis(validityInMilliseconds);
-        Instant refreshValidity = now.plusMillis(validityInMilliseconds * 3);
+        Instant refreshValidity = now.plusMillis(validityInMilliseconds * TEMP_REFRESH);
+        Duration ttl = Duration.between(now, refreshValidity);
 
-        String accessToken = getAccessToken(role, now, accessValidity, uuid, id);
-        String refreshToken = getRefreshToken(role, now, refreshValidity, uuid, id);
+        String accessToken = generateAccessToken(role, now, accessValidity, uuid, id);
+        String refreshToken = generateRefreshToken(role, now, refreshValidity, ttl, uuid, id);
 
-        logger.debug("Access/refresh token pair created for user {} with role {}", uuid, role);
+        log.debug("Access/refresh token pair created for user {} with role {}", uuid, role);
 
-        return new TokenDTO(
-                true,
-                now,
-                accessValidity,
-                accessToken,
-                refreshToken
-        );
+        return new TokenDTO(true, now, accessValidity, accessToken, refreshToken);
     }
 
     public TokenDTO createRefreshToken(String refreshToken) {
         if (!StringUtils.hasText(refreshToken)) {
-            logger.warn("Refresh token request rejected: missing or malformed Authorization header");
+            log.warn("Refresh token request rejected: missing or malformed token");
             throw new InvalidJwtAuthenticationException("Refresh token is missing");
         }
 
         try {
-            JWTVerifier verifier = JWT.require(algorithm).build();
             DecodedJWT decodedJWT = verifier.verify(refreshToken);
-
             String tokenType = decodedJWT.getClaim(CLAIM_TYPE).asString();
-            if (!TYPE_REFRESH.equals(tokenType)) {
-                logger.warn("Refresh attempt rejected: token type was '{}', expected '{}'", tokenType, TYPE_REFRESH);
-                throw new InvalidJwtAuthenticationException("Provided token is not a refresh token");
-            }
+            String jti = decodedJWT.getId();
+            Long userId = decodedJWT.getClaim(CLAIM_USER_ID).asLong();
+
+            validateRefreshToken(tokenType, jti, userId);
+
+            tokenStore.revoke(jti, userId);
 
             UUID uuid = UUID.fromString(decodedJWT.getSubject());
-            Long id = decodedJWT.getClaim(CLAIM_USER_ID).asLong();
             UserRole role = UserRole.valueOf(decodedJWT.getClaim(CLAIM_ROLE).asString());
 
-            logger.debug("Refresh token validated for user {}, issuing new token pair", uuid);
+            log.debug("Refresh token validated for user {}, issuing new token pair", uuid);
+            return createAccessToken(role, uuid, userId);
 
-            return createAccessToken(role, uuid, id);
         } catch (JWTVerificationException e) {
-            logger.warn("Refresh token rejected: invalid or expired ({})", e.getClass().getSimpleName());
+            log.warn("Refresh token rejected: invalid or expired ({})", e.getClass().getSimpleName());
             throw new InvalidJwtAuthenticationException("Refresh token is invalid or expired");
         }
     }
@@ -105,7 +108,7 @@ public class JwtTokenProvider {
         UUID uuid = UUID.fromString(decodedJWT.getSubject());
         UserRole role = UserRole.valueOf(decodedJWT.getClaim(CLAIM_ROLE).asString());
 
-        logger.debug("Authentication resolved from token for user {} with role {}", uuid, role);
+        log.debug("Authentication resolved from token for user {} with role {}", uuid, role);
 
         List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role.name()));
         return new UsernamePasswordAuthenticationToken(uuid, "", authorities);
@@ -114,19 +117,18 @@ public class JwtTokenProvider {
     public Optional<String> resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
 
-        if (!isValidBearerToken(bearerToken)) {
-            logger.debug("No valid Bearer token found in request to {}", request.getRequestURI());
+        if (!StringUtils.hasText(bearerToken) || !bearerToken.startsWith(BEARER_PREFIX)) {
+            log.trace("No valid Bearer token found in request to {}", request.getRequestURI());
             return Optional.empty();
         }
 
-        String cleanedToken = bearerToken.substring(BEARER_PREFIX.length());
-        return Optional.of(cleanedToken);
+        return Optional.of(bearerToken.substring(BEARER_PREFIX.length()));
     }
 
     public boolean validateToken(String token) {
         try {
             decodedToken(token);
-            logger.debug("Token validation succeeded");
+            log.debug("Token validation succeeded");
             return true;
         } catch (InvalidJwtAuthenticationException e) {
             return false;
@@ -134,19 +136,31 @@ public class JwtTokenProvider {
     }
 
     private DecodedJWT decodedToken(String token) {
-        JWTVerifier verifier = JWT.require(algorithm).build();
-
         try {
             return verifier.verify(token);
         } catch (JWTVerificationException e) {
-            logger.warn("Token verification failed: invalid or expired ({})", e.getClass().getSimpleName());
+            log.warn("Token verification failed: invalid or expired ({})", e.getClass().getSimpleName());
             throw new InvalidJwtAuthenticationException("Invalid or expired JWT token");
         }
     }
 
-    private String getAccessToken(UserRole role, Instant now, Instant validity, UUID uuid, Long id) {
+    private void validateRefreshToken(String tokenType, String jti, Long userId) {
+        if (!TYPE_REFRESH.equals(tokenType)) {
+            throw new InvalidJwtAuthenticationException("Provided token is not a valid refresh token");
+        }
+
+        if (!tokenStore.isValid(jti)) {
+            log.warn("Possible token reuse detected for user {}", userId);
+            tokenStore.revokeAllForUser(userId);
+            throw new InvalidJwtAuthenticationException("Refresh token already used");
+        }
+    }
+
+    private String generateAccessToken(UserRole role, Instant now, Instant validity, UUID uuid, Long id) {
         String issuerUrl = ServletUriComponentsBuilder
-                .fromCurrentContextPath().build().toUriString();
+                .fromCurrentContextPath()
+                .build()
+                .toUriString();
 
         return JWT.create()
                 .withSubject(uuid.toString())
@@ -159,18 +173,20 @@ public class JwtTokenProvider {
                 .sign(algorithm);
     }
 
-    private String getRefreshToken(UserRole role, Instant now, Instant validity, UUID uuid, Long id) {
-        return JWT.create()
+    private String generateRefreshToken(UserRole role, Instant now, Instant validity, Duration ttl, UUID uuid, Long id) {
+        String generatedId = UUID.randomUUID().toString();
+
+        String jwt = JWT.create()
                 .withSubject(uuid.toString())
+                .withJWTId(generatedId)
                 .withClaim(CLAIM_USER_ID, id)
                 .withClaim(CLAIM_ROLE, role.name())
                 .withClaim(CLAIM_TYPE, TYPE_REFRESH)
                 .withIssuedAt(now)
                 .withExpiresAt(validity)
                 .sign(algorithm);
-    }
 
-    private boolean isValidBearerToken(String bearerToken) {
-        return StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX);
+        tokenStore.save(generatedId, id, ttl);
+        return jwt;
     }
 }

@@ -25,7 +25,8 @@ public class GroupMember implements Serializable {
     @Column(name="is_lap_child", nullable = false)
     private boolean isLapChild;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "booking_id",  nullable = false)
     private Booking booking;
 
     public GroupMember() {}

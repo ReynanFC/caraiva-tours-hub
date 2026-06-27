@@ -29,7 +29,11 @@
 	</properties>
 
 	<dependencies>
-
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcprov-jdk18on</artifactId>
+			<version>1.78.1</version>
+		</dependency>
 		<!-- WEB -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

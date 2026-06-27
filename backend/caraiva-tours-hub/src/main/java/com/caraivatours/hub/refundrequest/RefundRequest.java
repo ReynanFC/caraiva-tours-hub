@@ -36,7 +36,7 @@ public class RefundRequest implements Serializable {
     @Column(name="requested_at", nullable=false)
     private LocalDateTime requestedAt;
 
-    @Column(name="requested_at", nullable=false)
+    @Column(name="resolved_at", nullable=false)
     private LocalDateTime resolvedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)

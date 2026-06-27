@@ -17,8 +17,6 @@ public class OpenApiConfig {
 
         return new OpenAPI()
                 .info(new Info().title("Project Tour Caraiva - API").version("v1"))
-                // Adiciona o suporte a Cookie
-                .addSecurityItem(new SecurityRequirement().addList(cookieSchemeName))
                 .components(new Components()
                         .addSecuritySchemes(cookieSchemeName,
                                 new SecurityScheme()
