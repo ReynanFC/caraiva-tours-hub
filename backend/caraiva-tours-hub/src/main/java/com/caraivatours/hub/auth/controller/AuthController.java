@@ -1,5 +1,7 @@
-package com.caraivatours.hub.auth;
+package com.caraivatours.hub.auth.controller;
 
+import com.caraivatours.hub.auth.AuthService;
+import com.caraivatours.hub.auth.controller.doc.AuthControllerDocs;
 import com.caraivatours.hub.auth.dto.AccountCredentialsDTO;
 import com.caraivatours.hub.auth.dto.TokenDTO;
 import jakarta.servlet.http.HttpServletResponse;
@@ -16,7 +18,7 @@ import java.time.Duration;
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
-public class AuthController {
+public class AuthController implements AuthControllerDocs {
 
     private static final String REFRESH_COOKIE_NAME = "refreshToken";
 
@@ -25,7 +27,9 @@ public class AuthController {
 
     private final AuthService authService;
 
+
     @PostMapping("/signin")
+    @Override
     public ResponseEntity<TokenDTO> signIn(@Valid @RequestBody AccountCredentialsDTO credentials, HttpServletResponse response) {
 
         ResponseEntity<TokenDTO> result = authService.signIn(credentials);
@@ -35,6 +39,7 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
+    @Override
     public ResponseEntity<TokenDTO> refresh(@CookieValue(name = REFRESH_COOKIE_NAME, required = false) String refreshToken, HttpServletResponse response) {
 
         ResponseEntity<TokenDTO> result = authService.refreshToken(refreshToken);

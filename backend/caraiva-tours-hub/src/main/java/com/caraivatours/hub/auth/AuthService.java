@@ -6,7 +6,6 @@ import com.caraivatours.hub.auth.entity.Permission;
 import com.caraivatours.hub.auth.entity.enums.UserRole;
 import com.caraivatours.hub.auth.jwt.JwtTokenProvider;
 import com.caraivatours.hub.user.User;
-import com.caraivatours.hub.user.UserService;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +15,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -26,9 +24,7 @@ public class AuthService {
     private final Logger logger = LoggerFactory.getLogger(AuthService.class);
 
     private final AuthenticationManager authenticationManager;
-    private final UserService userService;
     private final JwtTokenProvider jwtTokenProvider;
-    private final PasswordEncoder passwordEncoder;
 
     public ResponseEntity<TokenDTO> signIn(AccountCredentialsDTO credentials) {
         try {

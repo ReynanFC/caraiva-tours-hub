@@ -34,7 +34,6 @@ public class User implements Serializable, UserDetails {
     @EqualsAndHashCode.Include
     private Long id;
 
-    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name="external_user_id", nullable = false)
     private UUID externalUserId;
 
@@ -61,7 +60,7 @@ public class User implements Serializable, UserDetails {
     private LocalDateTime createdAt;
 
     @Setter(AccessLevel.NONE)
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_permission",
             joinColumns = {@JoinColumn (name = "user_id")},
             inverseJoinColumns = {@JoinColumn (name = "permission_id")}
