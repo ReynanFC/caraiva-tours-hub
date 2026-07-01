@@ -1,6 +1,7 @@
 package com.caraivatours.hub.shared.exceptions.handler;
 
 import com.caraivatours.hub.shared.exceptions.EmailAlreadyExistsException;
+import com.caraivatours.hub.shared.exceptions.EntityInUseException;
 import com.caraivatours.hub.shared.exceptions.InvalidJwtAuthenticationException;
 import com.caraivatours.hub.shared.exceptions.ResourceNotFoundException;
 import com.caraivatours.hub.shared.exceptions.model.StandardError;
@@ -38,6 +39,17 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<StandardError> handleResourceNotFoundException(
             ResourceNotFoundException exception,
+            HttpServletRequest request
+    ) {
+
+        return ResponseEntity
+                .status(getStatus(exception))
+                .body(buildError(exception.getMessage(), request));
+    }
+
+    @ExceptionHandler(EntityInUseException.class)
+    public ResponseEntity<StandardError> handleEntityInUseException(
+            EntityInUseException exception,
             HttpServletRequest request
     ) {
 
