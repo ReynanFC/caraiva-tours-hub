@@ -28,6 +28,10 @@ public interface TourMapper {
     @Mapping(target = "categoryTour", source = "categoryTourId", qualifiedByName = "idToCategoryTour")
     Tour toEntity(UpdateTourDTO dto);
 
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "categoryTour", source = "categoryTourId", qualifiedByName = "idToCategoryTour")
+    void updateEntityFromDto(UpdateTourDTO dto, @MappingTarget Tour entity);
+
     @Named("idToCategoryTour")
     default CategoryTour idToCategoryTour(Long categoryTourId) {
         if (categoryTourId == null) {
