@@ -1,11 +1,13 @@
 package com.caraivatours.hub.shared.exceptions.handler;
 
 import com.caraivatours.hub.shared.exceptions.EmailAlreadyExistsException;
+import com.caraivatours.hub.shared.exceptions.EntityInUseException;
 import com.caraivatours.hub.shared.exceptions.InvalidJwtAuthenticationException;
 import com.caraivatours.hub.shared.exceptions.ResourceNotFoundException;
 import com.caraivatours.hub.shared.exceptions.model.StandardError;
 import com.caraivatours.hub.shared.exceptions.model.ValidationError;
 import jakarta.servlet.http.HttpServletRequest;
+import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -38,6 +40,27 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<StandardError> handleResourceNotFoundException(
             ResourceNotFoundException exception,
+            HttpServletRequest request
+    ) {
+
+        return ResponseEntity
+                .status(getStatus(exception))
+                .body(buildError(exception.getMessage(), request));
+    }
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<StandardError> handleBadRequestException(
+            BadRequestException exception,
+            HttpServletRequest request
+    ) {
+
+        return ResponseEntity
+                .status(getStatus(exception))
+                .body(buildError(exception.getMessage(), request));
+    }
+
+    @ExceptionHandler(EntityInUseException.class)
+    public ResponseEntity<StandardError> handleEntityInUseException(
+            EntityInUseException exception,
             HttpServletRequest request
     ) {
 
