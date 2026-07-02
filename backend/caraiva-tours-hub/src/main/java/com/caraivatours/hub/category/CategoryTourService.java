@@ -11,6 +11,9 @@ import com.caraivatours.hub.tour.TourRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -28,6 +31,7 @@ public class CategoryTourService {
     private final CategoryTourRepository categoryRepository;
     private final TourRepository tourRepository;
 
+    @Cacheable(value ="category", key="#id")
     public CategoryResponseDTO findById(Long id) {
         log.info("Fetching category tour with ID: {}", id);
 
@@ -38,11 +42,14 @@ public class CategoryTourService {
         return new CategoryResponseDTO(entity.getId(), entity.getName());
     }
 
+    @Cacheable(value = "category-options", key = "#search")
     public List<CategoryOptionDTO> findOptions(String search) {
         log.info("Fetching category options with search term: '{}'", search);
         return categoryRepository.findOptions(search, PageRequest.of(0, 20));
     }
 
+    @Cacheable(value = "categories",
+            key = "#search + '-' + #pageable.pageNumber + '-' + #pageable.pageSize + '-' + #pageable.sort")
     public Page<CategoryListItemDTO> findAll(String search, Pageable pageable) {
         log.info("Fetching paginated categories with search term: '{}'", search);
         log.debug("Pagination details: {}", pageable);
@@ -50,6 +57,7 @@ public class CategoryTourService {
     }
 
     @Transactional
+    @CacheEvict(value = {"categories", "category-options"}, allEntries = true)
     public CategoryResponseDTO addCategoryTour(CreateCategoryDTO categoryDTO) throws BadRequestException {
         log.info("Attempting to add a new category tour with name: '{}'", categoryDTO.name());
 
@@ -67,6 +75,10 @@ public class CategoryTourService {
     }
 
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "category", key = "#id"),
+            @CacheEvict(value = {"categories", "category-options"}, allEntries = true)
+    })
     public CategoryResponseDTO updateCategoryTour(Long id, UpdateCategoryDTO updateCategoryDTO) {
         log.info("Attempting to update category tour with ID: {}", id);
         log.debug("Payload data received: {}", updateCategoryDTO);
@@ -90,6 +102,10 @@ public class CategoryTourService {
      *           Deletion is only allowed when the category is not associated with any tour.
      */
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "category", key = "#id"),
+            @CacheEvict(value = {"categories", "category-options"}, allEntries = true)
+    })
     public void deleteCategoryTour(Long id) {
         log.info("Attempting to delete category tour with ID: {}", id);
 
