@@ -2,7 +2,6 @@ package com.caraivatours.hub.tour;
 
 
 import com.caraivatours.hub.category.CategoryTour;
-import com.caraivatours.hub.category.dto.response.CategoryOptionDTO;
 import com.caraivatours.hub.tour.dto.request.CreateTourDTO;
 import com.caraivatours.hub.tour.dto.request.UpdateTourDTO;
 import com.caraivatours.hub.tour.dto.response.TourResponseDTO;
@@ -16,19 +15,19 @@ import org.mapstruct.*;
 public interface TourMapper {
 
     @Mapping(target = "category", source = "categoryTour")
+    @Mapping(target = "isCombo", source = "combo")
+    @Mapping(target = "isPromotional", source = "promotional")
     TourResponseDTO toResponseDTO(Tour tour);
 
-    CategoryOptionDTO toCategoryOptionDTO(CategoryTour categoryTour);
-
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "combo", source = "isCombo")
+    @Mapping(target = "promotional", source = "isPromotional")
     @Mapping(target = "categoryTour", source = "categoryTourId", qualifiedByName = "idToCategoryTour")
     Tour toEntity(CreateTourDTO dto);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "categoryTour", source = "categoryTourId", qualifiedByName = "idToCategoryTour")
-    Tour toEntity(UpdateTourDTO dto);
-
-    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "combo", source = "isCombo")
+    @Mapping(target = "promotional", source = "isPromotional")
     @Mapping(target = "categoryTour", source = "categoryTourId", qualifiedByName = "idToCategoryTour")
     void updateEntityFromDto(UpdateTourDTO dto, @MappingTarget Tour entity);
 

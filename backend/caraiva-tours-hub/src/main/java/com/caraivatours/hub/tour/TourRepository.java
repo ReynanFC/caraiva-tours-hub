@@ -21,7 +21,7 @@ public interface TourRepository extends JpaRepository<Tour, Long> {
 
     @Query("""
         SELECT t FROM Tour t
-                WHERE (:search IS NULL OR LOWER(:search) LIKE LOWER(CONCAT('%',:search,'%')))
+                WHERE (:search = '' OR LOWER(:search) LIKE LOWER(CONCAT('%',:search,'%')))
     """)
     Page<Tour> findAll(@Param("search") String search, Pageable pageable);
 

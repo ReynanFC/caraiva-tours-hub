@@ -1,6 +1,8 @@
 package com.caraivatours.hub.tour.controller;
 
+import com.caraivatours.hub.shared.validation.IsAdmin;
 import com.caraivatours.hub.tour.TourService;
+import com.caraivatours.hub.tour.controller.docs.TourControllerDocs;
 import com.caraivatours.hub.tour.dto.request.CreateTourDTO;
 import com.caraivatours.hub.tour.dto.request.ToggleTourAvailabilityDTO;
 import com.caraivatours.hub.tour.dto.request.UpdateTourDTO;
@@ -19,18 +21,19 @@ import java.net.URI;
 @RestController
 @RequestMapping("/api/tours")
 @RequiredArgsConstructor
-public class TourController {
+public class TourController implements TourControllerDocs {
 
     private final TourService tourService;
 
     @GetMapping
     public ResponseEntity<Page<TourResponseDTO>> findAllTours(
-            @RequestParam(value = "search") String search,
+            @RequestParam(value = "search", required = false, defaultValue = "") String search,
             @PageableDefault() Pageable pageable) {
 
-       return ResponseEntity.ok(tourService.findAll(normalize(search), pageable));
+       return ResponseEntity.ok(tourService.findAll(search.trim(), pageable));
     }
 
+    @IsAdmin
     @PostMapping
     public ResponseEntity<TourResponseDTO> createTour(@RequestBody @Valid CreateTourDTO  dto) {
 
@@ -45,6 +48,7 @@ public class TourController {
         return ResponseEntity.created(uri).body(response);
     }
 
+    @IsAdmin
     @PutMapping("/{id}")
     public ResponseEntity<TourResponseDTO> updateTour(
             @PathVariable Long id, @RequestBody @Valid UpdateTourDTO dto) {
@@ -52,6 +56,7 @@ public class TourController {
         return ResponseEntity.ok(tourService.updateTour(id, dto));
     }
 
+    @IsAdmin
     @PatchMapping("/{id}")
     public ResponseEntity<TourResponseDTO> changeAvailable(
             @PathVariable Long id, @RequestBody @Valid ToggleTourAvailabilityDTO dto) {
@@ -59,14 +64,11 @@ public class TourController {
         return ResponseEntity.ok(tourService.changeAvailable(id, dto));
     }
 
+    @IsAdmin
     @DeleteMapping("{id}")
-    public ResponseEntity<?> deleteTour(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteTour(@PathVariable Long id) {
 
         tourService.deleteTour(id);
         return ResponseEntity.noContent().build();
-    }
-
-    private String normalize(String search) {
-        return (search == null) ? "" : search.trim();
     }
 }

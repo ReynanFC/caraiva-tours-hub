@@ -17,7 +17,6 @@ import java.time.Duration;
 @Table(name="tour")
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
