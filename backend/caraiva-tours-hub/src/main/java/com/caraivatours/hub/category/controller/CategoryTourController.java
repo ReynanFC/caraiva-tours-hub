@@ -1,6 +1,7 @@
 package com.caraivatours.hub.category.controller;
 
 import com.caraivatours.hub.category.CategoryTourService;
+import com.caraivatours.hub.category.controller.docs.CategoryTourControllerDocs;
 import com.caraivatours.hub.category.dto.request.CreateCategoryDTO;
 import com.caraivatours.hub.category.dto.request.UpdateCategoryDTO;
 import com.caraivatours.hub.category.dto.response.CategoryListItemDTO;
@@ -8,7 +9,6 @@ import com.caraivatours.hub.category.dto.response.CategoryOptionDTO;
 import com.caraivatours.hub.category.dto.response.CategoryResponseDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -23,31 +23,35 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/categories")
 @RequiredArgsConstructor
-public class CategoryTourController {
+public class CategoryTourController implements CategoryTourControllerDocs {
 
     private final CategoryTourService categoryService;
 
     @GetMapping("/{id}")
+    @Override
     public ResponseEntity<CategoryResponseDTO> findById(@PathVariable Long id) {
         return ResponseEntity.ok(categoryService.findById(id));
     }
 
     @GetMapping("/options")
+    @Override
     public ResponseEntity<List<CategoryOptionDTO>> findOptions(
             @RequestParam(value = "search", required = false) String search) {
 
-        return ResponseEntity.ok(categoryService.findOptions(search));
+        return ResponseEntity.ok(categoryService.findOptions(normalize(search)));
     }
 
     @GetMapping
+    @Override
     public ResponseEntity<Page<CategoryListItemDTO>> findAll(
             @RequestParam(value = "search", required = false) String search,
             @PageableDefault(size = 10, sort = "name") Pageable pageable) {
 
-        return ResponseEntity.ok(categoryService.findAll(search, pageable));
+        return ResponseEntity.ok(categoryService.findAll(normalize(search), pageable));
     }
 
     @PostMapping
+    @Override
     public ResponseEntity<CategoryResponseDTO> addCategoryTour(
             @RequestBody @Valid CreateCategoryDTO dto) {
 
@@ -63,6 +67,7 @@ public class CategoryTourController {
     }
 
     @PutMapping("/{id}")
+    @Override
     public ResponseEntity<CategoryResponseDTO> updateCategoryTour(
             @PathVariable Long id, @RequestBody @Valid UpdateCategoryDTO dto) {
 
@@ -70,9 +75,14 @@ public class CategoryTourController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteCategoryTour(@PathVariable Long id) {
+    @Override
+    public ResponseEntity<Void> deleteCategoryTour(@PathVariable Long id) {
         categoryService.deleteCategoryTour(id);
 
         return ResponseEntity.noContent().build();
+    }
+
+    private String normalize(String search) {
+        return (search == null) ? "" : search.trim();
     }
 }
