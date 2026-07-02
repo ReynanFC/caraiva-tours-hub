@@ -74,7 +74,7 @@ public interface CategoryTourControllerDocs {
 
     @Operation(
             summary = "Add a new category tour",
-            description = "Creates a new category tour. The category name must be unique.",
+            description = "Creates a new category tour. The category name must be unique. \n\n**Role Required:** `ADMIN` (hasRole('ADMIN'))",
             responses = {
                     @ApiResponse(
                             description = "Created Successfully",
@@ -82,6 +82,7 @@ public interface CategoryTourControllerDocs {
                             content = @Content(schema = @Schema(implementation = CategoryResponseDTO.class))
                     ),
                     @ApiResponse(description = "Bad Request (Validation Error or Already Exists)", responseCode = "400", content = @Content),
+                    @ApiResponse(description = "Forbidden - Admin privileges required", responseCode = "403", content = @Content),
                     @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content)
             }
     )
@@ -89,13 +90,15 @@ public interface CategoryTourControllerDocs {
 
     @Operation(
             summary = "Update an existing category tour",
-            description = "Updates the name of a specific category tour found by its ID.",
+            description = "Updates the name of a specific category tour found by its ID. \n\n**Role Required:** `ADMIN` (hasRole('ADMIN'))",
             responses = {
                     @ApiResponse(
                             description = "Updated Successfully",
                             responseCode = "200",
                             content = @Content(schema = @Schema(implementation = CategoryResponseDTO.class))
                     ),
+                    @ApiResponse(description = "Bad Request (Validation Error)", responseCode = "400", content = @Content),
+                    @ApiResponse(description = "Forbidden - Admin privileges required", responseCode = "403", content = @Content),
                     @ApiResponse(description = "Category not found", responseCode = "404", content = @Content),
                     @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content)
             }
@@ -107,9 +110,10 @@ public interface CategoryTourControllerDocs {
 
     @Operation(
             summary = "Delete a category tour",
-            description = "Deletes a specific category tour by its ID. Deletion will be rejected with a 409 Conflict if the category is linked to any active tours.",
+            description = "Deletes a specific category tour by its ID. Deletion will be rejected with a 409 Conflict if the category is linked to any active tours. \n\n**Role Required:** `ADMIN` (hasRole('ADMIN'))",
             responses = {
                     @ApiResponse(description = "Deleted Successfully (No Content)", responseCode = "204", content = @Content),
+                    @ApiResponse(description = "Forbidden - Admin privileges required", responseCode = "403", content = @Content),
                     @ApiResponse(description = "Category not found", responseCode = "404", content = @Content),
                     @ApiResponse(description = "Conflict (Category is linked to active tours)", responseCode = "409", content = @Content),
                     @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content)
