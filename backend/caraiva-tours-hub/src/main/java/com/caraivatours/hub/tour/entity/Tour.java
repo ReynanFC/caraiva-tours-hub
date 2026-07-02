@@ -1,6 +1,7 @@
-package com.caraivatours.hub.tour;
+package com.caraivatours.hub.tour.entity;
 
 import com.caraivatours.hub.category.CategoryTour;
+import com.caraivatours.hub.tour.entity.enums.CommissionType;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
