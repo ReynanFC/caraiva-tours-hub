@@ -1,5 +1,6 @@
 package com.caraivatours.hub.auth.jwt;
 
+import com.caraivatours.hub.shared.exceptions.InvalidJwtAuthenticationException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
@@ -29,25 +30,18 @@ public class JwtTokenFilter extends GenericFilterBean {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
 
-        try {
-            var tokenOptional = tokenProvider.resolveToken(httpRequest);
+        tokenProvider.resolveToken(httpRequest).ifPresent(token -> {
+            try {
+                Authentication authentication = tokenProvider.getAuthenticationFromToken(token);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            tokenOptional
-                    .filter(token -> tokenProvider.validateToken(token))
-                    .ifPresent(token -> {
-                        Authentication authentication = tokenProvider.getAuthenticationFromToken(token);
+                logger.debug("Security context set for request to {}", httpRequest.getRequestURI());
+            } catch (InvalidJwtAuthenticationException e) {
+                logger.warn("Invalid token for request to {}: {}", httpRequest.getRequestURI(), e.getMessage());
+                SecurityContextHolder.clearContext();
+            }
+        });
 
-                        if (authentication != null) {
-                            SecurityContextHolder.getContext().setAuthentication(authentication);
-                            logger.debug("Security context set for request to {}", httpRequest.getRequestURI());
-                        } else {
-                            logger.warn("Token validated but produced null Authentication for request to {}", httpRequest.getRequestURI());
-                        }
-                    });
-        } catch (Exception e) {
-            logger.warn("Could not set authentication from token for request to {}: {}", httpRequest.getRequestURI(), e.getMessage());
-            SecurityContextHolder.clearContext();
-        }
         chain.doFilter(request, response);
     }
 }
