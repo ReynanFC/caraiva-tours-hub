@@ -35,17 +35,17 @@ public class CategoryTourController implements CategoryTourControllerDocs {
 
     @GetMapping("/options")
     public ResponseEntity<List<CategoryOptionDTO>> findOptions(
-            @RequestParam(value = "search", required = false) String search) {
+            @RequestParam(value = "search", required = false, defaultValue = "") String search) {
 
-        return ResponseEntity.ok(categoryService.findOptions(normalize(search)));
+        return ResponseEntity.ok(categoryService.findOptions(search.trim()));
     }
 
     @GetMapping
     public ResponseEntity<PagedResult<CategoryListItemDTO>> findAll(
-            @RequestParam(value = "search", required = false) String search,
+            @RequestParam(value = "search", required = false, defaultValue = "") String search,
             @PageableDefault(size = 10, sort = "name") Pageable pageable) {
 
-        return ResponseEntity.ok(categoryService.findAll(normalize(search), pageable));
+        return ResponseEntity.ok(categoryService.findAll(search.trim(), pageable));
     }
 
     @IsAdmin
@@ -80,7 +80,4 @@ public class CategoryTourController implements CategoryTourControllerDocs {
         return ResponseEntity.noContent().build();
     }
 
-    private String normalize(String search) {
-        return (search == null) ? "" : search.trim();
-    }
 }
