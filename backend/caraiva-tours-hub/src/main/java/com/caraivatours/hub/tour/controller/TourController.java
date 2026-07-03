@@ -1,5 +1,6 @@
 package com.caraivatours.hub.tour.controller;
 
+import com.caraivatours.hub.shared.dto.PagedResult;
 import com.caraivatours.hub.shared.validation.IsAdmin;
 import com.caraivatours.hub.tour.TourService;
 import com.caraivatours.hub.tour.controller.docs.TourControllerDocs;
@@ -26,7 +27,7 @@ public class TourController implements TourControllerDocs {
     private final TourService tourService;
 
     @GetMapping
-    public ResponseEntity<Page<TourResponseDTO>> findAllTours(
+    public ResponseEntity<PagedResult<TourResponseDTO>> findAllTours(
             @RequestParam(value = "search", required = false, defaultValue = "") String search,
             @PageableDefault() Pageable pageable) {
 

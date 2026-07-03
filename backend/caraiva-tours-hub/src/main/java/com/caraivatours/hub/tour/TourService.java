@@ -2,6 +2,7 @@ package com.caraivatours.hub.tour;
 
 import com.caraivatours.hub.category.CategoryTour;
 import com.caraivatours.hub.category.CategoryTourRepository;
+import com.caraivatours.hub.shared.dto.PagedResult;
 import com.caraivatours.hub.shared.exceptions.BadRequestException;
 import com.caraivatours.hub.shared.exceptions.ResourceNotFoundException;
 import com.caraivatours.hub.tour.dto.request.CreateTourDTO;
@@ -32,7 +33,7 @@ public class TourService {
     @Cacheable(value = "tours",
             key = "#search + '-' + #pageable.pageNumber + '-' + #pageable.pageSize + '-' + #pageable.sort"
     )
-    public Page<TourResponseDTO> findAll(String search, Pageable pageable) {
+    public PagedResult<TourResponseDTO> findAll(String search, Pageable pageable) {
         log.info("Fetching paginated tours list");
         log.debug("Pagination details: {}", pageable);
 
@@ -40,7 +41,7 @@ public class TourService {
 
         log.debug("Database returned {} tours for the current page", tours.getNumberOfElements());
 
-        return tours.map(mapper::toResponseDTO);
+        return PagedResult.from(tours.map(mapper::toResponseDTO));
     }
 
     @CacheEvict(value = {"tours", "categories"}, allEntries = true)
