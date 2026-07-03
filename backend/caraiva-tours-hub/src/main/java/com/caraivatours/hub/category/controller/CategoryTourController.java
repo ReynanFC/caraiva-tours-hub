@@ -7,10 +7,10 @@ import com.caraivatours.hub.category.dto.request.UpdateCategoryDTO;
 import com.caraivatours.hub.category.dto.response.CategoryListItemDTO;
 import com.caraivatours.hub.category.dto.response.CategoryOptionDTO;
 import com.caraivatours.hub.category.dto.response.CategoryResponseDTO;
+import com.caraivatours.hub.shared.dto.PagedResult;
 import com.caraivatours.hub.shared.validation.IsAdmin;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
@@ -41,7 +41,7 @@ public class CategoryTourController implements CategoryTourControllerDocs {
     }
 
     @GetMapping
-    public ResponseEntity<Page<CategoryListItemDTO>> findAll(
+    public ResponseEntity<PagedResult<CategoryListItemDTO>> findAll(
             @RequestParam(value = "search", required = false) String search,
             @PageableDefault(size = 10, sort = "name") Pageable pageable) {
 

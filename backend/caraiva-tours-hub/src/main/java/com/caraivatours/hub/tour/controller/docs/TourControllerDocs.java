@@ -1,5 +1,6 @@
 package com.caraivatours.hub.tour.controller.docs;
 
+import com.caraivatours.hub.shared.dto.PagedResult;
 import com.caraivatours.hub.tour.dto.request.CreateTourDTO;
 import com.caraivatours.hub.tour.dto.request.ToggleTourAvailabilityDTO;
 import com.caraivatours.hub.tour.dto.request.UpdateTourDTO;
@@ -30,7 +31,7 @@ public interface TourControllerDocs {
                     @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content)
             }
     )
-    ResponseEntity<Page<TourResponseDTO>> findAllTours(
+    ResponseEntity<PagedResult<TourResponseDTO>> findAllTours(
             @Parameter(description = "Optional search term to filter tours by name") String search,
             @ParameterObject Pageable pageable
     );

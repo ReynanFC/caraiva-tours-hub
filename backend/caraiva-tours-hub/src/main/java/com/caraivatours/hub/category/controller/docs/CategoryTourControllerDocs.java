@@ -5,6 +5,7 @@ import com.caraivatours.hub.category.dto.request.UpdateCategoryDTO;
 import com.caraivatours.hub.category.dto.response.CategoryListItemDTO;
 import com.caraivatours.hub.category.dto.response.CategoryOptionDTO;
 import com.caraivatours.hub.category.dto.response.CategoryResponseDTO;
+import com.caraivatours.hub.shared.dto.PagedResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -13,7 +14,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springdoc.core.annotations.ParameterObject;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 
@@ -67,7 +67,7 @@ public interface CategoryTourControllerDocs {
                     @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content)
             }
     )
-    ResponseEntity<Page<CategoryListItemDTO>> findAll(
+    ResponseEntity<PagedResult<CategoryListItemDTO>> findAll(
             @Parameter(description = "Optional search term to filter categories by name") String search,
             @ParameterObject Pageable pageable
     );

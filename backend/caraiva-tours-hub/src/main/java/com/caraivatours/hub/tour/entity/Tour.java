@@ -51,7 +51,8 @@ public class Tour implements Serializable {
     @Column(name = "commission_value", precision = 10, scale = 2, nullable = false)
     private BigDecimal commissionValue;
 
-    @Column(name = "duration", nullable = false, columnDefinition = "INTERVAL")
+    @Column(name = "duration", nullable = false)
+    @JdbcTypeCode(SqlTypes.INTERVAL_SECOND)
     private Duration duration;
 
     @Column(name = "available", nullable = false)
