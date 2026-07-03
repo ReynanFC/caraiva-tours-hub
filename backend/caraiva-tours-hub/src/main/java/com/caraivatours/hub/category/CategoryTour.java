@@ -1,6 +1,6 @@
 package com.caraivatours.hub.category;
 
-import com.caraivatours.hub.tour.Tour;
+import com.caraivatours.hub.tour.entity.Tour;
 import jakarta.persistence.*;
 
 import java.io.Serial;
