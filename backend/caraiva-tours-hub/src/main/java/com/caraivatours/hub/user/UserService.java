@@ -47,6 +47,8 @@ public class UserService implements UserDetailsService {
         return mapper.toDTO(savedUser);
     }
 
+
+
     private String generateHashedPassword(String password) {
         return passwordEncoder.encode(password);
     }
