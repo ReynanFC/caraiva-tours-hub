@@ -5,6 +5,7 @@ import com.caraivatours.hub.category.dto.request.UpdateCategoryDTO;
 import com.caraivatours.hub.category.dto.response.CategoryListItemDTO;
 import com.caraivatours.hub.category.dto.response.CategoryOptionDTO;
 import com.caraivatours.hub.category.dto.response.CategoryResponseDTO;
+import com.caraivatours.hub.shared.dto.PagedResult;
 import com.caraivatours.hub.shared.exceptions.BadRequestException;
 import com.caraivatours.hub.shared.exceptions.EntityInUseException;
 import com.caraivatours.hub.shared.exceptions.ResourceNotFoundException;
@@ -14,7 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -50,10 +50,10 @@ public class CategoryTourService {
 
     @Cacheable(value = "categories",
             key = "#search + '-' + #pageable.pageNumber + '-' + #pageable.pageSize + '-' + #pageable.sort")
-    public Page<CategoryListItemDTO> findAll(String search, Pageable pageable) {
+    public PagedResult<CategoryListItemDTO> findAll(String search, Pageable pageable) {
         log.info("Fetching paginated categories with search term: '{}'", search);
         log.debug("Pagination details: {}", pageable);
-        return categoryRepository.findAllWithTourCount(search, pageable);
+        return PagedResult.from(categoryRepository.findAllWithTourCount(search, pageable));
     }
 
     @Transactional
