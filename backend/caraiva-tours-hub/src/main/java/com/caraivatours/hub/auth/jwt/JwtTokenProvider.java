@@ -5,6 +5,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.caraivatours.hub.auth.dto.AuthenticatedUser;
 import com.caraivatours.hub.auth.dto.TokenDTO;
 import com.caraivatours.hub.auth.entity.enums.UserRole;
 import com.caraivatours.hub.shared.exceptions.InvalidJwtAuthenticationException;
@@ -12,6 +13,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.realm.AuthenticatedUserRealm;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -81,13 +83,12 @@ public class JwtTokenProvider {
         }
 
         try {
-            DecodedJWT decodedJWT = verifier.verify(refreshToken);
+            DecodedJWT decodedJWT = decodedToken(refreshToken);
             String tokenType = decodedJWT.getClaim(CLAIM_TYPE).asString();
             String jti = decodedJWT.getId();
             Long userId = decodedJWT.getClaim(CLAIM_USER_ID).asLong();
 
             validateRefreshToken(tokenType, jti, userId);
-
             tokenStore.revoke(jti, userId);
 
             UUID uuid = UUID.fromString(decodedJWT.getSubject());
@@ -106,12 +107,14 @@ public class JwtTokenProvider {
         DecodedJWT decodedJWT = decodedToken(token);
 
         UUID uuid = UUID.fromString(decodedJWT.getSubject());
+        Long id = decodedJWT.getClaim(CLAIM_USER_ID).asLong();
         UserRole role = UserRole.valueOf(decodedJWT.getClaim(CLAIM_ROLE).asString());
 
         log.debug("Authentication resolved from token for user {} with role {}", uuid, role);
 
         List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role.name()));
-        return new UsernamePasswordAuthenticationToken(uuid, "", authorities);
+
+        return new UsernamePasswordAuthenticationToken(new AuthenticatedUser(uuid, id), "", authorities);
     }
 
     public Optional<String> resolveToken(HttpServletRequest request) {
@@ -123,16 +126,6 @@ public class JwtTokenProvider {
         }
 
         return Optional.of(bearerToken.substring(BEARER_PREFIX.length()));
-    }
-
-    public boolean validateToken(String token) {
-        try {
-            decodedToken(token);
-            log.debug("Token validation succeeded");
-            return true;
-        } catch (InvalidJwtAuthenticationException e) {
-            return false;
-        }
     }
 
     private DecodedJWT decodedToken(String token) {
