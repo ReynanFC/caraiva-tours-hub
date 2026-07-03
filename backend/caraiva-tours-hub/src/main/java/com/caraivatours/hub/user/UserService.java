@@ -4,6 +4,7 @@ import com.caraivatours.hub.shared.dto.PagedResult;
 import com.caraivatours.hub.shared.exceptions.EmailAlreadyExistsException;
 import com.caraivatours.hub.shared.exceptions.ResourceNotFoundException;
 import com.caraivatours.hub.tour.dto.request.ToggleTourAvailabilityDTO;
+import com.caraivatours.hub.user.dto.request.ToggleUserEnabledDTO;
 import com.caraivatours.hub.user.dto.request.UserChangePasswordDTO;
 import com.caraivatours.hub.user.dto.request.UserRegistrationDTO;
 import com.caraivatours.hub.user.dto.request.UserUpdateDTO;
@@ -140,9 +141,9 @@ public class UserService implements UserDetailsService {
         return mapper.toDTO(entity);
     }
 
-    public UserSummaryDTO changeEnabled(Long id, ToggleTourAvailabilityDTO availabilityDTO) {
+    public UserSummaryDTO changeEnabled(Long id, ToggleUserEnabledDTO userEnabledDTO) {
         log.info("Attempting to update status (enabled) for user with ID: {}", id);
-        log.debug("Payload data received for status change: {}", availabilityDTO);
+        log.debug("Payload data received for status change: {}", userEnabledDTO);
 
         User entity = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
@@ -150,7 +151,7 @@ public class UserService implements UserDetailsService {
         log.debug("Current entity state before status update - ID: {}, Email: '{}', Current Status: {}",
                 entity.getId(), entity.getEmail(), entity.isEnabled());
 
-        entity.setEnabled(availabilityDTO.available());
+        entity.setEnabled(userEnabledDTO.enabled());
         log.debug("Entity state updated in memory - New Status (Enabled): {}", entity.isEnabled());
 
         entity = userRepository.save(entity);
