@@ -3,7 +3,6 @@ package com.caraivatours.hub.user;
 import com.caraivatours.hub.shared.dto.PagedResult;
 import com.caraivatours.hub.shared.exceptions.EmailAlreadyExistsException;
 import com.caraivatours.hub.shared.exceptions.ResourceNotFoundException;
-import com.caraivatours.hub.tour.dto.request.ToggleTourAvailabilityDTO;
 import com.caraivatours.hub.user.dto.request.ToggleUserEnabledDTO;
 import com.caraivatours.hub.user.dto.request.UserChangePasswordDTO;
 import com.caraivatours.hub.user.dto.request.UserRegistrationDTO;
@@ -13,6 +12,9 @@ import com.caraivatours.hub.user.dto.response.UserProfileDTO;
 import com.caraivatours.hub.user.dto.response.UserSummaryDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -46,6 +48,7 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional(readOnly = true)
+    @Cacheable(value = "users", key = "#search + '-' + #pageable.pageNumber + '-' + #pageable.pageSize + '-' + #pageable.sort")
     public PagedResult<UserSummaryDTO> findAll(String search, Pageable pageable) {
         log.info("Fetching paginated users list");
         log.debug("Pagination details: {}", pageable);
@@ -58,6 +61,7 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional(readOnly = true)
+    @Cacheable(value = "userHeader", key = "#id")
     public UserHeaderProjection findHeaderDataById(Long id) {
         log.info("Fetching user header data for ID: {}", id);
 
@@ -68,6 +72,7 @@ public class UserService implements UserDetailsService {
                 });
     }
 
+    @Cacheable(value = "userProfile", key = "#id")
     @Transactional(readOnly = true)
     public UserProfileDTO findProfile(Long id) {
         log.info("Fetching user profile for ID: {}", id);
@@ -81,6 +86,7 @@ public class UserService implements UserDetailsService {
         return mapper.toProfileDTO(entity);
     }
 
+    @CacheEvict(value = "users", allEntries = true)
     public UserSummaryDTO createUser(UserRegistrationDTO dto) {
         log.info("Attempting to register a new user with email: '{}'", dto.email());
 
@@ -101,6 +107,10 @@ public class UserService implements UserDetailsService {
         return mapper.toDTO(entity);
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = "users", allEntries = true),
+            @CacheEvict(value = {"userHeader", "userProfile"},  key = "#id"),
+    })
     public UserSummaryDTO updateUser(Long id, UserUpdateDTO userUpdateDTO) {
         log.info("Attempting to update user with ID: {}", id);
         log.debug("Payload data received for update: {}", userUpdateDTO);
@@ -141,6 +151,10 @@ public class UserService implements UserDetailsService {
         return mapper.toDTO(entity);
     }
 
+    @Caching( evict = {
+            @CacheEvict(value = "users", allEntries = true),
+            @CacheEvict(value = {"userHeader", "userProfile"}, key = "#id")
+    })
     public UserSummaryDTO changeEnabled(Long id, ToggleUserEnabledDTO userEnabledDTO) {
         log.info("Attempting to update status (enabled) for user with ID: {}", id);
         log.debug("Payload data received for status change: {}", userEnabledDTO);
