@@ -11,7 +11,8 @@ import java.util.List;
 
 @Mapper(
         componentModel = MappingConstants.ComponentModel.SPRING,
-        unmappedTargetPolicy = ReportingPolicy.ERROR
+        unmappedTargetPolicy = ReportingPolicy.ERROR,
+        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
 )
 public interface UserMapper {
 
@@ -23,21 +24,22 @@ public interface UserMapper {
     @Mapping(target = "bookings", ignore = true)
     @Mapping(target = "enabled", ignore = true)
     @Mapping(target = "historyChange", ignore = true)
+    @Mapping(target = "authorities", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     User toEntity(UserRegistrationDTO dto);
 
     @Mapping(target = "userName", source = "username")
-    @Mapping(target = "role", source = "permission")
+    @Mapping(target = "role", source = "permission", qualifiedByName = "permissionsToRole")
     UserSummaryDTO toDTO(User user);
 
-    @Mapping(target = "userName", source = "username")
-    @Mapping(target = "role", source = "permission")
+    @InheritConfiguration(name = "toDTO")
     UserProfileDTO toProfileDTO(User user);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "externalUserId", ignore = true)
     @Mapping(target = "password", ignore = true)
     @Mapping(target = "permission", ignore = true)
+    @Mapping(target = "authorities", ignore = true)
     @Mapping(target = "bookings", ignore = true)
     @Mapping(target = "enabled", ignore = true)
     @Mapping(target = "historyChange", ignore = true)
@@ -45,8 +47,9 @@ public interface UserMapper {
     @Mapping(target = "fullName", ignore = true)
     void updateEntityFromDto(UserUpdateDTO dto, @MappingTarget User entity);
 
+    @Named("permissionsToRole")
     default String mapPermissionsToRole(List<Permission> permissions) {
         if (permissions == null || permissions.isEmpty()) return null;
-        return permissions.getFirst().getRole().name();
+        return permissions.get(0).getRole().name();
     }
 }

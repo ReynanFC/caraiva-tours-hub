@@ -1,5 +1,8 @@
 package com.caraivatours.hub.user;
 
+import com.caraivatours.hub.auth.PermissionRepository;
+import com.caraivatours.hub.auth.entity.Permission;
+import com.caraivatours.hub.auth.entity.enums.UserRole;
 import com.caraivatours.hub.shared.dto.PagedResult;
 import com.caraivatours.hub.shared.exceptions.EmailAlreadyExistsException;
 import com.caraivatours.hub.shared.exceptions.ResourceNotFoundException;
@@ -32,6 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
+    private final PermissionRepository permissionRepository;
     private final UserMapper mapper;
     private final PasswordEncoder passwordEncoder;
 
@@ -55,7 +59,7 @@ public class UserService implements UserDetailsService {
 
         Page<UserSummaryDTO> userSummary = userRepository.findAll(search, pageable);
 
-        log.debug("Database returned {} users for the current page", userSummary.getNumberOfElements());
+        log.debug("Database returned {} users for the current page", userSummary);
 
         return PagedResult.from(userSummary);
     }
@@ -101,10 +105,20 @@ public class UserService implements UserDetailsService {
         log.debug("Hashing user password before persisting");
         entity.setPassword(generateHashedPassword(dto.password()));
 
+        insertUserPermissions(entity, dto.role().toUpperCase());
+
         entity = userRepository.save(entity);
         log.info("User registered successfully with ID: '{}' and email: '{}'", entity.getId(), entity.getEmail());
 
         return mapper.toDTO(entity);
+    }
+
+    private void insertUserPermissions(User entity, String role) {
+        log.debug("Inserting user permissions for entity with role: '{}'", role);
+        Permission dbPermission = permissionRepository.findByRole(UserRole.valueOf(role))
+                .orElseThrow(() -> new ResourceNotFoundException("Permission not found for role: " + role));
+
+        entity.addPermission(dbPermission);
     }
 
     @Caching(evict = {

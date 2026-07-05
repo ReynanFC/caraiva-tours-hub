@@ -19,7 +19,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
             u.id, u.userName, u.email, p.role, u.enabled
         )
         FROM User u
-         JOIN u.permission p
+          LEFT JOIN u.permission p
             WHERE (:search = '' OR LOWER(u.userName) LIKE LOWER(CONCAT('%', :search, '%'))
                             OR LOWER(u.email) LIKE LOWER(CONCAT('%', :search, '%')))
     """)
