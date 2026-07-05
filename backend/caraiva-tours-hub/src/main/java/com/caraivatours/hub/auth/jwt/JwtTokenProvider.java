@@ -9,6 +9,7 @@ import com.caraivatours.hub.auth.dto.AuthenticatedUser;
 import com.caraivatours.hub.auth.dto.TokenDTO;
 import com.caraivatours.hub.auth.entity.enums.UserRole;
 import com.caraivatours.hub.shared.exceptions.InvalidJwtAuthenticationException;
+import com.caraivatours.hub.user.UserRepository;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -50,6 +51,8 @@ public class JwtTokenProvider {
 
     private final RefreshTokenStore tokenStore;
 
+    private final UserRepository userRepository;
+
     private Algorithm algorithm;
     private JWTVerifier verifier;
 
@@ -89,6 +92,7 @@ public class JwtTokenProvider {
             Long userId = decodedJWT.getClaim(CLAIM_USER_ID).asLong();
 
             validateRefreshToken(tokenType, jti, userId);
+            verifyUserEnabled(userId);
             tokenStore.revoke(jti, userId);
 
             UUID uuid = UUID.fromString(decodedJWT.getSubject());
@@ -126,6 +130,16 @@ public class JwtTokenProvider {
         }
 
         return Optional.of(bearerToken.substring(BEARER_PREFIX.length()));
+    }
+
+    private void verifyUserEnabled(Long userId) {
+        boolean isEnabled = userRepository.findEnabledStatusById(userId).orElse(false);
+
+        if (!isEnabled) {
+            log.warn("Refresh token rejected: User ID {} is disabled or does not exist", userId);
+            tokenStore.revokeAllForUser(userId);
+            throw new InvalidJwtAuthenticationException("User account is disabled or inactive");
+        }
     }
 
     private DecodedJWT decodedToken(String token) {
