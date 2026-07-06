@@ -1,5 +1,11 @@
+<<<<<<<< HEAD:backend/caraiva-tours-hub/src/main/java/com/caraivatours/hub/user/UserRegistrationDTO.java
 package com.caraivatours.hub.user;
+========
+package com.caraivatours.hub.user.dto.request;
+>>>>>>>> develop:backend/caraiva-tours-hub/src/main/java/com/caraivatours/hub/user/dto/request/UserRegistrationDTO.java
 
+import com.caraivatours.hub.auth.entity.enums.UserRole;
+import com.caraivatours.hub.shared.validation.ValueOfEnum;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -27,10 +33,8 @@ public record UserRegistrationDTO(
    String password,
 
    @Size(max = 255)
-   String pixKey
-) {
-    public UserRegistrationDTO {
-        userName = userName != null ? userName.trim() : null;
-        fullName = fullName != null ? fullName.trim() : null;
-    }
-}
+   String pixKey,
+
+   @ValueOfEnum(enumClass = UserRole.class)
+   String role
+) {}

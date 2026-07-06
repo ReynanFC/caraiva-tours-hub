@@ -12,7 +12,7 @@ import org.hibernate.type.SqlTypes;
 import com.caraivatours.hub.pickuplocation.PickupLocation;
 import com.caraivatours.hub.shared.enums.BookingStatus;
 import com.caraivatours.hub.statushistory.StatusHistory;
-import com.caraivatours.hub.tour.Tour;
+import com.caraivatours.hub.tour.entity.Tour;
 import com.caraivatours.hub.user.User;
 
 import java.io.Serial;

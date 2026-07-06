@@ -19,7 +19,6 @@ import java.util.*;
 @Table(name= "users")
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
@@ -34,8 +33,7 @@ public class User implements Serializable, UserDetails {
     @EqualsAndHashCode.Include
     private Long id;
 
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name="external_user_id", nullable = false)
+    @Column(name="external_user_id", nullable = false, insertable = false)
     private UUID externalUserId;
 
     @Column(name="user_name", nullable = false, length = 50)
@@ -53,9 +51,6 @@ public class User implements Serializable, UserDetails {
     @Column(name="pix_key")
     private String pixKey;
 
-    @Column(name="credentials_non_expired", nullable = false)
-    private boolean credentialsNonExpired;
-
     @Column(name="enabled", nullable = false)
     private boolean enabled;
 
@@ -64,12 +59,12 @@ public class User implements Serializable, UserDetails {
     private LocalDateTime createdAt;
 
     @Setter(AccessLevel.NONE)
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_permission",
             joinColumns = {@JoinColumn (name = "user_id")},
             inverseJoinColumns = {@JoinColumn (name = "permission_id")}
     )
-    private List<Permission> permission;
+    private List<Permission> permission = new ArrayList<>();
 
     @Setter(AccessLevel.NONE)
     @OneToMany(mappedBy = "attendant")
@@ -79,6 +74,11 @@ public class User implements Serializable, UserDetails {
     @OneToMany(mappedBy = "user")
     private Set<StatusHistory> historyChange = new HashSet<>();
 
+    public void addPermission(Permission newPermission) {
+        if (newPermission != null && !permission.contains(newPermission)) {
+            permission.add(newPermission);
+        }
+    }
 
     public void addBooking(Booking booking) {
         this.bookings.add(booking);
@@ -88,17 +88,6 @@ public class User implements Serializable, UserDetails {
     public void addHistoryChange(StatusHistory statusHistory) {
         historyChange.add(statusHistory);
         statusHistory.setUser(this);
-    }
-
-
-    public boolean isAdmin() {
-        return this.getAuthorities().stream()
-                .anyMatch(authority -> authority.equals(UserRole.ADMIN));
-    }
-
-    public void setRole(Permission role) {
-        permission = new ArrayList<>();
-        permission.add(role);
     }
 
     @Override
@@ -116,8 +105,4 @@ public class User implements Serializable, UserDetails {
         return enabled;
     }
 
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return credentialsNonExpired;
-    }
 }

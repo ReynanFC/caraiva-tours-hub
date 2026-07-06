@@ -1,6 +1,13 @@
+<<<<<<<< HEAD:backend/caraiva-tours-hub/src/main/java/com/caraivatours/hub/tour/Tour.java
 package com.caraivatours.hub.tour;
 
 import com.caraivatours.hub.category.CategoryTour;
+========
+package com.caraivatours.hub.tour.entity;
+
+import com.caraivatours.hub.category.CategoryTour;
+import com.caraivatours.hub.tour.entity.enums.CommissionType;
+>>>>>>>> develop:backend/caraiva-tours-hub/src/main/java/com/caraivatours/hub/tour/entity/Tour.java
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -16,7 +23,6 @@ import java.time.Duration;
 @Table(name="tour")
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
@@ -51,7 +57,8 @@ public class Tour implements Serializable {
     @Column(name = "commission_value", precision = 10, scale = 2, nullable = false)
     private BigDecimal commissionValue;
 
-    @Column(name = "duration", nullable = false, columnDefinition = "INTERVAL")
+    @Column(name = "duration", nullable = false)
+    @JdbcTypeCode(SqlTypes.INTERVAL_SECOND)
     private Duration duration;
 
     @Column(name = "available", nullable = false)

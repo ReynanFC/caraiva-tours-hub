@@ -22,6 +22,22 @@ services:
       timeout: 5s
       retries: 5
 
+  redis:
+    image: redis:8.2.7-alpine
+    container_name: caraiva-tours-redis
+    restart: always
+    networks:
+      - caraiva-network
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   caraiva-backend:
     container_name: caraiva-tours-backend
     restart: always
@@ -40,11 +56,15 @@ services:
     depends_on:
       postgres-db:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     networks:
       - caraiva-network
+
 volumes:
   portainer_data:
   postgres_data:
+  redis_data:
 
 networks:
   caraiva-network:

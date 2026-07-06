@@ -1,7 +1,17 @@
 server:
   port: 8080
 
+#Angular
+cors:
+  originPatterns: http://localhost:4200
+
+app:
+  security:
+    cookie:
+      secure: false
+
 spring:
+
   datasource:
     driver-class-name: org.postgresql.Driver
     url: ${DB_URL}
@@ -17,6 +27,11 @@ spring:
   flyway:
     enabled: true
     locations: classpath:db/migration
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
 
 logging:
   level:
