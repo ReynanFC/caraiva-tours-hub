@@ -15,18 +15,15 @@ import org.mapstruct.*;
 public interface TourMapper {
 
     @Mapping(target = "category", source = "categoryTour")
-    @Mapping(target = "isCombo", source = "combo")
     @Mapping(target = "isPromotional", source = "promotional")
     TourResponseDTO toResponseDTO(Tour tour);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "combo", source = "isCombo")
     @Mapping(target = "promotional", source = "isPromotional")
     @Mapping(target = "categoryTour", source = "categoryTourId", qualifiedByName = "idToCategoryTour")
     Tour toEntity(CreateTourDTO dto);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "combo", source = "isCombo")
     @Mapping(target = "promotional", source = "isPromotional")
     @Mapping(target = "categoryTour", source = "categoryTourId", qualifiedByName = "idToCategoryTour")
     void updateEntityFromDto(UpdateTourDTO dto, @MappingTarget Tour entity);

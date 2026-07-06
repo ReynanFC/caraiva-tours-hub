@@ -18,7 +18,6 @@ public record TourResponseDTO (
         Duration duration,
         boolean available,
         String imageUrl,
-        boolean isCombo,
         boolean isPromotional,
         CategoryOptionDTO category
 ) {}
