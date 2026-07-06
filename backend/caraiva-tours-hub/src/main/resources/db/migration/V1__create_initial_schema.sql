@@ -40,6 +40,7 @@ CREATE TABLE users (
      email VARCHAR(100) UNIQUE NOT NULL,
      pix_key VARCHAR(255),
      password VARCHAR(255) NOT NULL,
+     credentials_non_expired BOOLEAN DEFAULT TRUE NOT NULL,
      enabled BOOLEAN DEFAULT TRUE NOT NULL,
      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
@@ -63,7 +64,6 @@ CREATE TABLE tour (
      duration INTERVAL NOT NULL,
      available BOOLEAN DEFAULT TRUE NOT NULL,
      image_url VARCHAR(255),
-     is_combo BOOLEAN DEFAULT FALSE NOT NULL,
      is_promotional BOOLEAN DEFAULT FALSE NOT NULL,
      category_id BIGINT NOT NULL,
       CONSTRAINT chk_tour_prices
