@@ -88,6 +88,13 @@ public class Booking implements Serializable {
     @OneToMany(mappedBy = "booking", cascade = CascadeType.PERSIST)
     private Set<StatusHistory> statusHistory = new HashSet<>();
 
+
+    /**
+     * Calculates the final total price of the booking, including the base price,
+     * deducting any manual discounts, and adding pickup location fees if applicable.
+     *
+     * @return a {@link BigDecimal} representing the final total price.
+     */
     public BigDecimal calculateTotalPrice() {
         BigDecimal baseTotal = financialData.totalPrice().subtract(financialData.manualDiscount());
 
@@ -98,11 +105,26 @@ public class Booking implements Serializable {
         return baseTotal;
     }
 
+    /**
+     * Calculates the required deposit amount for the booking based on the
+     * defined deposit percentage configuration. The result is rounded to two decimal places.
+     *
+     * @return a {@link BigDecimal} representing the required deposit amount rounded half-up.
+     */
     public BigDecimal calculateRequiredDeposit() {
         return calculateTotalPrice().multiply(new BigDecimal(DEPOSIT_PERCENTAGE))
                 .setScale(2, RoundingMode.HALF_UP);
     }
 
+    /**
+     * Updates the financial snapshot of the booking. Calculates the total gross amount
+     * and the total tour commission based on the number of participants, then instantiates
+     * a new immutable {@link FinancialSnapshot}.
+     *
+     * @param unitPrice    the price per individual participant.
+     * @param participants the total number of participants in the booking.
+     * @param discount     the manual discount amount to be applied.
+     */
     public void updateFinancials(BigDecimal unitPrice, int participants, BigDecimal discount) {
         BigDecimal total = unitPrice.multiply(BigDecimal.valueOf(participants));
         BigDecimal commissionPerPerson = tour.calculateCommissionPerPerson(unitPrice);
@@ -113,6 +135,13 @@ public class Booking implements Serializable {
         financialData = new FinancialSnapshot(unitPrice, total, totalCommission, discount);
     }
 
+    /**
+     * Calculates the total number of participants by adding the group members count
+     * to the mandatory organizer count.
+     *
+     * @param membersCount the number of registered group members.
+     * @return the total headcount for the booking.
+     */
     public static int calculateTotalParticipants(int membersCount) {
         return membersCount + ORGANIZER_COUNT;
     }
