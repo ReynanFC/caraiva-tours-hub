@@ -1,8 +1,4 @@
-<<<<<<<< HEAD:backend/caraiva-tours-hub/src/main/java/com/caraivatours/hub/user/UserRegistrationDTO.java
-package com.caraivatours.hub.user;
-========
 package com.caraivatours.hub.user.dto.request;
->>>>>>>> develop:backend/caraiva-tours-hub/src/main/java/com/caraivatours/hub/user/dto/request/UserRegistrationDTO.java
 
 import com.caraivatours.hub.auth.entity.enums.UserRole;
 import com.caraivatours.hub.shared.validation.ValueOfEnum;

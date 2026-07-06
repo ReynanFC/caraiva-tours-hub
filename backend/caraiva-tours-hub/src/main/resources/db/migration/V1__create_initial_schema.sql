@@ -4,7 +4,7 @@ DO $$
             CREATE TYPE user_role_enum AS ENUM ('ADMIN', 'EMPLOYEE');
         END IF;
         IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'booking_status_enum') THEN
-            CREATE TYPE booking_status_enum AS ENUM ('DRAFT', 'COMPLETED', 'COMFIRMED', 'CANCELLED', 'CANCEL_REQUEST');
+            CREATE TYPE booking_status_enum AS ENUM ('DRAFT', 'COMPLETED', 'CONFIRMED', 'CANCELLED', 'CANCEL_REQUEST');
         END IF;
         IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'refund_status_enum') THEN
             CREATE TYPE refund_status_enum AS ENUM ('PENDING', 'APPROVED', 'REJECTED');

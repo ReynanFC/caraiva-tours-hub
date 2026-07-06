@@ -8,9 +8,10 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.type.SqlTypes;
 import com.caraivatours.hub.pickuplocation.PickupLocation;
-import com.caraivatours.hub.shared.enums.BookingStatus;
+import com.caraivatours.hub.booking.enums.BookingStatus;
 import com.caraivatours.hub.statushistory.StatusHistory;
 import com.caraivatours.hub.tour.entity.Tour;
 import com.caraivatours.hub.user.User;
@@ -54,11 +55,15 @@ public class Booking implements Serializable {
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(name="current_status",  nullable=false)
-    private BookingStatus currentStatus = BookingStatus.PENDING_RECEIPT; // default
+    private BookingStatus currentStatus;
 
     @CreationTimestamp
     @Column(name="created_at", nullable=false)
     private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    @Column(name="updated_at")
+    private LocalDateTime updatedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name= "tour_id", nullable=false)
