@@ -46,7 +46,7 @@ public class Tour implements Serializable {
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(name = "commission_type", nullable = false)
-    private CommissionType commissionType = CommissionType.PERCENTAGE; // default
+    private CommissionType commissionType;
 
     @Column(name = "commission_value", precision = 10, scale = 2, nullable = false)
     private BigDecimal commissionValue;
@@ -60,9 +60,6 @@ public class Tour implements Serializable {
 
     @Column(name = "image_url")
     private String imageUrl;
-
-    @Column(name = "is_combo")
-    private boolean isCombo;
 
     @Column(name = "is_promotional")
     private boolean isPromotional;

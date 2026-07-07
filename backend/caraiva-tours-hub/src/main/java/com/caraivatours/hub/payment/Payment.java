@@ -2,6 +2,10 @@ package com.caraivatours.hub.payment;
 
 import com.caraivatours.hub.booking.Booking;
 import jakarta.persistence.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.io.Serial;
@@ -11,6 +15,10 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
+@Getter
+@Setter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@NoArgsConstructor
 @Table(name="payment")
 public class Payment implements Serializable {
 
@@ -20,13 +28,14 @@ public class Payment implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="payment_id")
+    @EqualsAndHashCode.Include
     private Long id;
 
-    @Column(name="amount_paid",  nullable=false, precision=10,scale=2)
-    private BigDecimal amountPaid;
+    @Column(name="expected_amount",  nullable=false, precision=10,scale=2)
+    private BigDecimal expectedAmount;
 
-    @Column(name="external_receipt_url", nullable = false)
-    private String externalReceiptUrl;
+    @Column(name="receipt_url", nullable = false)
+    private String receiptUrl;
 
     @CreationTimestamp
     @Column(name="paid_at", nullable = false)
@@ -35,63 +44,9 @@ public class Payment implements Serializable {
     @OneToOne(mappedBy = "payment")
     private Booking booking;
 
-    public Payment() {}
-
-    public Payment(BigDecimal amountPaid, String externalReceiptUrl, Booking booking) {
-        this.amountPaid = amountPaid;
-        this.externalReceiptUrl = externalReceiptUrl;
+    public Payment(BigDecimal expectedAmount, String receiptUrl, Booking booking) {
+        this.expectedAmount = expectedAmount;
+        this.receiptUrl = receiptUrl;
         this.booking = booking;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public BigDecimal getAmountPaid() {
-        return amountPaid;
-    }
-
-    public void setAmountPaid(BigDecimal amountPaid) {
-        this.amountPaid = amountPaid;
-    }
-
-    public String getExternalReceiptUrl() {
-        return externalReceiptUrl;
-    }
-
-    public void setExternalReceiptUrl(String externalReceiptUrl) {
-        this.externalReceiptUrl = externalReceiptUrl;
-    }
-
-    public LocalDateTime getPaidAt() {
-        return paidAt;
-    }
-
-    public void setPaidAt(LocalDateTime paidAt) {
-        this.paidAt = paidAt;
-    }
-
-    public Booking getBooking() {
-        return booking;
-    }
-
-    public void setBooking(Booking booking) {
-        this.booking = booking;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        Payment payment = (Payment) o;
-        return Objects.equals(id, payment.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(id);
     }
 }

@@ -42,9 +42,6 @@ public record CreateTourDTO(
         @Size(max = 255, message = "Image URL must not exceed 255 characters")
         String imageUrl,
 
-        @NotNull(message = "Combo status flag is required")
-        Boolean isCombo,
-
         @NotNull(message = "Promotional status flag is required")
         Boolean isPromotional,
 
