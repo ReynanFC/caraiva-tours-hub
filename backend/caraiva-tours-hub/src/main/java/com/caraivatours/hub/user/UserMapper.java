@@ -28,11 +28,12 @@ public interface UserMapper {
     @Mapping(target = "createdAt", ignore = true)
     User toEntity(UserRegistrationDTO dto);
 
+    @Mapping(target = "role", expression = "java(user.getPermission().getFirst().getRole())")
     @Mapping(target = "userName", source = "username")
-    @Mapping(target = "role", source = "permission", qualifiedByName = "permissionsToRole")
     UserSummaryDTO toDTO(User user);
 
-    @InheritConfiguration(name = "toDTO")
+    @Mapping(target = "role", expression = "java(user.getPermission().getFirst().getRole())")
+    @Mapping(target = "userName", source = "username")
     UserProfileDTO toProfileDTO(User user);
 
     @Mapping(target = "id", ignore = true)
@@ -46,10 +47,4 @@ public interface UserMapper {
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "fullName", ignore = true)
     void updateEntityFromDto(UserUpdateDTO dto, @MappingTarget User entity);
-
-    @Named("permissionsToRole")
-    default String mapPermissionsToRole(List<Permission> permissions) {
-        if (permissions == null || permissions.isEmpty()) return null;
-        return permissions.get(0).getRole().name();
-    }
 }
