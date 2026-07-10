@@ -1,7 +1,7 @@
 package com.caraivatours.hub.booking.dto.response;
 
 import com.caraivatours.hub.groupmember.dto.GroupMemberDTO;
-import com.caraivatours.hub.statushistory.dto.StatusHistoryDTO;
+import com.caraivatours.hub.booking.statushistory.dto.StatusHistoryDTO;
 
 import java.math.BigDecimal;
 import java.util.Set;

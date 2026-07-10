@@ -12,7 +12,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.type.SqlTypes;
 import com.caraivatours.hub.pickuplocation.PickupLocation;
 import com.caraivatours.hub.booking.enums.BookingStatus;
-import com.caraivatours.hub.statushistory.StatusHistory;
+import com.caraivatours.hub.booking.statushistory.StatusHistory;
 import com.caraivatours.hub.tour.entity.Tour;
 import com.caraivatours.hub.user.User;
 
@@ -85,7 +85,7 @@ public class Booking implements Serializable {
     @OneToMany(mappedBy = "booking")
     private Set<GroupMember> groupMembers = new HashSet<>();
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "payment_id")
     private Payment payment;
 
@@ -149,21 +149,6 @@ public class Booking implements Serializable {
      */
     public static int calculateTotalParticipants(int membersCount) {
         return membersCount + ORGANIZER_COUNT;
-    }
-
-    public void addGroupMember(GroupMember member) {
-        this.groupMembers.add(member);
-        member.setBooking(this);
-    }
-
-    public void removeGroupMember(GroupMember member) {
-        this.groupMembers.remove(member);
-        member.setBooking(null);
-    }
-
-    public void addStatusHistory(StatusHistory status) {
-        statusHistory.add(status);
-        status.setBooking(this);
     }
 
 }
