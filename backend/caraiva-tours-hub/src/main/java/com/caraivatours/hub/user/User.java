@@ -1,9 +1,8 @@
 package com.caraivatours.hub.user;
 
-import com.caraivatours.hub.auth.entity.enums.UserRole;
 import com.caraivatours.hub.booking.Booking;
 import com.caraivatours.hub.auth.entity.Permission;
-import com.caraivatours.hub.statushistory.StatusHistory;
+import com.caraivatours.hub.booking.statushistory.StatusHistory;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -78,16 +77,6 @@ public class User implements Serializable, UserDetails {
         if (newPermission != null && !permission.contains(newPermission)) {
             permission.add(newPermission);
         }
-    }
-
-    public void addBooking(Booking booking) {
-        this.bookings.add(booking);
-        booking.setAttendant(this);
-    }
-
-    public void addHistoryChange(StatusHistory statusHistory) {
-        historyChange.add(statusHistory);
-        statusHistory.setUser(this);
     }
 
     @Override

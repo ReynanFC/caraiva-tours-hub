@@ -1,4 +1,4 @@
-package com.caraivatours.hub.statushistory.dto;
+package com.caraivatours.hub.booking.statushistory.dto;
 
 import com.caraivatours.hub.booking.enums.BookingStatus;
 

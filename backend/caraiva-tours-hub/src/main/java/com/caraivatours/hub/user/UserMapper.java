@@ -1,13 +1,10 @@
 package com.caraivatours.hub.user;
 
-import com.caraivatours.hub.auth.entity.Permission;
 import com.caraivatours.hub.user.dto.request.UserRegistrationDTO;
 import com.caraivatours.hub.user.dto.request.UserUpdateDTO;
 import com.caraivatours.hub.user.dto.response.UserProfileDTO;
 import com.caraivatours.hub.user.dto.response.UserSummaryDTO;
 import org.mapstruct.*;
-
-import java.util.List;
 
 @Mapper(
         componentModel = MappingConstants.ComponentModel.SPRING,
