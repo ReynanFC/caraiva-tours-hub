@@ -34,4 +34,10 @@ public record CreateBookingRequest(
         BigDecimal manualDiscount,
 
         String pixPaymentUrl
-) {}
+) {
+        public CreateBookingRequest {
+                if (members == null) {
+                        members = Set.of();
+                }
+        }
+}
