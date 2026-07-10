@@ -1,6 +1,6 @@
 package com.caraivatours.hub.booking.dto.request;
 
-import com.caraivatours.hub.client.dto.CreateClientDTO;
+import com.caraivatours.hub.client.dto.ClientDTO;
 import com.caraivatours.hub.groupmember.dto.GroupMemberDTO;
 import com.caraivatours.hub.pickuplocation.dto.PickupDTO;
 import jakarta.validation.Valid;
@@ -15,7 +15,7 @@ import java.util.Set;
 public record CreateBookingRequest(
         @Valid
         @NotNull(message = "Client is required")
-        CreateClientDTO client,
+        ClientDTO client,
 
         Set<@Valid GroupMemberDTO> members,
 
