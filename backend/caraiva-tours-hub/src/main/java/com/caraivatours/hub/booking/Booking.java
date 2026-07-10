@@ -151,16 +151,6 @@ public class Booking implements Serializable {
         return membersCount + ORGANIZER_COUNT;
     }
 
-    public void addGroupMember(GroupMember member) {
-        this.groupMembers.add(member);
-        member.setBooking(this);
-    }
-
-    public void removeGroupMember(GroupMember member) {
-        this.groupMembers.remove(member);
-        member.setBooking(null);
-    }
-
     public void addStatusHistory(StatusHistory status) {
         statusHistory.add(status);
         status.setBooking(this);

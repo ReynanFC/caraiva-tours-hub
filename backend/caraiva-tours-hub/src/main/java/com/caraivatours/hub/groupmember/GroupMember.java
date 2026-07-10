@@ -31,10 +31,9 @@ public class GroupMember implements Serializable {
 
     public GroupMember() {}
 
-    public GroupMember(String name, boolean isLapChild, Booking booking) {
+    public GroupMember(String name, boolean isLapChild) {
         this.name = name;
         this.isLapChild = isLapChild;
-        this.booking = booking;
     }
 
     public Long getId() {
