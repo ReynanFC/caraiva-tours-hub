@@ -1,4 +1,4 @@
-package com.caraivatours.hub.statushistory;
+package com.caraivatours.hub.booking.statushistory;
 
 import com.caraivatours.hub.booking.Booking;
 import com.caraivatours.hub.booking.enums.BookingStatus;
@@ -58,10 +58,4 @@ public class StatusHistory implements Serializable {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    public StatusHistory(BookingStatus previousStatus, BookingStatus newStatus, Booking booking, User user) {
-        this.previousStatus = previousStatus;
-        this.newStatus = newStatus;
-        this.booking = booking;
-        this.user = user;
-    }
 }

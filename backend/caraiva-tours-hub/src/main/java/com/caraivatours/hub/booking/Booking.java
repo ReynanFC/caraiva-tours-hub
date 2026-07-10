@@ -12,7 +12,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.type.SqlTypes;
 import com.caraivatours.hub.pickuplocation.PickupLocation;
 import com.caraivatours.hub.booking.enums.BookingStatus;
-import com.caraivatours.hub.statushistory.StatusHistory;
+import com.caraivatours.hub.booking.statushistory.StatusHistory;
 import com.caraivatours.hub.tour.entity.Tour;
 import com.caraivatours.hub.user.User;
 
