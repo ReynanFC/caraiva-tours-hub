@@ -9,6 +9,7 @@ import com.caraivatours.hub.client.Client;
 import com.caraivatours.hub.client.ClientService;
 import com.caraivatours.hub.groupmember.GroupMember;
 import com.caraivatours.hub.groupmember.dto.GroupMemberDTO;
+import com.caraivatours.hub.payment.Payment;
 import com.caraivatours.hub.pickuplocation.PickupLocation;
 import com.caraivatours.hub.pickuplocation.dto.PickupDTO;
 import com.caraivatours.hub.shared.exceptions.ResourceNotFoundException;
@@ -25,6 +26,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -94,6 +97,11 @@ public class BookingService {
         entity.updateFinancials(tour.getEffectivePrice(), totalParticipants, req.manualDiscount());
         log.debug("Booking financials updated. Total participants: {}, Manual discount: {}", totalParticipants, req.manualDiscount());
 
+        if (StringUtils.hasText(req.pixPaymentUrl())) {
+            log.info("Creating reservation payment with URL: {}", req.pixPaymentUrl());
+            createPayment(req.pixPaymentUrl(), entity);
+        }
+
         var savedBooking = bookingRepository.save(entity);
         log.info("Booking created successfully. Generated ID: {}, Initial Status: {}", savedBooking.getId(), status);
 
@@ -112,6 +120,15 @@ public class BookingService {
         changeStatus(entity, BookingStatus.CONFIRMED, attendantId, "Booking confirmed");
 
         return bookingMapper.toSummary(entity);
+    }
+
+    private void createPayment(String pixPaymentUrl, Booking booking) {
+        BigDecimal signalAmount = booking.getFinancialData()
+                .totalPrice()
+                .multiply(BigDecimal.valueOf(0.20))
+                .setScale(2, RoundingMode.HALF_EVEN);
+
+        booking.setPayment(new Payment(signalAmount, pixPaymentUrl, booking));
     }
 
     private void changeStatus(Booking booking, BookingStatus newStatus, Long userId, String reason) {
