@@ -85,7 +85,7 @@ public class Booking implements Serializable {
     @OneToMany(mappedBy = "booking")
     private Set<GroupMember> groupMembers = new HashSet<>();
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "payment_id")
     private Payment payment;
 
@@ -149,11 +149,6 @@ public class Booking implements Serializable {
      */
     public static int calculateTotalParticipants(int membersCount) {
         return membersCount + ORGANIZER_COUNT;
-    }
-
-    public void addStatusHistory(StatusHistory status) {
-        statusHistory.add(status);
-        status.setBooking(this);
     }
 
 }
