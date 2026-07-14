@@ -10,6 +10,7 @@ import com.caraivatours.hub.client.ClientService;
 import com.caraivatours.hub.groupmember.GroupMember;
 import com.caraivatours.hub.groupmember.dto.GroupMemberDTO;
 import com.caraivatours.hub.payment.Payment;
+import com.caraivatours.hub.payment.PaymentService;
 import com.caraivatours.hub.pickuplocation.PickupLocation;
 import com.caraivatours.hub.pickuplocation.dto.PickupDTO;
 import com.caraivatours.hub.shared.exceptions.ResourceNotFoundException;
@@ -42,6 +43,7 @@ public class BookingService {
     private final UserRepository userRepository;
     private final ApplicationEventPublisher eventPublisher;
     private final ClientService clientService;
+    private final PaymentService paymentService;
 
     @Transactional(readOnly = true)
     public Page<BookingSummaryDTO> findAll(String search, Pageable pageable) {
@@ -99,7 +101,7 @@ public class BookingService {
 
         if (StringUtils.hasText(req.pixPaymentUrl())) {
             log.info("Creating reservation payment with URL: {}", req.pixPaymentUrl());
-            createPayment(req.pixPaymentUrl(), entity);
+            paymentService.createReservationPayment(entity, req.pixPaymentUrl());
         }
 
         var savedBooking = bookingRepository.save(entity);
@@ -120,15 +122,6 @@ public class BookingService {
         changeStatus(entity, BookingStatus.CONFIRMED, attendantId, "Booking confirmed");
 
         return bookingMapper.toSummary(entity);
-    }
-
-    private void createPayment(String pixPaymentUrl, Booking booking) {
-        BigDecimal signalAmount = booking.getFinancialData()
-                .totalPrice()
-                .multiply(BigDecimal.valueOf(0.20))
-                .setScale(2, RoundingMode.HALF_EVEN);
-
-        booking.setPayment(new Payment(signalAmount, pixPaymentUrl, booking));
     }
 
     private void changeStatus(Booking booking, BookingStatus newStatus, Long userId, String reason) {
