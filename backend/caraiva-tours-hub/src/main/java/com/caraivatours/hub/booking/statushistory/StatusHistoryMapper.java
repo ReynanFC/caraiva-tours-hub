@@ -10,6 +10,6 @@ import org.mapstruct.ReportingPolicy;
         unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface StatusHistoryMapper {
 
-    @Mapping(target = "changedByUserName", source = "changedBy.name")
+    @Mapping(target = "changedByUserName", source = "user.username")
     StatusHistoryDTO toDTO(StatusHistory statusHistory);
 }

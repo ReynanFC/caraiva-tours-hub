@@ -29,5 +29,5 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
             WHERE b.currentStatus = :status
                 ORDER BY p.paidAt DESC
     """)
-    Page<Payment> findByStatusBooking(@Param("status") BookingStatus status);
+    Page<Payment> findByStatusBooking(@Param("status") BookingStatus status, Pageable pageable);
 }
