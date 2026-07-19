@@ -39,7 +39,8 @@ public class StatusHistoryService {
         history.setPreviousStatus(event.previousStatus());
         history.setNewStatus(event.newStatus());
         history.setChangeReason(event.reason());
-        booking.getStatusHistory().add(history);
+
+        booking.addStatusHistory(history);
 
         statusHistoryRepository.save(history);
         log.debug("Status history persisted for booking ID: {}", event.bookingId());

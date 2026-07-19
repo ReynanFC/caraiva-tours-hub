@@ -39,5 +39,8 @@ public record CreateBookingRequest(
                 if (members == null) {
                         members = Set.of();
                 }
+                if (manualDiscount == null) {
+                        manualDiscount = BigDecimal.ZERO;
+                }
         }
 }

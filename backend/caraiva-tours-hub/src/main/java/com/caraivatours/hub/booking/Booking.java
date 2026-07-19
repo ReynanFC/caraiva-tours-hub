@@ -82,7 +82,8 @@ public class Booking implements Serializable {
     private PickupLocation pickupLocation;
 
     @Setter(AccessLevel.NONE)
-    @OneToMany(mappedBy = "booking")
+    @Builder.Default
+    @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<GroupMember> groupMembers = new HashSet<>();
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
@@ -90,6 +91,7 @@ public class Booking implements Serializable {
     private Payment payment;
 
     @Setter(AccessLevel.NONE)
+    @Builder.Default
     @OneToMany(mappedBy = "booking", cascade = CascadeType.PERSIST)
     private Set<StatusHistory> statusHistory = new HashSet<>();
 
@@ -151,4 +153,13 @@ public class Booking implements Serializable {
         return membersCount + ORGANIZER_COUNT;
     }
 
+    public void addGroupMember(GroupMember member) {
+        groupMembers.add(member);
+        member.setBooking(this);
+    }
+
+    public void addStatusHistory(StatusHistory history) {
+        statusHistory.add(history);
+        history.setBooking(this);
+    }
 }

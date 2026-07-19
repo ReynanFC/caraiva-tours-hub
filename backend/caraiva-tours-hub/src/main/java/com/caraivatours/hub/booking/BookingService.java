@@ -8,11 +8,12 @@ import com.caraivatours.hub.booking.event.BookingStatusChangedEvent;
 import com.caraivatours.hub.client.Client;
 import com.caraivatours.hub.client.ClientService;
 import com.caraivatours.hub.groupmember.GroupMember;
-import com.caraivatours.hub.groupmember.dto.GroupMemberDTO;
-import com.caraivatours.hub.payment.Payment;
+import com.caraivatours.hub.groupmember.GroupMemberService;
 import com.caraivatours.hub.payment.PaymentService;
 import com.caraivatours.hub.pickuplocation.PickupLocation;
+import com.caraivatours.hub.pickuplocation.PickupLocationRepository;
 import com.caraivatours.hub.pickuplocation.dto.PickupDTO;
+import com.caraivatours.hub.shared.dto.PagedResult;
 import com.caraivatours.hub.shared.exceptions.ResourceNotFoundException;
 import com.caraivatours.hub.tour.TourRepository;
 import com.caraivatours.hub.tour.entity.Tour;
@@ -27,12 +28,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Set;
-import java.util.stream.Collectors;
+
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 
 @Slf4j
+@Transactional(readOnly = true)
 @Service
 @RequiredArgsConstructor
 public class BookingService {
@@ -44,20 +46,28 @@ public class BookingService {
     private final ApplicationEventPublisher eventPublisher;
     private final ClientService clientService;
     private final PaymentService paymentService;
+    private final GroupMemberService groupMemberService;
+    private final PickupLocationRepository pickupLocationRepository;
 
-    @Transactional(readOnly = true)
-    public Page<BookingSummaryDTO> findAll(String search, Pageable pageable) {
+    @Cacheable(value = "bookings", key = "'all:' + #search + ':' + #pageable.pageNumber + ':' + #pageable.pageSize + ':' + #pageable.sort")
+    public PagedResult<BookingSummaryDTO> findAll(String search, Pageable pageable) {
         log.info("Fetching all bookings with search filter: '{}'", search);
-        return bookingRepository.findAll(search, pageable);
+
+        Page<BookingSummaryDTO> bookings = bookingRepository.findAll(search, pageable);
+
+        return PagedResult.from(bookings);
     }
 
-    @Transactional(readOnly = true)
-    public Page<BookingSummaryDTO> findByStatus(BookingStatus status, Pageable pageable) {
+    @Cacheable(value = "bookings", key = "'status:' + #status + ':' + #pageable.pageNumber + ':' + #pageable.pageSize + ':' + #pageable.sort")
+    public PagedResult<BookingSummaryDTO> findByStatus(BookingStatus status, Pageable pageable) {
         log.info("Filtering bookings by status: {}", status);
-        return bookingRepository.findByCurrentStatus(status, pageable);
+
+        Page<BookingSummaryDTO> bookings = bookingRepository.findByCurrentStatus(status, pageable);
+
+        return PagedResult.from(bookings);
     }
 
-    @Transactional(readOnly = true)
+    @Cacheable(value = "booking-details", key = "#id")
     public BookingDetailDTO findDetailsBooking(Long id) {
         log.info("Retrieving booking details with id: {}", id);
 
@@ -68,6 +78,7 @@ public class BookingService {
     }
 
     @Transactional
+    @CacheEvict(value = {"bookings", "booking-details"}, allEntries = true)
     public BookingSummaryDTO createBooking(Long attendantId, CreateBookingRequest req) {
         log.info("Starting booking creation process for Tour ID: {} by Attendant ID: {}", req.tourId(), attendantId);
         log.debug("Received create booking payload: {}", req);
@@ -81,8 +92,7 @@ public class BookingService {
         Client client = clientService.findOrCreate(req.client());
         log.debug("Client resolved/created successfully: {}", client.getId());
 
-        PickupLocation pickup = createPickupLocation(req.pickup());
-        Set<GroupMember> members = addMembersInBooking(req.members());
+        PickupLocation pickup = pickupLocationRepository.save(createPickupLocation(req.pickup()));
         BookingStatus status = getStatus(req.pixPaymentUrl());
 
         Booking entity = Booking.builder()
@@ -91,30 +101,34 @@ public class BookingService {
                 .tour(tour)
                 .pickupLocation(pickup)
                 .customSchedule(req.scheduleDate())
-                .groupMembers(members)
                 .currentStatus(status)
                 .build();
 
-        int totalParticipants = Booking.calculateTotalParticipants(members.size());
+        Set<GroupMember> members = groupMemberService.createForBooking(entity, req.members());
+        members.forEach(entity::addGroupMember);
+
+        int totalParticipants = Booking.calculateTotalParticipants(req.members().size());
         entity.updateFinancials(tour.getEffectivePrice(), totalParticipants, req.manualDiscount());
         log.debug("Booking financials updated. Total participants: {}, Manual discount: {}", totalParticipants, req.manualDiscount());
 
+        Booking savedBooking = bookingRepository.save(entity);
+
         if (StringUtils.hasText(req.pixPaymentUrl())) {
             log.info("Creating reservation payment with URL: {}", req.pixPaymentUrl());
-            paymentService.createReservationPayment(entity, req.pixPaymentUrl());
+            paymentService.createReservationPayment(savedBooking, req.pixPaymentUrl());
         }
 
-        var savedBooking = bookingRepository.save(entity);
         log.info("Booking created successfully. Generated ID: {}, Initial Status: {}", savedBooking.getId(), status);
 
         eventPublisher.publishEvent(new BookingStatusChangedEvent(
                 savedBooking.getId(), null, status, attendantId, "Created booking"
         ));
 
-        return bookingMapper.toSummary(entity);
+        return bookingMapper.toSummary(savedBooking);
     }
 
     @Transactional
+    @CacheEvict(value = {"bookings", "booking-details"}, allEntries = true)
     public BookingSummaryDTO confirmBooking(Long bookingId, Long attendantId) {
         Booking entity = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new ResourceNotFoundException("Booking not found with ID: " + bookingId));
@@ -132,18 +146,6 @@ public class BookingService {
         eventPublisher.publishEvent(new BookingStatusChangedEvent(
                 booking.getId(), previousStatus, newStatus, userId, reason
         ));
-    }
-
-    private Set<GroupMember> addMembersInBooking(Set<GroupMemberDTO> dto) {
-
-        log.debug("Mapping {} group members to booking entities", dto.size());
-        return dto.stream()
-                .map(this::createGroupMember)
-                .collect(Collectors.toSet());
-    }
-
-    private GroupMember createGroupMember(GroupMemberDTO dto) {
-        return new GroupMember(dto.name(), dto.isLapChild());
     }
 
     private PickupLocation createPickupLocation(PickupDTO dto) {

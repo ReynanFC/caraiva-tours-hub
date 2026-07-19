@@ -5,6 +5,7 @@ import com.caraivatours.hub.payment.controller.docs.PaymentControllerDocs;
 import com.caraivatours.hub.payment.dto.PaymentDetailDTO;
 import com.caraivatours.hub.payment.dto.PaymentSummaryDTO;
 import com.caraivatours.hub.booking.enums.BookingStatus;
+import com.caraivatours.hub.shared.dto.PagedResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,7 +22,7 @@ public class PaymentController implements PaymentControllerDocs {
     private final PaymentService paymentService;
 
     @GetMapping
-    public ResponseEntity<Page<PaymentSummaryDTO>> findAllByFilters(
+    public ResponseEntity<PagedResult<PaymentSummaryDTO>> findAllByFilters(
             @RequestParam(required = false) Long idPayment,
             @RequestParam(required = false) String nameClient,
             @PageableDefault(size = 10, sort = "paidAt", direction = Sort.Direction.DESC) Pageable pageable) {
@@ -35,7 +36,7 @@ public class PaymentController implements PaymentControllerDocs {
     }
 
     @GetMapping("/status/{status}")
-    public ResponseEntity<Page<PaymentSummaryDTO>> findByBookingStatus(
+    public ResponseEntity<PagedResult<PaymentSummaryDTO>> findByBookingStatus(
             @PathVariable BookingStatus status,
             @PageableDefault(size = 10, sort = "paidAt", direction = Sort.Direction.DESC) Pageable pageable) {
 

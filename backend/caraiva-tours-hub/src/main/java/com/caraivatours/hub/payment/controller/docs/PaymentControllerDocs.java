@@ -3,6 +3,7 @@ package com.caraivatours.hub.payment.controller.docs;
 import com.caraivatours.hub.booking.enums.BookingStatus;
 import com.caraivatours.hub.payment.dto.PaymentDetailDTO;
 import com.caraivatours.hub.payment.dto.PaymentSummaryDTO;
+import com.caraivatours.hub.shared.dto.PagedResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -27,7 +28,7 @@ public interface PaymentControllerDocs {
                     @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
             }
     )
-    ResponseEntity<Page<PaymentSummaryDTO>> findAllByFilters(
+    ResponseEntity<PagedResult<PaymentSummaryDTO>> findAllByFilters(
             @Parameter(description = "Optional payment identifier") Long idPayment,
             @Parameter(description = "Optional fragment of the client's name") String nameClient,
             @ParameterObject Pageable pageable
@@ -58,7 +59,7 @@ public interface PaymentControllerDocs {
                     @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
             }
     )
-    ResponseEntity<Page<PaymentSummaryDTO>> findByBookingStatus(
+    ResponseEntity<PagedResult<PaymentSummaryDTO>> findByBookingStatus(
             @Parameter(description = "Current status of the related booking", required = true) BookingStatus status,
             @ParameterObject Pageable pageable
     );

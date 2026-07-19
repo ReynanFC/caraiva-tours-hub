@@ -7,8 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -16,26 +15,18 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class GroupMemberService {
 
-    private final GroupMemberRepository groupMemberRepository;
-
-    @Transactional
+    @Transactional(readOnly = true)
     public Set<GroupMember> createForBooking(Booking booking, Set<GroupMemberDTO> memberDtos) {
         if (memberDtos == null || memberDtos.isEmpty()) {
-            log.debug("No group members to create for booking ID: {}", booking.getId());
-            return Set.of();
+            log.debug("No group members to create.");
+            return Collections.emptySet();
         }
 
-        log.info("Creating {} group members for booking ID: {}", memberDtos.size(), booking.getId());
+        log.info("Creating {} group members.", memberDtos.size());
 
-        Set<GroupMember> members = memberDtos.stream()
+        return memberDtos.stream()
                 .map(dto -> toEntity(dto, booking))
-                .collect(Collectors.toCollection(LinkedHashSet::new));
-
-        Set<GroupMember> savedMembers = new LinkedHashSet<>();
-        groupMemberRepository.saveAll(members).forEach(savedMembers::add);
-
-        log.debug("Created {} group members for booking ID: {}", savedMembers.size(), booking.getId());
-        return savedMembers;
+                .collect(Collectors.toCollection(HashSet::new));
     }
 
     private GroupMember toEntity(GroupMemberDTO dto, Booking booking) {
