@@ -4,6 +4,7 @@ import com.caraivatours.hub.booking.Booking;
 import com.caraivatours.hub.booking.enums.BookingStatus;
 import com.caraivatours.hub.payment.dto.PaymentDetailDTO;
 import com.caraivatours.hub.payment.dto.PaymentSummaryDTO;
+import com.caraivatours.hub.shared.dto.PagedResult;
 import com.caraivatours.hub.shared.exceptions.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,25 +26,42 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final PaymentMapper paymentMapper;
 
-    @Cacheable(value = "payments", key = "'search:' + #idPayment + ':' + #nameClient + ':' + #pageable.pageNumber + ':' + #pageable.pageSize + ':' + #pageable.sort")
-    public Page<PaymentSummaryDTO> findAllByNameClientOrId(Long idPayment, String nameClient, Pageable pageable) {
-        log.debug("Searching payments by idPayment={}, nameClient={}, page={}", idPayment, nameClient, pageable);
+    @Cacheable(
+            value = "payments",
+            key = "'search:' + #idPayment + ':' + #nameClient + ':' + #pageable.pageNumber + ':' + #pageable.pageSize + ':' + #pageable.sort"
+    )
+    public PagedResult<PaymentSummaryDTO> findAllByNameClientOrId(
+            Long idPayment,
+            String nameClient,
+            Pageable pageable
+    ) {
+        log.debug("Searching payments by idPayment={}, nameClient={}, page={}",
+                idPayment, nameClient, pageable);
 
         Page<Payment> payments = paymentRepository.findAllByFilters(idPayment, nameClient, pageable);
+
         log.info("Found {} payments matching filters (idPayment={}, nameClient={})",
                 payments.getTotalElements(), idPayment, nameClient);
 
-        return payments.map(paymentMapper::toSummary);
+        return PagedResult.from(payments.map(paymentMapper::toSummary));
     }
 
-    @Cacheable(value = "payments", key = "'status:' + #status + ':' + #pageable.pageNumber + ':' + #pageable.pageSize + ':' + #pageable.sort")
-    public Page<PaymentSummaryDTO> findByStatusBooking(BookingStatus status, Pageable pageable) {
+    @Cacheable(
+            value = "payments",
+            key = "'status:' + #status + ':' + #pageable.pageNumber + ':' + #pageable.pageSize + ':' + #pageable.sort"
+    )
+    public PagedResult<PaymentSummaryDTO> findByStatusBooking(
+            BookingStatus status,
+            Pageable pageable
+    ) {
         log.debug("Searching payments by booking status={}", status);
 
         Page<Payment> payments = paymentRepository.findByStatusBooking(status, pageable);
-        log.info("Found {} payments with booking status={}", payments.getTotalElements(), status);
 
-        return payments.map(paymentMapper::toSummary);
+        log.info("Found {} payments with booking status={}",
+                payments.getTotalElements(), status);
+
+        return PagedResult.from(payments.map(paymentMapper::toSummary));
     }
 
     @Cacheable(value = "payment-details", key = "#id")
@@ -68,5 +86,15 @@ public class PaymentService {
         booking.setPayment(new Payment(signalAmount, receiptUrl, booking));
 
         log.info("Payment created for booking ID: {}. Signal amount: {}", booking.getId(), signalAmount);
+    }
+
+    @Transactional
+    @CacheEvict(value = {"payments", "payment-details"}, allEntries = true)
+    public void updateExpectedAmount(Booking booking) {
+        if (booking.getPayment() == null) {
+            return;
+        }
+
+        booking.getPayment().setExpectedAmount(booking.calculateRequiredDeposit());
     }
 }

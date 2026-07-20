@@ -4,9 +4,12 @@ import com.caraivatours.hub.auth.dto.AuthenticatedUser;
 import com.caraivatours.hub.booking.BookingService;
 import com.caraivatours.hub.booking.controller.docs.BookingControllerDocs;
 import com.caraivatours.hub.booking.dto.request.CreateBookingRequest;
+import com.caraivatours.hub.booking.dto.request.UpdateBookingRequest;
 import com.caraivatours.hub.booking.dto.response.BookingDetailDTO;
 import com.caraivatours.hub.booking.dto.response.BookingSummaryDTO;
 import com.caraivatours.hub.booking.enums.BookingStatus;
+import com.caraivatours.hub.groupmember.dto.GroupMemberDTO;
+import com.caraivatours.hub.shared.dto.PagedResult;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -26,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/bookings")
@@ -35,14 +39,14 @@ public class BookingController implements BookingControllerDocs {
     private final BookingService bookingService;
 
     @GetMapping
-    public ResponseEntity<Page<BookingSummaryDTO>> findAll(
+    public ResponseEntity<PagedResult<BookingSummaryDTO>> findAll(
             @RequestParam(defaultValue = "") String search,
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         return ResponseEntity.ok(bookingService.findAll(search.trim(), pageable));
     }
 
     @GetMapping("/status/{status}")
-    public ResponseEntity<Page<BookingSummaryDTO>> findByStatus(
+    public ResponseEntity<PagedResult<BookingSummaryDTO>> findByStatus(
             @PathVariable BookingStatus status,
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         return ResponseEntity.ok(bookingService.findByStatus(status, pageable));
@@ -51,6 +55,11 @@ public class BookingController implements BookingControllerDocs {
     @GetMapping("/{id}")
     public ResponseEntity<BookingDetailDTO> findDetails(@PathVariable Long id) {
         return ResponseEntity.ok(bookingService.findDetailsBooking(id));
+    }
+
+    @GetMapping("/{id}/group-members")
+    public ResponseEntity<Set<GroupMemberDTO>> findGroupMembers(@PathVariable Long id) {
+        return ResponseEntity.ok(bookingService.findGroupMembers(id));
     }
 
     @PostMapping
@@ -70,5 +79,12 @@ public class BookingController implements BookingControllerDocs {
             @PathVariable Long id,
             @AuthenticationPrincipal AuthenticatedUser authenticatedUser) {
         return ResponseEntity.ok(bookingService.confirmBooking(id, authenticatedUser.id()));
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<BookingSummaryDTO> update(
+            @PathVariable Long id,
+            @RequestBody @Valid UpdateBookingRequest request) {
+        return ResponseEntity.ok(bookingService.updateBooking(id, request));
     }
 }
