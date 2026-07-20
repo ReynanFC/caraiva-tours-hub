@@ -49,7 +49,11 @@ public class BookingService {
     private final GroupMemberService groupMemberService;
     private final PickupLocationRepository pickupLocationRepository;
 
-    @Cacheable(value = "bookings", key = "'all:' + #search + ':' + #pageable.pageNumber + ':' + #pageable.pageSize + ':' + #pageable.sort")
+    @Cacheable(
+            value = "bookings",
+            key = "'all:' + #search + ':' + #pageable.pageNumber + ':' + #pageable.pageSize + ':' + #pageable.sort",
+            condition = "#search == null || #search.isEmpty()"
+    )
     public PagedResult<BookingSummaryDTO> findAll(String search, Pageable pageable) {
         log.info("Fetching all bookings with search filter: '{}'", search);
 
@@ -58,7 +62,11 @@ public class BookingService {
         return PagedResult.from(bookings);
     }
 
-    @Cacheable(value = "bookings", key = "'status:' + #status + ':' + #pageable.pageNumber + ':' + #pageable.pageSize + ':' + #pageable.sort")
+    @Cacheable(
+            value = "bookings",
+            key = "'status:' + #status + ':' + #pageable.pageNumber + ':' + #pageable.pageSize + ':' + #pageable.sort",
+            condition = "#status == null"
+    )
     public PagedResult<BookingSummaryDTO> findByStatus(BookingStatus status, Pageable pageable) {
         log.info("Filtering bookings by status: {}", status);
 

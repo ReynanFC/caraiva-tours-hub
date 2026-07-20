@@ -52,7 +52,11 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional(readOnly = true)
-    @Cacheable(value = "users", key = "#search + '-' + #pageable.pageNumber + '-' + #pageable.pageSize + '-' + #pageable.sort")
+    @Cacheable(
+            value = "users",
+            key = "#search + '-' + #pageable.pageNumber + '-' + #pageable.pageSize + '-' + #pageable.sort",
+            condition = "#search == null || #search.isEmpty()"
+    )
     public PagedResult<UserSummaryDTO> findAll(String search, Pageable pageable) {
         log.info("Fetching paginated users list");
         log.debug("Pagination details: {}", pageable);

@@ -31,7 +31,8 @@ public class TourService {
 
     @Transactional(readOnly = true)
     @Cacheable(value = "tours",
-            key = "#search + '-' + #pageable.pageNumber + '-' + #pageable.pageSize + '-' + #pageable.sort"
+            key = "#search + '-' + #pageable.pageNumber + '-' + #pageable.pageSize + '-' + #pageable.sort",
+            condition = "#search == null || #search.isEmpty()"
     )
     public PagedResult<TourResponseDTO> findAll(String search, Pageable pageable) {
         log.info("Fetching paginated tours list");

@@ -49,7 +49,8 @@ public class CategoryTourService {
     }
 
     @Cacheable(value = "categories",
-            key = "#search + '-' + #pageable.pageNumber + '-' + #pageable.pageSize + '-' + #pageable.sort")
+            key = "#search + '-' + #pageable.pageNumber + '-' + #pageable.pageSize + '-' + #pageable.sort",
+            condition = "#search == null || #search.isEmpty()")
     public PagedResult<CategoryListItemDTO> findAll(String search, Pageable pageable) {
         log.info("Fetching paginated categories with search term: '{}'", search);
         log.debug("Pagination details: {}", pageable);

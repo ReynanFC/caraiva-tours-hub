@@ -28,7 +28,8 @@ public class PaymentService {
 
     @Cacheable(
             value = "payments",
-            key = "'search:' + #idPayment + ':' + #nameClient + ':' + #pageable.pageNumber + ':' + #pageable.pageSize + ':' + #pageable.sort"
+            key = "'search:' + #idPayment + ':' + #nameClient + ':' + #pageable.pageNumber + ':' + #pageable.pageSize + ':' + #pageable.sort",
+            condition = "#idPayment == null && (#nameClient == null || #nameClient.isEmpty())"
     )
     public PagedResult<PaymentSummaryDTO> findAllByNameClientOrId(
             Long idPayment,
@@ -48,7 +49,8 @@ public class PaymentService {
 
     @Cacheable(
             value = "payments",
-            key = "'status:' + #status + ':' + #pageable.pageNumber + ':' + #pageable.pageSize + ':' + #pageable.sort"
+            key = "'status:' + #status + ':' + #pageable.pageNumber + ':' + #pageable.pageSize + ':' + #pageable.sort",
+            condition = "#status == null"
     )
     public PagedResult<PaymentSummaryDTO> findByStatusBooking(
             BookingStatus status,
