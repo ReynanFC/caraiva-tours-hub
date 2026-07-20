@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
         unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface BookingMapper {
 
+    @Mapping(target = "clientId", source = "client.id")
     @Mapping(target = "clientName", source = "client.name")
     @Mapping(target = "tourName", source = "tour.name")
     @Mapping(target = "date", source = "customSchedule")

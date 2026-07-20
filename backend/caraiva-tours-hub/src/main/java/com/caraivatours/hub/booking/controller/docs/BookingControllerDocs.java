@@ -20,12 +20,12 @@ import org.springframework.http.ResponseEntity;
 @Tag(name = "Bookings", description = "Endpoints for creating and managing tour bookings")
 public interface BookingControllerDocs {
 
-    @Operation(summary = "List bookings", responses = {
+    @Operation(summary = "List bookings", description = "Each booking summary includes the client identifier in `clientId`.", responses = {
             @ApiResponse(responseCode = "200", description = "Bookings retrieved", content = @Content(schema = @Schema(implementation = BookingSummaryDTO.class)))
     })
     ResponseEntity<PagedResult<BookingSummaryDTO>> findAll(String search, @ParameterObject Pageable pageable);
 
-    @Operation(summary = "List bookings by status", responses = {
+    @Operation(summary = "List bookings by status", description = "Each booking summary includes the client identifier in `clientId`.", responses = {
             @ApiResponse(responseCode = "200", description = "Bookings retrieved", content = @Content(schema = @Schema(implementation = BookingSummaryDTO.class)))
     })
     ResponseEntity<PagedResult<BookingSummaryDTO>> findByStatus(BookingStatus status, @ParameterObject Pageable pageable);
@@ -36,14 +36,14 @@ public interface BookingControllerDocs {
     })
     ResponseEntity<BookingDetailDTO> findDetails(@Parameter(description = "Booking ID") Long id);
 
-    @Operation(summary = "Create a booking", responses = {
+    @Operation(summary = "Create a booking", description = "The returned booking summary includes the client identifier in `clientId`.", responses = {
             @ApiResponse(responseCode = "201", description = "Booking created", content = @Content(schema = @Schema(implementation = BookingSummaryDTO.class))),
             @ApiResponse(responseCode = "400", description = "Invalid request", content = @Content),
             @ApiResponse(responseCode = "404", description = "Tour or user not found", content = @Content)
     })
     ResponseEntity<BookingSummaryDTO> create(@Parameter(hidden = true) AuthenticatedUser authenticatedUser, CreateBookingRequest request);
 
-    @Operation(summary = "Confirm a booking", responses = {
+    @Operation(summary = "Confirm a booking", description = "The returned booking summary includes the client identifier in `clientId`.", responses = {
             @ApiResponse(responseCode = "200", description = "Booking confirmed", content = @Content(schema = @Schema(implementation = BookingSummaryDTO.class))),
             @ApiResponse(responseCode = "404", description = "Booking or user not found", content = @Content)
     })

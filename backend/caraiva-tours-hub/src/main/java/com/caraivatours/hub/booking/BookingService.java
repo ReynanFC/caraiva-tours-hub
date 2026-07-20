@@ -78,7 +78,7 @@ public class BookingService {
     }
 
     @Transactional
-    @CacheEvict(value = {"bookings", "booking-details"}, allEntries = true)
+    @CacheEvict(value = {"bookings", "booking-details", "client-details", "client-tour-history"}, allEntries = true)
     public BookingSummaryDTO createBooking(Long attendantId, CreateBookingRequest req) {
         log.info("Starting booking creation process for Tour ID: {} by Attendant ID: {}", req.tourId(), attendantId);
         log.debug("Received create booking payload: {}", req);
@@ -128,7 +128,7 @@ public class BookingService {
     }
 
     @Transactional
-    @CacheEvict(value = {"bookings", "booking-details"}, allEntries = true)
+    @CacheEvict(value = {"bookings", "booking-details", "client-tour-history"}, allEntries = true)
     public BookingSummaryDTO confirmBooking(Long bookingId, Long attendantId) {
         Booking entity = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new ResourceNotFoundException("Booking not found with ID: " + bookingId));

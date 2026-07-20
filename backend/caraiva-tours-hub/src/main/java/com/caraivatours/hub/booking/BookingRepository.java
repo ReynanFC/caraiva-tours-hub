@@ -22,6 +22,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     @Query("""
     SELECT new com.caraivatours.hub.booking.dto.response.BookingSummaryDTO(
         b.id,
+        b.client.id,
         b.client.name,
         b.tour.name,
         b.customSchedule,
@@ -39,6 +40,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     @Query("""
     SELECT new com.caraivatours.hub.booking.dto.response.BookingSummaryDTO(
         b.id,
+        b.client.id,
         b.client.name,
         b.tour.name,
         b.customSchedule,
