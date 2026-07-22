@@ -1,7 +1,7 @@
 package com.caraivatours.hub.tour;
 
 import com.caraivatours.hub.category.CategoryTour;
-import com.caraivatours.hub.category.CategoryTourRepository;
+import com.caraivatours.hub.category.CategoryTourService;
 import com.caraivatours.hub.shared.dto.PagedResult;
 import com.caraivatours.hub.shared.exceptions.BadRequestException;
 import com.caraivatours.hub.shared.exceptions.ResourceNotFoundException;
@@ -20,22 +20,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @Slf4j
 @RequiredArgsConstructor
 public class TourService {
 
     private final TourRepository tourRepository;
-    private final CategoryTourRepository categoryRepository;
+    private final CategoryTourService categoryTourService;
     private final TourMapper mapper;
 
-    @Transactional(readOnly = true)
     public Tour findById(Long id) {
         return tourRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Tour not found with ID: " + id));
     }
 
-    @Transactional(readOnly = true)
     @Cacheable(value = "tours",
             key = "#search + '-' + #pageable.pageNumber + '-' + #pageable.pageSize + '-' + #pageable.sort",
             condition = "#search == null || #search.isEmpty()"
@@ -51,6 +49,7 @@ public class TourService {
         return PagedResult.from(tours.map(mapper::toResponseDTO));
     }
 
+    @Transactional
     @CacheEvict(value = {"tours", "categories"}, allEntries = true)
     public TourResponseDTO createTour(CreateTourDTO createTourDTO) {
         log.info("Attempting to add a new tour with name: '{}'", createTourDTO.name());
@@ -62,8 +61,7 @@ public class TourService {
         }
 
         log.debug("Verifying category existence with ID: {}", createTourDTO.categoryTourId());
-        CategoryTour category = categoryRepository.findById(createTourDTO.categoryTourId())
-                .orElseThrow(() -> new ResourceNotFoundException("Category not found with ID: " + createTourDTO.categoryTourId()));
+        CategoryTour category = categoryTourService.findEntityById(createTourDTO.categoryTourId());
 
         log.debug("Mapping CreateTourDTO to Tour entity state");
         Tour entity = mapper.toEntity(createTourDTO);
@@ -77,6 +75,7 @@ public class TourService {
         return mapper.toResponseDTO(entity);
     }
 
+    @Transactional
     @CacheEvict(value = {"tours", "categories"}, allEntries = true)
     public TourResponseDTO updateTour(Long id, UpdateTourDTO updateTourDTO) {
         log.info("Attempting to update tour with ID: {}", id);
@@ -110,12 +109,11 @@ public class TourService {
 
         entity.getCategoryTour().removeTour(entity);
 
-        CategoryTour newCategory = categoryRepository.findById(dto.categoryTourId())
-                .orElseThrow(() -> new ResourceNotFoundException("Category not found with ID: " + dto.categoryTourId()));
-
+        CategoryTour newCategory = categoryTourService.findEntityById(dto.categoryTourId());
         newCategory.addTour(entity);
     }
 
+    @Transactional
     @CacheEvict(value = {"tours", "categories"}, allEntries = true)
     public TourResponseDTO changeAvailable(Long id, ToggleTourAvailabilityDTO availabilityDTO) {
         log.info("Attempting to update availability status for tour with ID: {}", id);
@@ -136,6 +134,7 @@ public class TourService {
         return mapper.toResponseDTO(entity);
     }
 
+    @Transactional
     @CacheEvict(value = {"tours", "categories"}, allEntries = true)
     public void deleteTour(Long id) {
         log.info("Attempting to delete tour with ID: {}", id);

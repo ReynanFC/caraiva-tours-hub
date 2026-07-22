@@ -4,6 +4,7 @@ import com.caraivatours.hub.client.Client;
 import com.caraivatours.hub.groupmember.GroupMember;
 import com.caraivatours.hub.payment.Payment;
 import com.caraivatours.hub.booking.embeddable.FinancialSnapshot;
+import com.caraivatours.hub.shared.exceptions.BadRequestException;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -151,6 +152,14 @@ public class Booking implements Serializable {
      */
     public static int calculateTotalParticipants(int membersCount) {
         return membersCount + ORGANIZER_COUNT;
+    }
+
+    public void validateBookingStateForModification() {
+        if (currentStatus == BookingStatus.COMPLETED ||
+            currentStatus == BookingStatus.CANCELLED ||
+            currentStatus == BookingStatus.CANCEL_REQUEST) {
+            throw new BadRequestException("This Booking cannot be changed/accessed because its status is: " + currentStatus.name());
+        }
     }
 
     public void addGroupMember(GroupMember member) {

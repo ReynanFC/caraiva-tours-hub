@@ -10,6 +10,7 @@ import com.caraivatours.hub.shared.exceptions.BadRequestException;
 import com.caraivatours.hub.shared.exceptions.EntityInUseException;
 import com.caraivatours.hub.shared.exceptions.ResourceNotFoundException;
 import com.caraivatours.hub.tour.TourRepository;
+import com.caraivatours.hub.tour.TourService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
@@ -31,12 +32,16 @@ public class CategoryTourService {
     private final CategoryTourRepository categoryRepository;
     private final TourRepository tourRepository;
 
+    public CategoryTour findEntityById(Long id) {
+        return categoryRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found with ID: " + id));
+    }
+
     @Cacheable(value ="category", key="#id")
     public CategoryResponseDTO findById(Long id) {
         log.info("Fetching category tour with ID: {}", id);
 
-        CategoryTour entity = categoryRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Category tour not found"));
+        CategoryTour entity = findEntityById(id);
 
         log.debug("Category tour found - ID: {}, Name: {}", entity.getId(), entity.getName());
         return new CategoryResponseDTO(entity.getId(), entity.getName());
@@ -84,9 +89,7 @@ public class CategoryTourService {
         log.info("Attempting to update category tour with ID: {}", id);
         log.debug("Payload data received: {}", updateCategoryDTO);
 
-        CategoryTour entity = categoryRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Category tour not found"));
-
+        CategoryTour entity = findEntityById(id);
         log.debug("Current entity state before update - ID: {}, Name: '{}'", entity.getId(), entity.getName());
 
         entity.setName(updateCategoryDTO.name());

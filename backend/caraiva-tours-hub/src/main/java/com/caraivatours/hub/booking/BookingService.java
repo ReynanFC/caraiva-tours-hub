@@ -161,8 +161,7 @@ public class BookingService {
         Booking entity = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new ResourceNotFoundException("Booking not found with ID: " + bookingId));
 
-        validateBookingStateForModification(entity);
-
+        entity.validateBookingStateForModification();
         clientService.updateClientData(entity.getClient(), request.clientName(), request.clientPhone());
 
         boolean tourChanged = applyTourChangeIfPresent(entity, request.tourId());
@@ -178,15 +177,6 @@ public class BookingService {
 
         log.info("Booking ID: {} updated successfully", bookingId);
         return bookingMapper.toSummary(entity);
-    }
-
-    public void validateBookingStateForModification(Booking booking) {
-        BookingStatus status = booking.getCurrentStatus();
-
-        if (status == BookingStatus.COMPLETED || status == BookingStatus.CANCELLED || status == BookingStatus.CANCEL_REQUEST) {
-            log.warn("Attempted operation on Booking ID {} with invalid status: {}", booking.getId(), status);
-            throw new BadRequestException("This Booking cannot be changed/accessed because its status is: " + status.name());
-        }
     }
 
     private boolean applyTourChangeIfPresent(Booking booking, Long newTourId) {

@@ -1,7 +1,7 @@
 package com.caraivatours.hub.groupmember;
 
 import com.caraivatours.hub.booking.Booking;
-import com.caraivatours.hub.booking.BookingService;
+import com.caraivatours.hub.booking.BookingRepository;
 import com.caraivatours.hub.groupmember.dto.GroupMemberDTO;
 import com.caraivatours.hub.shared.exceptions.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -18,14 +18,16 @@ import java.util.stream.Collectors;
 public class GroupMemberService {
 
     private final GroupMemberRepository groupMemberRepository;
-    private final BookingService bookingService;
+    private final BookingRepository bookingRepository;
 
     @Transactional(readOnly = true)
     public Set<GroupMemberDTO> findGroupMembers(Long bookingId) {
         log.info("Fetching group members for Booking ID: {}", bookingId);
 
-        Booking booking = bookingService.findById(bookingId);
-        bookingService.validateBookingStateForModification(booking);
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new ResourceNotFoundException("Booking not found with ID: " + bookingId));
+
+        booking.validateBookingStateForModification();
 
         Set<GroupMember> members = groupMemberRepository.findByBookingId(bookingId);
         log.debug("Found {} group members for Booking ID: {}", members.size(), bookingId);
