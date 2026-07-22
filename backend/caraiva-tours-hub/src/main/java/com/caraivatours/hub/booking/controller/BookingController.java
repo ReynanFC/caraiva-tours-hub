@@ -4,9 +4,11 @@ import com.caraivatours.hub.auth.dto.AuthenticatedUser;
 import com.caraivatours.hub.booking.BookingService;
 import com.caraivatours.hub.booking.controller.docs.BookingControllerDocs;
 import com.caraivatours.hub.booking.dto.request.CreateBookingRequest;
+import com.caraivatours.hub.booking.dto.request.UpdateBookingRequest;
 import com.caraivatours.hub.booking.dto.response.BookingDetailDTO;
 import com.caraivatours.hub.booking.dto.response.BookingSummaryDTO;
 import com.caraivatours.hub.booking.enums.BookingStatus;
+import com.caraivatours.hub.groupmember.dto.GroupMemberDTO;
 import com.caraivatours.hub.shared.dto.PagedResult;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/bookings")
@@ -54,6 +57,11 @@ public class BookingController implements BookingControllerDocs {
         return ResponseEntity.ok(bookingService.findDetailsBooking(id));
     }
 
+    @GetMapping("/{id}/group-members")
+    public ResponseEntity<Set<GroupMemberDTO>> findGroupMembers(@PathVariable Long id) {
+        return ResponseEntity.ok(bookingService.findGroupMembers(id));
+    }
+
     @PostMapping
     public ResponseEntity<BookingSummaryDTO> create(
             @AuthenticationPrincipal AuthenticatedUser authenticatedUser,
@@ -71,5 +79,12 @@ public class BookingController implements BookingControllerDocs {
             @PathVariable Long id,
             @AuthenticationPrincipal AuthenticatedUser authenticatedUser) {
         return ResponseEntity.ok(bookingService.confirmBooking(id, authenticatedUser.id()));
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<BookingSummaryDTO> update(
+            @PathVariable Long id,
+            @RequestBody @Valid UpdateBookingRequest request) {
+        return ResponseEntity.ok(bookingService.updateBooking(id, request));
     }
 }

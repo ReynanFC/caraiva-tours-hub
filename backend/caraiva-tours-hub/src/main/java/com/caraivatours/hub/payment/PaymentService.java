@@ -89,4 +89,14 @@ public class PaymentService {
 
         log.info("Payment created for booking ID: {}. Signal amount: {}", booking.getId(), signalAmount);
     }
+
+    @Transactional
+    @CacheEvict(value = {"payments", "payment-details"}, allEntries = true)
+    public void updateExpectedAmount(Booking booking) {
+        if (booking.getPayment() == null) {
+            return;
+        }
+
+        booking.getPayment().setExpectedAmount(booking.calculateRequiredDeposit());
+    }
 }

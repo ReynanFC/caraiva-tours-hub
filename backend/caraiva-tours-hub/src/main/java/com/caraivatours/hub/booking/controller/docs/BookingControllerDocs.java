@@ -2,9 +2,11 @@ package com.caraivatours.hub.booking.controller.docs;
 
 import com.caraivatours.hub.auth.dto.AuthenticatedUser;
 import com.caraivatours.hub.booking.dto.request.CreateBookingRequest;
+import com.caraivatours.hub.booking.dto.request.UpdateBookingRequest;
 import com.caraivatours.hub.booking.dto.response.BookingDetailDTO;
 import com.caraivatours.hub.booking.dto.response.BookingSummaryDTO;
 import com.caraivatours.hub.booking.enums.BookingStatus;
+import com.caraivatours.hub.groupmember.dto.GroupMemberDTO;
 import com.caraivatours.hub.shared.dto.PagedResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -16,6 +18,8 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+
+import java.util.Set;
 
 @Tag(name = "Bookings", description = "Endpoints for creating and managing tour bookings")
 public interface BookingControllerDocs {
@@ -36,6 +40,12 @@ public interface BookingControllerDocs {
     })
     ResponseEntity<BookingDetailDTO> findDetails(@Parameter(description = "Booking ID") Long id);
 
+    @Operation(summary = "List booking group members", responses = {
+            @ApiResponse(responseCode = "200", description = "Group members retrieved", content = @Content(schema = @Schema(implementation = GroupMemberDTO.class))),
+            @ApiResponse(responseCode = "404", description = "Booking not found", content = @Content)
+    })
+    ResponseEntity<Set<GroupMemberDTO>> findGroupMembers(@Parameter(description = "Booking ID") Long id);
+
     @Operation(summary = "Create a booking", responses = {
             @ApiResponse(responseCode = "201", description = "Booking created", content = @Content(schema = @Schema(implementation = BookingSummaryDTO.class))),
             @ApiResponse(responseCode = "400", description = "Invalid request", content = @Content),
@@ -48,4 +58,11 @@ public interface BookingControllerDocs {
             @ApiResponse(responseCode = "404", description = "Booking or user not found", content = @Content)
     })
     ResponseEntity<BookingSummaryDTO> confirm(Long id, @Parameter(hidden = true) AuthenticatedUser authenticatedUser);
+
+    @Operation(summary = "Update a booking", responses = {
+            @ApiResponse(responseCode = "200", description = "Booking updated", content = @Content(schema = @Schema(implementation = BookingSummaryDTO.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid request", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Booking or tour not found", content = @Content)
+    })
+    ResponseEntity<BookingSummaryDTO> update(@Parameter(description = "Booking ID") Long id, UpdateBookingRequest request);
 }

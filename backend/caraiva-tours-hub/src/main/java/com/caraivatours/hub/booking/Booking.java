@@ -158,6 +158,11 @@ public class Booking implements Serializable {
         member.setBooking(this);
     }
 
+    public void replaceGroupMembers(Set<GroupMember> members) {
+        groupMembers.clear();
+        members.forEach(this::addGroupMember);
+    }
+
     public void addStatusHistory(StatusHistory history) {
         statusHistory.add(history);
         history.setBooking(this);
