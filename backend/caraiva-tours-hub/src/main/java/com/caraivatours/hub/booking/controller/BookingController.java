@@ -57,11 +57,6 @@ public class BookingController implements BookingControllerDocs {
         return ResponseEntity.ok(bookingService.findDetailsBooking(id));
     }
 
-    @GetMapping("/{id}/group-members")
-    public ResponseEntity<Set<GroupMemberDTO>> findGroupMembers(@PathVariable Long id) {
-        return ResponseEntity.ok(bookingService.findGroupMembers(id));
-    }
-
     @PostMapping
     public ResponseEntity<BookingSummaryDTO> create(
             @AuthenticationPrincipal AuthenticatedUser authenticatedUser,

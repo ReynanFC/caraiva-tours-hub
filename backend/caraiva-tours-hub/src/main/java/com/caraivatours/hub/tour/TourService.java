@@ -30,6 +30,12 @@ public class TourService {
     private final TourMapper mapper;
 
     @Transactional(readOnly = true)
+    public Tour findById(Long id) {
+        return tourRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Tour not found with ID: " + id));
+    }
+
+    @Transactional(readOnly = true)
     @Cacheable(value = "tours",
             key = "#search + '-' + #pageable.pageNumber + '-' + #pageable.pageSize + '-' + #pageable.sort",
             condition = "#search == null || #search.isEmpty()"

@@ -52,6 +52,12 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional(readOnly = true)
+    public User findById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + id));
+    }
+
+    @Transactional(readOnly = true)
     @Cacheable(
             value = "users",
             key = "#search + '-' + #pageable.pageNumber + '-' + #pageable.pageSize + '-' + #pageable.sort",

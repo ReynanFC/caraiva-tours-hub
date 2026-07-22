@@ -40,12 +40,6 @@ public interface BookingControllerDocs {
     })
     ResponseEntity<BookingDetailDTO> findDetails(@Parameter(description = "Booking ID") Long id);
 
-    @Operation(summary = "List booking group members", responses = {
-            @ApiResponse(responseCode = "200", description = "Group members retrieved", content = @Content(schema = @Schema(implementation = GroupMemberDTO.class))),
-            @ApiResponse(responseCode = "404", description = "Booking not found", content = @Content)
-    })
-    ResponseEntity<Set<GroupMemberDTO>> findGroupMembers(@Parameter(description = "Booking ID") Long id);
-
     @Operation(summary = "Create a booking", responses = {
             @ApiResponse(responseCode = "201", description = "Booking created", content = @Content(schema = @Schema(implementation = BookingSummaryDTO.class))),
             @ApiResponse(responseCode = "400", description = "Invalid request", content = @Content),

@@ -9,20 +9,18 @@ import com.caraivatours.hub.booking.event.BookingStatusChangedEvent;
 import com.caraivatours.hub.client.Client;
 import com.caraivatours.hub.client.ClientService;
 import com.caraivatours.hub.groupmember.GroupMember;
-import com.caraivatours.hub.groupmember.GroupMemberRepository;
 import com.caraivatours.hub.groupmember.GroupMemberService;
 import com.caraivatours.hub.groupmember.dto.GroupMemberDTO;
 import com.caraivatours.hub.payment.PaymentService;
 import com.caraivatours.hub.pickuplocation.PickupLocation;
-import com.caraivatours.hub.pickuplocation.PickupLocationRepository;
-import com.caraivatours.hub.pickuplocation.dto.PickupDTO;
+import com.caraivatours.hub.pickuplocation.PickupLocationService;
 import com.caraivatours.hub.shared.dto.PagedResult;
 import com.caraivatours.hub.shared.exceptions.BadRequestException;
 import com.caraivatours.hub.shared.exceptions.ResourceNotFoundException;
-import com.caraivatours.hub.tour.TourRepository;
+import com.caraivatours.hub.tour.TourService;
 import com.caraivatours.hub.tour.entity.Tour;
 import com.caraivatours.hub.user.User;
-import com.caraivatours.hub.user.UserRepository;
+import com.caraivatours.hub.user.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -35,7 +33,6 @@ import org.springframework.util.StringUtils;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -47,15 +44,19 @@ import org.springframework.cache.annotation.Cacheable;
 public class BookingService {
 
     private final BookingRepository bookingRepository;
-    private final TourRepository tourRepository;
-    private final UserRepository userRepository;
-    private final PickupLocationRepository pickupLocationRepository;
-    private final GroupMemberRepository groupMemberRepository;
     private final BookingMapper bookingMapper;
-    private final ApplicationEventPublisher eventPublisher;
+    private final TourService tourService;
+    private final UserService userService;
+    private final PickupLocationService pickupService;
     private final ClientService clientService;
     private final PaymentService paymentService;
     private final GroupMemberService groupMemberService;
+    private final ApplicationEventPublisher eventPublisher;
+
+    public Booking findById(Long id) {
+        return bookingRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Booking not found with ID: " + id));
+    }
 
     @Cacheable(
             value = "bookings",
@@ -93,38 +94,19 @@ public class BookingService {
         return bookingMapper.toDetail(entity);
     }
 
-    public Set<GroupMemberDTO> findGroupMembers(Long bookingId) {
-        log.info("Fetching group members for Booking ID: {}", bookingId);
-
-        Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new ResourceNotFoundException("Booking not found with ID: " + bookingId));
-
-        validateBookingStateForModification(booking);
-
-        Set<GroupMember> members = groupMemberRepository.findByBookingId(bookingId);
-        log.debug("Found {} group members for Booking ID: {}", members.size(), bookingId);
-
-        return members.stream()
-                .map(member -> new GroupMemberDTO(member.getName(), member.isLapChild()))
-                .collect(Collectors.toSet());
-    }
-
     @Transactional
     @CacheEvict(value = {"bookings", "booking-details"}, allEntries = true)
     public BookingSummaryDTO createBooking(Long attendantId, CreateBookingRequest req) {
         log.info("Starting booking creation process for Tour ID: {} by Attendant ID: {}", req.tourId(), attendantId);
         log.debug("Received create booking payload: {}", req);
 
-        User user = userRepository.findById(attendantId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + attendantId));
-
-        Tour tour = tourRepository.findById(req.tourId())
-                .orElseThrow(() -> new ResourceNotFoundException("Tour not found with ID: " + req.tourId()));
+        User user = userService.findById(attendantId);
+        Tour tour = tourService.findById(req.tourId());
 
         Client client = clientService.findOrCreate(req.client());
         log.debug("Client resolved/created successfully: {}", client.getId());
 
-        PickupLocation pickup = pickupLocationRepository.save(createPickupLocation(req.pickup()));
+        PickupLocation pickup = pickupService.createPickupLocation(req.pickup());
         BookingStatus status = getStatus(req.pixPaymentUrl());
 
         Booking entity = Booking.builder()
@@ -198,7 +180,7 @@ public class BookingService {
         return bookingMapper.toSummary(entity);
     }
 
-    private void validateBookingStateForModification(Booking booking) {
+    public void validateBookingStateForModification(Booking booking) {
         BookingStatus status = booking.getCurrentStatus();
 
         if (status == BookingStatus.COMPLETED || status == BookingStatus.CANCELLED || status == BookingStatus.CANCEL_REQUEST) {
@@ -220,8 +202,7 @@ public class BookingService {
         log.info("Updating Tour for Booking ID: {} from Tour ID {} to Tour ID {}",
                 booking.getId(), booking.getTour().getId(), newTourId);
 
-        Tour newTour = tourRepository.findById(newTourId)
-                .orElseThrow(() -> new ResourceNotFoundException("Tour not found with ID: " + newTourId));
+        Tour newTour = tourService.findById(newTourId);
 
         booking.setTour(newTour);
         return true;
@@ -272,14 +253,6 @@ public class BookingService {
         eventPublisher.publishEvent(new BookingStatusChangedEvent(
                 booking.getId(), previousStatus, newStatus, userId, reason
         ));
-    }
-
-    private PickupLocation createPickupLocation(PickupDTO dto) {
-        log.debug("Processing pickup location. Postal Code: {}, Name: {}", dto.cep(), dto.locationName());
-
-        return new PickupLocation(
-                dto.cep(), dto.locationName(), dto.referencePoint(), dto.appliedPickupFee()
-        );
     }
 
     private BookingStatus getStatus(String pixPaymentUrl) {

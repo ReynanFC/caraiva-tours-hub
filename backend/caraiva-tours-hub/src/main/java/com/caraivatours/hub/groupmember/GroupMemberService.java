@@ -1,7 +1,9 @@
 package com.caraivatours.hub.groupmember;
 
 import com.caraivatours.hub.booking.Booking;
+import com.caraivatours.hub.booking.BookingService;
 import com.caraivatours.hub.groupmember.dto.GroupMemberDTO;
+import com.caraivatours.hub.shared.exceptions.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -14,6 +16,24 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class GroupMemberService {
+
+    private final GroupMemberRepository groupMemberRepository;
+    private final BookingService bookingService;
+
+    @Transactional(readOnly = true)
+    public Set<GroupMemberDTO> findGroupMembers(Long bookingId) {
+        log.info("Fetching group members for Booking ID: {}", bookingId);
+
+        Booking booking = bookingService.findById(bookingId);
+        bookingService.validateBookingStateForModification(booking);
+
+        Set<GroupMember> members = groupMemberRepository.findByBookingId(bookingId);
+        log.debug("Found {} group members for Booking ID: {}", members.size(), bookingId);
+
+        return members.stream()
+                .map(member -> new GroupMemberDTO(member.getName(), member.isLapChild()))
+                .collect(Collectors.toSet());
+    }
 
     @Transactional(readOnly = true)
     public Set<GroupMember> createForBooking(Booking booking, Set<GroupMemberDTO> memberDtos) {
