@@ -3,7 +3,8 @@ package com.caraivatours.hub.payment.controller.docs;
 import com.caraivatours.hub.booking.enums.BookingStatus;
 import com.caraivatours.hub.payment.dto.PaymentDetailDTO;
 import com.caraivatours.hub.payment.dto.PaymentSummaryDTO;
-import com.caraivatours.hub.shared.dto.PagedResult;
+import com.caraivatours.hub.payment.dto.PaymentOverviewDTO;
+import com.caraivatours.hub.payment.dto.ReservationPaymentDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -18,6 +19,12 @@ import org.springframework.http.ResponseEntity;
 @Tag(name = "Payments", description = "Endpoints for consulting reservation payments")
 public interface PaymentControllerDocs {
 
+    @Operation(summary = "Get payment overview", description = "Administrator-only totals for received 20% deposits, deposits awaiting proof, and the remaining 80% due after proof approval.")
+    ResponseEntity<PaymentOverviewDTO> overview();
+
+    @Operation(summary = "Search payment reservations", description = "Administrator-only reservation search by client name, phone or booking number. Filter by DRAFT for receipts awaiting proof or CANCELLED for rejected reservations.")
+    ResponseEntity<Page<ReservationPaymentDTO>> searchReservations(BookingStatus status, String search, @ParameterObject Pageable pageable);
+
     @Operation(
             summary = "List payments",
             description = "Returns a paginated payment list. Results can be filtered by payment ID and/or client name.",
@@ -28,7 +35,7 @@ public interface PaymentControllerDocs {
                     @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
             }
     )
-    ResponseEntity<PagedResult<PaymentSummaryDTO>> findAllByFilters(
+    ResponseEntity<Page<PaymentSummaryDTO>> findAllByFilters(
             @Parameter(description = "Optional payment identifier") Long idPayment,
             @Parameter(description = "Optional fragment of the client's name") String nameClient,
             @ParameterObject Pageable pageable
@@ -59,7 +66,7 @@ public interface PaymentControllerDocs {
                     @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
             }
     )
-    ResponseEntity<PagedResult<PaymentSummaryDTO>> findByBookingStatus(
+    ResponseEntity<Page<PaymentSummaryDTO>> findByBookingStatus(
             @Parameter(description = "Current status of the related booking", required = true) BookingStatus status,
             @ParameterObject Pageable pageable
     );
