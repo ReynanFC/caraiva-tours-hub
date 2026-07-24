@@ -4,6 +4,11 @@ import com.caraivatours.hub.booking.Booking;
 import com.caraivatours.hub.booking.enums.BookingStatus;
 import com.caraivatours.hub.payment.dto.PaymentDetailDTO;
 import com.caraivatours.hub.payment.dto.PaymentSummaryDTO;
+import com.caraivatours.hub.payment.dto.PaymentOverviewDTO;
+import com.caraivatours.hub.payment.dto.ReservationPaymentDTO;
+import com.caraivatours.hub.payment.mapper.PaymentMapper;
+import com.caraivatours.hub.payment.mapper.ReservationPaymentMapper;
+import com.caraivatours.hub.payment.projection.PaymentOverviewProjection;
 import com.caraivatours.hub.shared.exceptions.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +29,21 @@ public class PaymentService {
 
     private final PaymentRepository paymentRepository;
     private final PaymentMapper paymentMapper;
+    private final ReservationPaymentMapper reservationPaymentMapper;
+
+    public PaymentOverviewDTO getOverview() {
+        log.info("Fetching payment financial overview");
+        PaymentOverviewProjection overview = paymentRepository.paymentOverview(
+                java.util.List.of(BookingStatus.COMPLETED, BookingStatus.CONFIRMED), BookingStatus.DRAFT, BookingStatus.COMPLETED);
+        return new PaymentOverviewDTO(amount(overview.getReceivedDepositAmount()), amount(overview.getAwaitingReceiptAmount()), amount(overview.getRemainingAmount()));
+    }
+
+    public Page<ReservationPaymentDTO> searchReservations(BookingStatus status, String search, Pageable pageable) {
+        String normalizedSearch = search == null ? "" : search.trim();
+        log.info("Searching payment reservations with status={}, search={}", status, normalizedSearch);
+        return paymentRepository.findReservationsForPayment(status, normalizedSearch, pageable)
+                .map(reservationPaymentMapper::toReservationPayment);
+    }
 
     @Cacheable(value = "payments", key = "'search:' + #idPayment + ':' + #nameClient + ':' + #pageable.pageNumber + ':' + #pageable.pageSize + ':' + #pageable.sort")
     public Page<PaymentSummaryDTO> findAllByNameClientOrId(Long idPayment, String nameClient, Pageable pageable) {
@@ -68,5 +88,9 @@ public class PaymentService {
         booking.setPayment(new Payment(signalAmount, receiptUrl, booking));
 
         log.info("Payment created for booking ID: {}. Signal amount: {}", booking.getId(), signalAmount);
+    }
+
+    private BigDecimal amount(BigDecimal value) {
+        return value == null ? BigDecimal.ZERO : value;
     }
 }

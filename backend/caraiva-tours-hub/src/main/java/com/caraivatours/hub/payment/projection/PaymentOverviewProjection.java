@@ -1,4 +1,4 @@
-package com.caraivatours.hub.payment;
+package com.caraivatours.hub.payment.projection;
 
 import java.math.BigDecimal;
 

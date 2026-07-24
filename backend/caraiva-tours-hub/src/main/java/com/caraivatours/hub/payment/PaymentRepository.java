@@ -2,7 +2,7 @@ package com.caraivatours.hub.payment;
 
 import com.caraivatours.hub.booking.enums.BookingStatus;
 import com.caraivatours.hub.booking.Booking;
-import com.caraivatours.hub.payment.dto.PaymentSummaryDTO;
+import com.caraivatours.hub.payment.projection.PaymentOverviewProjection;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

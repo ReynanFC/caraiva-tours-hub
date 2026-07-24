@@ -1,4 +1,4 @@
-package com.caraivatours.hub.payment;
+package com.caraivatours.hub.payment.mapper;
 
 import com.caraivatours.hub.booking.Booking;
 import com.caraivatours.hub.payment.dto.ReservationPaymentDTO;

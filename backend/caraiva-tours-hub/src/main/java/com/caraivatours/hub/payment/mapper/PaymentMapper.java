@@ -1,6 +1,7 @@
-package com.caraivatours.hub.payment;
+package com.caraivatours.hub.payment.mapper;
 
 import com.caraivatours.hub.booking.statushistory.StatusHistoryMapper;
+import com.caraivatours.hub.payment.Payment;
 import com.caraivatours.hub.payment.dto.PaymentDetailDTO;
 import com.caraivatours.hub.payment.dto.PaymentSummaryDTO;
 import org.mapstruct.*;
