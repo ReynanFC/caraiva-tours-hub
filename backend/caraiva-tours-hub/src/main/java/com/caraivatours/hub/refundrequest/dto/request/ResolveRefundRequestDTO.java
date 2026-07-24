@@ -1,6 +1,6 @@
 package com.caraivatours.hub.refundrequest.dto.request;
 
-import com.caraivatours.hub.refundrequest.RefundStatus;
+import com.caraivatours.hub.refundrequest.enums.RefundStatus;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 

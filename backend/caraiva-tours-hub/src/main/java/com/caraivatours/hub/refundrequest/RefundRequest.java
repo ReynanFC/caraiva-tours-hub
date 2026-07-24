@@ -1,6 +1,7 @@
 package com.caraivatours.hub.refundrequest;
 
 import com.caraivatours.hub.booking.Booking;
+import com.caraivatours.hub.refundrequest.enums.RefundStatus;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

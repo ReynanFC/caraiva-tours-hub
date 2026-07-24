@@ -8,6 +8,8 @@ import com.caraivatours.hub.booking.event.BookingStatusChangedEvent;
 import com.caraivatours.hub.refundrequest.dto.request.CreateRefundRequestDTO;
 import com.caraivatours.hub.refundrequest.dto.request.ResolveRefundRequestDTO;
 import com.caraivatours.hub.refundrequest.dto.response.RefundRequestResponseDTO;
+import com.caraivatours.hub.refundrequest.enums.RefundStatus;
+import com.caraivatours.hub.shared.dto.PagedResult;
 import com.caraivatours.hub.shared.exceptions.BadRequestException;
 import com.caraivatours.hub.shared.exceptions.ResourceNotFoundException;
 import com.caraivatours.hub.user.User;
@@ -16,6 +18,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +34,21 @@ public class RefundRequestService {
     private final BookingRepository bookingRepository;
     private final UserService userService;
     private final ApplicationEventPublisher eventPublisher;
+
+    public PagedResult<RefundRequestResponseDTO> findAll(Pageable pageable) {
+        log.info("Fetching refund request history with pagination: {}", pageable);
+        Page<RefundRequestResponseDTO> refundRequests = refundRequestRepository.findAll(pageable)
+                .map(refundRequestMapper::toResponse);
+        return PagedResult.from(refundRequests);
+    }
+
+    public PagedResult<RefundRequestResponseDTO> findMine(Long requesterId, Pageable pageable) {
+        log.info("Fetching refund request history for user ID: {} with pagination: {}", requesterId, pageable);
+        Page<RefundRequestResponseDTO> refundRequests = refundRequestRepository
+                .findAllByRequestedByUserId(requesterId, pageable)
+                .map(refundRequestMapper::toResponse);
+        return PagedResult.from(refundRequests);
+    }
 
     @Transactional
     @CacheEvict(value = {"bookings", "booking-details"}, allEntries = true)

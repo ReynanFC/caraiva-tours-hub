@@ -1,6 +1,6 @@
 package com.caraivatours.hub.refundrequest.dto.response;
 
-import com.caraivatours.hub.refundrequest.RefundStatus;
+import com.caraivatours.hub.refundrequest.enums.RefundStatus;
 
 import java.time.LocalDateTime;
 

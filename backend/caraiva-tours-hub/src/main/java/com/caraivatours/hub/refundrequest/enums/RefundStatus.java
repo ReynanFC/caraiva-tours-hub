@@ -1,4 +1,4 @@
-package com.caraivatours.hub.refundrequest;
+package com.caraivatours.hub.refundrequest.enums;
 
 public enum RefundStatus {
     PENDING,

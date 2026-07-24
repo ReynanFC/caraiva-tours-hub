@@ -4,6 +4,7 @@ import com.caraivatours.hub.auth.dto.AuthenticatedUser;
 import com.caraivatours.hub.refundrequest.dto.request.CreateRefundRequestDTO;
 import com.caraivatours.hub.refundrequest.dto.request.ResolveRefundRequestDTO;
 import com.caraivatours.hub.refundrequest.dto.response.RefundRequestResponseDTO;
+import com.caraivatours.hub.shared.dto.PagedResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -11,9 +12,35 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Pageable;
 
 @Tag(name = "Refund requests", description = "Endpoints for requesting and resolving booking refunds")
 public interface RefundRequestControllerDocs {
+
+    @Operation(
+            summary = "List refund request history",
+            description = "Returns the complete paginated refund request history. Only administrators can access this endpoint.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Refund request history retrieved", content = @Content(schema = @Schema(implementation = RefundRequestResponseDTO.class))),
+                    @ApiResponse(responseCode = "401", description = "Unauthenticated", content = @Content),
+                    @ApiResponse(responseCode = "403", description = "Administrator access required", content = @Content)
+            }
+    )
+    ResponseEntity<PagedResult<RefundRequestResponseDTO>> findAll(@ParameterObject Pageable pageable);
+
+    @Operation(
+            summary = "List my refund requests",
+            description = "Returns a paginated history containing only refund requests created by the authenticated user.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "User refund request history retrieved", content = @Content(schema = @Schema(implementation = RefundRequestResponseDTO.class))),
+                    @ApiResponse(responseCode = "401", description = "Unauthenticated", content = @Content)
+            }
+    )
+    ResponseEntity<PagedResult<RefundRequestResponseDTO>> findMine(
+            @Parameter(hidden = true) AuthenticatedUser authenticatedUser,
+            @ParameterObject Pageable pageable
+    );
 
     @Operation(
             summary = "Request a refund",
