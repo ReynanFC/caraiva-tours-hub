@@ -91,9 +91,9 @@ public class JwtTokenProvider {
             String jti = decodedJWT.getId();
             Long userId = decodedJWT.getClaim(CLAIM_USER_ID).asLong();
 
-            validateRefreshToken(tokenType, jti, userId);
+            validateRefreshTokenType(tokenType);
             verifyUserEnabled(userId);
-            tokenStore.revoke(jti, userId);
+            consumeRefreshToken(jti, userId);
 
             UUID uuid = UUID.fromString(decodedJWT.getSubject());
             UserRole role = UserRole.valueOf(decodedJWT.getClaim(CLAIM_ROLE).asString());
@@ -151,12 +151,14 @@ public class JwtTokenProvider {
         }
     }
 
-    private void validateRefreshToken(String tokenType, String jti, Long userId) {
+    private void validateRefreshTokenType(String tokenType) {
         if (!TYPE_REFRESH.equals(tokenType)) {
             throw new InvalidJwtAuthenticationException("Provided token is not a valid refresh token");
         }
+    }
 
-        if (!tokenStore.isValid(jti)) {
+    private void consumeRefreshToken(String jti, Long userId) {
+        if (!tokenStore.consume(jti, userId)) {
             log.warn("Possible token reuse detected for user {}", userId);
             tokenStore.revokeAllForUser(userId);
             throw new InvalidJwtAuthenticationException("Refresh token already used");
