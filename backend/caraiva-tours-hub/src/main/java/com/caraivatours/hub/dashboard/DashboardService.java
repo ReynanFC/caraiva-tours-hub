@@ -1,6 +1,5 @@
 package com.caraivatours.hub.dashboard;
 
-import com.caraivatours.hub.booking.Booking;
 import com.caraivatours.hub.booking.BookingMapper;
 import com.caraivatours.hub.booking.BookingRepository;
 import com.caraivatours.hub.booking.dto.response.BookingSummaryDTO;
