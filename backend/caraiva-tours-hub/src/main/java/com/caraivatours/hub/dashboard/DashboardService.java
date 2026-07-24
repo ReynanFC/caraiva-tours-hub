@@ -1,6 +1,5 @@
 package com.caraivatours.hub.dashboard;
 
-import com.caraivatours.hub.booking.Booking;
 import com.caraivatours.hub.booking.BookingMapper;
 import com.caraivatours.hub.booking.BookingRepository;
 import com.caraivatours.hub.booking.dto.response.BookingSummaryDTO;
@@ -127,18 +126,30 @@ public class DashboardService {
     }
 
     private Period resolvePeriod(YearMonth month, boolean all) {
-        if (all) return new Period(LocalDateTime.of(1970, 1, 1, 0, 0), LocalDateTime.now().plusNanos(1), "all");
+        if (all) return new Period(
+                LocalDateTime.of(1970, 1, 1, 0, 0),
+                LocalDateTime.now().plusNanos(1),
+                "all"
+        );
 
         YearMonth selected = month == null ? YearMonth.now() : month;
 
-        return new Period(selected.atDay(1).atStartOfDay(), selected.plusMonths(1).atDay(1).atStartOfDay(), selected.toString());
+        return new Period(
+                selected.atDay(1).atStartOfDay(),
+                selected.plusMonths(1).atDay(1).atStartOfDay(),
+                selected.toString()
+        );
     }
 
     private BigDecimal amount(BigDecimal value) { return value == null ? BigDecimal.ZERO : value; }
 
     private long count(Long value) { return value == null ? 0 : value; }
 
-    private double percentage(long value, long total) { return total == 0 ? 0 : BigDecimal.valueOf(value * 100.0 / total).setScale(2, RoundingMode.HALF_UP).doubleValue(); }
+    private double percentage(long value, long total) {
+        return total == 0 ? 0 : BigDecimal.valueOf(value * 100.0 / total).setScale
+                (2, RoundingMode.HALF_UP)
+                .doubleValue();
+    }
 
     private record Period(LocalDateTime start, LocalDateTime end, String label) {}
 }
