@@ -52,6 +52,9 @@ public class RefundRequestService {
 
     @Transactional
     @CacheEvict(value = {"bookings", "booking-details"}, allEntries = true)
+    /**
+     * Opens a refund request for a non-admin user and moves the related booking to cancellation review.
+     */
     public RefundRequestResponseDTO create(Long requesterId, CreateRefundRequestDTO request) {
         log.info("Creating refund request for booking ID: {} by user ID: {}", request.bookingId(), requesterId);
         User requester = userService.findById(requesterId);
@@ -83,6 +86,9 @@ public class RefundRequestService {
 
     @Transactional
     @CacheEvict(value = {"bookings", "booking-details"}, allEntries = true)
+    /**
+     * Lets an administrator approve or reject a pending request; approval finalizes the booking cancellation.
+     */
     public RefundRequestResponseDTO resolve(Long refundRequestId, Long adminId, ResolveRefundRequestDTO request) {
         log.info("Resolving refund request ID: {} by user ID: {} with status: {}",
                 refundRequestId, adminId, request.refundStatus());

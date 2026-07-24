@@ -96,6 +96,10 @@ public class BookingService {
 
     @Transactional
     @CacheEvict(value = {"bookings", "booking-details"}, allEntries = true)
+    /**
+     * Creates a booking with its immutable financial snapshot, group members and optional 20% deposit.
+     * It also emits the initial status event used by the booking history.
+     */
     public BookingSummaryDTO createBooking(Long attendantId, CreateBookingRequest req) {
         log.info("Starting booking creation process for Tour ID: {} by Attendant ID: {}", req.tourId(), attendantId);
         log.debug("Received create booking payload: {}", req);
@@ -143,6 +147,9 @@ public class BookingService {
 
     @Transactional
     @CacheEvict(value = {"bookings", "booking-details"}, allEntries = true)
+    /**
+     * Marks the tour as completed and records the status transition under the attendant responsible.
+     */
     public BookingSummaryDTO confirmBooking(Long bookingId, Long attendantId) {
         Booking entity = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new ResourceNotFoundException("Booking not found with ID: " + bookingId));
@@ -154,6 +161,10 @@ public class BookingService {
 
     @Transactional
     @CacheEvict(value = {"bookings", "booking-details"}, allEntries = true)
+    /**
+     * Updates mutable booking data only while its current status permits modification.
+     * Tour, participant and discount changes recalculate both the financial snapshot and the 20% deposit.
+     */
     public BookingSummaryDTO updateBooking(Long bookingId, UpdateBookingRequest request) {
         log.info("Starting update process for Booking ID: {}", bookingId);
         log.debug("Update request payload for Booking ID {}: {}", bookingId, request);

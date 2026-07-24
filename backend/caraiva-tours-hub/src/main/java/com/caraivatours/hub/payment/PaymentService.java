@@ -81,6 +81,10 @@ public class PaymentService {
 
     @Transactional
     @CacheEvict(value = {"payments", "payment-details"}, allEntries = true)
+    /**
+     * Creates the 20% reservation deposit after a payment receipt is supplied.
+     * The amount is derived from the booking total so discounts and pickup fees are honored.
+     */
     public void createReservationPayment(Booking booking, String receiptUrl) {
         log.info("Creating payment for booking ID: {}", booking.getId());
 
@@ -88,6 +92,22 @@ public class PaymentService {
         booking.setPayment(new Payment(signalAmount, receiptUrl, booking));
 
         log.info("Payment created for booking ID: {}. Signal amount: {}", booking.getId(), signalAmount);
+    }
+
+    /**
+     * Recalculates the reservation deposit whenever a booking financial change affects its total.
+     * A booking without a receipt/payment has no deposit to update.
+     */
+    @Transactional
+    @CacheEvict(value = {"payments", "payment-details"}, allEntries = true)
+    public void updateExpectedAmount(Booking booking) {
+        if (booking.getPayment() == null) {
+            log.debug("Skipping expected payment update for booking ID {} because no payment exists", booking.getId());
+            return;
+        }
+        BigDecimal expectedAmount = booking.calculateRequiredDeposit();
+        booking.getPayment().setExpectedAmount(expectedAmount);
+        log.info("Updated 20% deposit for booking ID {} to {}", booking.getId(), expectedAmount);
     }
 
     private BigDecimal amount(BigDecimal value) {
