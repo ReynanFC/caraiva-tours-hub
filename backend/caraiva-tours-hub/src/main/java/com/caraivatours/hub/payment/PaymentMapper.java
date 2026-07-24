@@ -24,6 +24,7 @@ public interface PaymentMapper {
             target = "totalPrice",
             expression = "java(payment.getBooking().calculateTotalPrice())"
     )
+    @Mapping(target = "status", source = "booking.currentStatus")
     PaymentSummaryDTO toSummary(Payment payment);
 
     @Mapping(target = "paymentId", source = "id")
