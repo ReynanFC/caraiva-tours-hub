@@ -36,24 +36,22 @@ public class RefreshTokenStore {
     }
 
     /**
-     * Checks whether a refresh token JTI is still valid (not yet consumed or expired).
+     * Atomically consumes a refresh token JTI using Redis GETDEL.
+     * Only the request that receives the stored owner can rotate the token.
      *
-     * @param jti JWT ID to check
-     * @return true if the JTI exists in Redis
+     * @param jti    unique JWT ID of the refresh token
+     * @param userId expected owner of the token
+     * @return true when the token existed and belonged to the expected user
      */
-    public boolean isValid(String jti) {
-        return redisTemplate.hasKey(REFRESH_TOKEN + jti);
-    }
+    public boolean consume(String jti, Long userId) {
+        String storedUserId = redisTemplate.opsForValue().getAndDelete(REFRESH_TOKEN + jti);
 
-    /**
-     * Consumes a refresh token JTI, removing it from Redis and from the user's active token set.
-     *
-     * @param jti    JWT ID to revoke
-     * @param userId owner of the token
-     */
-    public void revoke(String jti, Long userId) {
-        redisTemplate.delete(REFRESH_TOKEN + jti);
+        if (!userId.toString().equals(storedUserId)) {
+            return false;
+        }
+
         redisTemplate.opsForSet().remove(USER_TOKENS + userId, jti);
+        return true;
     }
 
     /**
