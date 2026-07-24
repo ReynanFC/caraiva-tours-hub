@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
+    /** Searches persisted payments by payment identifier and/or client-name fragment. */
     @Query("""
     SELECT p FROM Payment p
         JOIN p.booking b
@@ -24,6 +25,7 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
                                    @Param("nameClient") String nameClient,
                                    Pageable pageable);
 
+    /** Returns payments linked to bookings in the requested workflow status. */
     @Query("""
     SELECT p FROM Payment p
         JOIN p.booking b
@@ -32,6 +34,7 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
     """)
     Page<Payment> findByStatusBooking(@Param("status") BookingStatus status, Pageable pageable);
 
+    /** Searches bookings from the payment view, including DRAFT reservations that may not yet have a Payment entity. */
     @Query("""
             SELECT b FROM Booking b
             WHERE (:status IS NULL OR b.currentStatus = :status)
@@ -42,6 +45,7 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
             """)
     Page<Booking> findReservationsForPayment(@Param("status") BookingStatus status, @Param("search") String search, Pageable pageable);
 
+    /** Aggregates received deposits, deposits awaiting proof and the 80% balance due. */
     @Query("""
             SELECT COALESCE(SUM(CASE WHEN b.currentStatus IN :receivedStatuses THEN p.expectedAmount ELSE 0 END), 0) AS receivedDepositAmount,
                    COALESCE(SUM(CASE WHEN b.currentStatus = :draftStatus THEN b.financialData.totalPrice * 0.20 ELSE 0 END), 0) AS awaitingReceiptAmount,

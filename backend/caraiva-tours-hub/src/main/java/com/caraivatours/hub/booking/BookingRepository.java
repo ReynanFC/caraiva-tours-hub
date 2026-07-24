@@ -17,9 +17,11 @@ import java.util.List;
 @Repository
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 
+    /** Finds DRAFT bookings whose scheduled time passed and can no longer remain pending. */
     @Query("SELECT b FROM Booking b WHERE b.currentStatus = :status AND b.customSchedule <= :threshold")
     List<Booking> findExpiredDrafts(@Param("status") BookingStatus status, @Param("threshold") LocalDateTime threshold);
 
+    /** Searches booking summaries by client phone or email. */
     @Query("""
     SELECT new com.caraivatours.hub.booking.dto.response.BookingSummaryDTO(
         b.id,
@@ -37,6 +39,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 """)
     Page<BookingSummaryDTO> findAll(@Param("search") String search, Pageable pageable);
 
+    /** Returns booking summaries for one workflow status. */
     @Query("""
     SELECT new com.caraivatours.hub.booking.dto.response.BookingSummaryDTO(
         b.id,
