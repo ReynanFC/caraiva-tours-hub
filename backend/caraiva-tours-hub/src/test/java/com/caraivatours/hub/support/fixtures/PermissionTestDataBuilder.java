@@ -15,6 +15,11 @@ public final class PermissionTestDataBuilder {
         return new PermissionTestDataBuilder();
     }
 
+    public PermissionTestDataBuilder withRole(UserRole role) {
+        this.role = role;
+        return this;
+    }
+
     public Permission build() {
         Permission permission = new Permission(role);
         permission.setId(id);

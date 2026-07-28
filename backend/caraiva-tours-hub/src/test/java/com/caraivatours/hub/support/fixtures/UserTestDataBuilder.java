@@ -30,6 +30,33 @@ public final class UserTestDataBuilder {
         return new UserTestDataBuilder();
     }
 
+    public UserTestDataBuilder withEmail(String email) {
+        this.email = email;
+        return this;
+    }
+
+    public UserTestDataBuilder withPassword(String password) {
+        this.password = password;
+        return this;
+    }
+
+    public UserTestDataBuilder enabled(boolean enabled) {
+        this.enabled = enabled;
+        return this;
+    }
+
+    public UserTestDataBuilder withPermission(Permission permission) {
+        this.permissions.clear();
+        this.permissions.add(permission);
+        return this;
+    }
+
+    public UserTestDataBuilder withPermissions(List<Permission> permissions) {
+        this.permissions.clear();
+        this.permissions.addAll(permissions);
+        return this;
+    }
+
     public User build() {
         User user = new User();
         user.setId(id);
