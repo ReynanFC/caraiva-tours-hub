@@ -25,7 +25,7 @@ public interface TourMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "promotional", source = "isPromotional")
-    @Mapping(target = "categoryTour", source = "categoryTourId", qualifiedByName = "idToCategoryTour")
+    @Mapping(target = "categoryTour", ignore = true)
     void updateEntityFromDto(UpdateTourDTO dto, @MappingTarget Tour entity);
 
     @Named("idToCategoryTour")

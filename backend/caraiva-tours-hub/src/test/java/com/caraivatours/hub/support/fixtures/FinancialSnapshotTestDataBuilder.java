@@ -18,26 +18,6 @@ public final class FinancialSnapshotTestDataBuilder {
         return new FinancialSnapshotTestDataBuilder();
     }
 
-    public FinancialSnapshotTestDataBuilder withUnitPrice(BigDecimal unitPrice) {
-        this.unitPrice = unitPrice;
-        return this;
-    }
-
-    public FinancialSnapshotTestDataBuilder withTotalPrice(BigDecimal totalPrice) {
-        this.totalPrice = totalPrice;
-        return this;
-    }
-
-    public FinancialSnapshotTestDataBuilder withCommissionValue(BigDecimal commissionValue) {
-        this.commissionValue = commissionValue;
-        return this;
-    }
-
-    public FinancialSnapshotTestDataBuilder withManualDiscount(BigDecimal manualDiscount) {
-        this.manualDiscount = manualDiscount;
-        return this;
-    }
-
     public FinancialSnapshot build() {
         return new FinancialSnapshot(unitPrice, totalPrice, commissionValue, manualDiscount);
     }

@@ -29,51 +29,6 @@ public final class RefundRequestTestDataBuilder {
         return new RefundRequestTestDataBuilder();
     }
 
-    public RefundRequestTestDataBuilder withId(Long id) {
-        this.id = id;
-        return this;
-    }
-
-    public RefundRequestTestDataBuilder withReason(String reason) {
-        this.reason = reason;
-        return this;
-    }
-
-    public RefundRequestTestDataBuilder withAdminObservation(String adminObservation) {
-        this.adminObservation = adminObservation;
-        return this;
-    }
-
-    public RefundRequestTestDataBuilder withStatus(RefundStatus status) {
-        this.status = status;
-        return this;
-    }
-
-    public RefundRequestTestDataBuilder withRequestedAt(LocalDateTime requestedAt) {
-        this.requestedAt = requestedAt;
-        return this;
-    }
-
-    public RefundRequestTestDataBuilder withResolvedAt(LocalDateTime resolvedAt) {
-        this.resolvedAt = resolvedAt;
-        return this;
-    }
-
-    public RefundRequestTestDataBuilder withBooking(Booking booking) {
-        this.booking = booking;
-        return this;
-    }
-
-    public RefundRequestTestDataBuilder requestedBy(User requestedByUser) {
-        this.requestedByUser = requestedByUser;
-        return this;
-    }
-
-    public RefundRequestTestDataBuilder resolvedBy(User resolvedByUser) {
-        this.resolvedByUser = resolvedByUser;
-        return this;
-    }
-
     public RefundRequest build() {
         RefundRequest refundRequest = new RefundRequest();
         refundRequest.setId(id);

@@ -30,63 +30,6 @@ public final class UserTestDataBuilder {
         return new UserTestDataBuilder();
     }
 
-    public UserTestDataBuilder withId(Long id) {
-        this.id = id;
-        return this;
-    }
-
-    public UserTestDataBuilder withExternalUserId(UUID externalUserId) {
-        this.externalUserId = externalUserId;
-        return this;
-    }
-
-    public UserTestDataBuilder withUserName(String userName) {
-        this.userName = userName;
-        return this;
-    }
-
-    public UserTestDataBuilder withFullName(String fullName) {
-        this.fullName = fullName;
-        return this;
-    }
-
-    public UserTestDataBuilder withEmail(String email) {
-        this.email = email;
-        return this;
-    }
-
-    public UserTestDataBuilder withPassword(String password) {
-        this.password = password;
-        return this;
-    }
-
-    public UserTestDataBuilder withPixKey(String pixKey) {
-        this.pixKey = pixKey;
-        return this;
-    }
-
-    public UserTestDataBuilder enabled(boolean enabled) {
-        this.enabled = enabled;
-        return this;
-    }
-
-    public UserTestDataBuilder withCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-        return this;
-    }
-
-    public UserTestDataBuilder withPermission(Permission permission) {
-        this.permissions.clear();
-        this.permissions.add(permission);
-        return this;
-    }
-
-    public UserTestDataBuilder withPermissions(List<Permission> permissions) {
-        this.permissions.clear();
-        this.permissions.addAll(permissions);
-        return this;
-    }
-
     public User build() {
         User user = new User();
         user.setId(id);

@@ -26,41 +26,6 @@ public final class StatusHistoryTestDataBuilder {
         return new StatusHistoryTestDataBuilder();
     }
 
-    public StatusHistoryTestDataBuilder withId(Long id) {
-        this.id = id;
-        return this;
-    }
-
-    public StatusHistoryTestDataBuilder withPreviousStatus(BookingStatus previousStatus) {
-        this.previousStatus = previousStatus;
-        return this;
-    }
-
-    public StatusHistoryTestDataBuilder withNewStatus(BookingStatus newStatus) {
-        this.newStatus = newStatus;
-        return this;
-    }
-
-    public StatusHistoryTestDataBuilder withChangeReason(String changeReason) {
-        this.changeReason = changeReason;
-        return this;
-    }
-
-    public StatusHistoryTestDataBuilder withChangedAt(LocalDateTime changedAt) {
-        this.changedAt = changedAt;
-        return this;
-    }
-
-    public StatusHistoryTestDataBuilder withBooking(Booking booking) {
-        this.booking = booking;
-        return this;
-    }
-
-    public StatusHistoryTestDataBuilder withUser(User user) {
-        this.user = user;
-        return this;
-    }
-
     public StatusHistory build() {
         StatusHistory history = new StatusHistory();
         history.setId(id);

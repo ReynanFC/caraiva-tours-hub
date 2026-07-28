@@ -19,31 +19,6 @@ public final class ClientTestDataBuilder {
         return new ClientTestDataBuilder();
     }
 
-    public ClientTestDataBuilder withId(Long id) {
-        this.id = id;
-        return this;
-    }
-
-    public ClientTestDataBuilder withName(String name) {
-        this.name = name;
-        return this;
-    }
-
-    public ClientTestDataBuilder withPhone(String phone) {
-        this.phone = phone;
-        return this;
-    }
-
-    public ClientTestDataBuilder withEmail(String email) {
-        this.email = email;
-        return this;
-    }
-
-    public ClientTestDataBuilder withCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-        return this;
-    }
-
     public Client build() {
         Client client = new Client(name, phone, email);
         client.setId(id);

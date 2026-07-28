@@ -19,31 +19,6 @@ public final class PickupLocationTestDataBuilder {
         return new PickupLocationTestDataBuilder();
     }
 
-    public PickupLocationTestDataBuilder withId(Long id) {
-        this.id = id;
-        return this;
-    }
-
-    public PickupLocationTestDataBuilder withCep(String cep) {
-        this.cep = cep;
-        return this;
-    }
-
-    public PickupLocationTestDataBuilder withLocationName(String locationName) {
-        this.locationName = locationName;
-        return this;
-    }
-
-    public PickupLocationTestDataBuilder withReferencePoint(String referencePoint) {
-        this.referencePoint = referencePoint;
-        return this;
-    }
-
-    public PickupLocationTestDataBuilder withAppliedPickupFee(BigDecimal appliedPickupFee) {
-        this.appliedPickupFee = appliedPickupFee;
-        return this;
-    }
-
     public PickupLocation build() {
         PickupLocation pickupLocation = new PickupLocation(
                 cep,

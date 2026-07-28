@@ -21,11 +21,36 @@ public interface TourRepository extends JpaRepository<Tour, Long> {
 
     @Query("""
         SELECT t FROM Tour t
-                WHERE (:search = '' OR LOWER(:search) LIKE LOWER(CONCAT('%',:search,'%')))
+        WHERE (:search = '' OR LOWER(t.name) LIKE LOWER(CONCAT('%', :search, '%')))
     """)
     Page<Tour> findAll(@Param("search") String search, Pageable pageable);
 
-    Optional<TourResponseDTO> findByName(String name);
+    @Query("""
+        SELECT new com.caraivatours.hub.tour.dto.response.TourResponseDTO(
+            t.id,
+            t.name,
+            t.description,
+            t.basePricePerPerson,
+            t.promoPricePerPerson,
+            CASE
+                WHEN t.isPromotional = true THEN t.promoPricePerPerson
+                ELSE t.basePricePerPerson
+            END,
+            t.commissionType,
+            t.commissionValue,
+            t.duration,
+            t.available,
+            t.imageUrl,
+            t.isPromotional,
+            new com.caraivatours.hub.category.dto.response.CategoryOptionDTO(
+                t.categoryTour.id,
+                t.categoryTour.name
+            )
+        )
+        FROM Tour t
+        WHERE t.name = :name
+    """)
+    Optional<TourResponseDTO> findByName(@Param("name") String name);
 
     boolean existsByCategoryTourId(Long categoryTourId);
 

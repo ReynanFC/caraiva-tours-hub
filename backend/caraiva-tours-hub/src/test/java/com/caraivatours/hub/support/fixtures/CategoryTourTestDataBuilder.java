@@ -14,11 +14,6 @@ public final class CategoryTourTestDataBuilder {
         return new CategoryTourTestDataBuilder();
     }
 
-    public CategoryTourTestDataBuilder withId(Long id) {
-        this.id = id;
-        return this;
-    }
-
     public CategoryTourTestDataBuilder withName(String name) {
         this.name = name;
         return this;

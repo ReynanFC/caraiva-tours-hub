@@ -31,49 +31,13 @@ public final class TourTestDataBuilder {
         return new TourTestDataBuilder();
     }
 
-    public TourTestDataBuilder withId(Long id) {
-        this.id = id;
-        return this;
-    }
-
     public TourTestDataBuilder withName(String name) {
         this.name = name;
         return this;
     }
 
-    public TourTestDataBuilder withDescription(String description) {
-        this.description = description;
-        return this;
-    }
-
-    public TourTestDataBuilder withBasePrice(BigDecimal basePricePerPerson) {
-        this.basePricePerPerson = basePricePerPerson;
-        return this;
-    }
-
-    public TourTestDataBuilder withPromoPrice(BigDecimal promoPricePerPerson) {
-        this.promoPricePerPerson = promoPricePerPerson;
-        return this;
-    }
-
-    public TourTestDataBuilder withCommission(CommissionType type, BigDecimal value) {
-        this.commissionType = type;
-        this.commissionValue = value;
-        return this;
-    }
-
-    public TourTestDataBuilder withDuration(Duration duration) {
-        this.duration = duration;
-        return this;
-    }
-
     public TourTestDataBuilder available(boolean available) {
         this.available = available;
-        return this;
-    }
-
-    public TourTestDataBuilder withImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
         return this;
     }
 

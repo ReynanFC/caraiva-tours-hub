@@ -21,31 +21,6 @@ public final class PaymentTestDataBuilder {
         return new PaymentTestDataBuilder();
     }
 
-    public PaymentTestDataBuilder withId(Long id) {
-        this.id = id;
-        return this;
-    }
-
-    public PaymentTestDataBuilder withExpectedAmount(BigDecimal expectedAmount) {
-        this.expectedAmount = expectedAmount;
-        return this;
-    }
-
-    public PaymentTestDataBuilder withReceiptUrl(String receiptUrl) {
-        this.receiptUrl = receiptUrl;
-        return this;
-    }
-
-    public PaymentTestDataBuilder withPaidAt(LocalDateTime paidAt) {
-        this.paidAt = paidAt;
-        return this;
-    }
-
-    public PaymentTestDataBuilder withBooking(Booking booking) {
-        this.booking = booking;
-        return this;
-    }
-
     public Payment build() {
         Payment payment = new Payment(expectedAmount, receiptUrl, booking);
         payment.setId(id);
