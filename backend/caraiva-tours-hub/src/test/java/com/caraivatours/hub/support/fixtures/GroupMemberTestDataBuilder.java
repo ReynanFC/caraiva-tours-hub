@@ -17,6 +17,21 @@ public final class GroupMemberTestDataBuilder {
         return new GroupMemberTestDataBuilder();
     }
 
+    public GroupMemberTestDataBuilder withName(String name) {
+        this.name = name;
+        return this;
+    }
+
+    public GroupMemberTestDataBuilder lapChild(boolean lapChild) {
+        this.lapChild = lapChild;
+        return this;
+    }
+
+    public GroupMemberTestDataBuilder withBooking(Booking booking) {
+        this.booking = booking;
+        return this;
+    }
+
     public GroupMember build() {
         GroupMember groupMember = new GroupMember(name, lapChild);
         groupMember.setId(id);
