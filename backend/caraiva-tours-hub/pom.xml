@@ -26,7 +26,6 @@
 		<springdoc.version>3.0.2</springdoc.version>
 		<jwt.version>4.5.2</jwt.version>
 		<org.mapstruct.version>1.6.3</org.mapstruct.version>
-		<testcontainers.version>1.20.1</testcontainers.version>
 	</properties>
 
 	<dependencies>
@@ -142,7 +141,7 @@
 
 		<dependency>
 			<groupId>org.testcontainers</groupId>
-			<artifactId>testcontainers</artifactId>
+			<artifactId>testcontainers-junit-jupiter</artifactId>
 			<scope>test</scope>
 		</dependency>
 
@@ -154,8 +153,7 @@
 
 		<dependency>
 			<groupId>org.testcontainers</groupId>
-			<artifactId>postgresql</artifactId>
-			<version>${testcontainers.version}</version>
+			<artifactId>testcontainers-postgresql</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

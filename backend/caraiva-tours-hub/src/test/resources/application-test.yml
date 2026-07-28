@@ -1,0 +1,11 @@
+spring:
+  cache:
+    type: none
+  session:
+    store-type: none
+
+app:
+  security:
+    jwt:
+      token:
+        secret-key: integration-test-secret-key
