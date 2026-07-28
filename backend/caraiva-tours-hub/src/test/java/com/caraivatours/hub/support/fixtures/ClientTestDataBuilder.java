@@ -19,6 +19,21 @@ public final class ClientTestDataBuilder {
         return new ClientTestDataBuilder();
     }
 
+    public ClientTestDataBuilder withName(String name) {
+        this.name = name;
+        return this;
+    }
+
+    public ClientTestDataBuilder withPhone(String phone) {
+        this.phone = phone;
+        return this;
+    }
+
+    public ClientTestDataBuilder withEmail(String email) {
+        this.email = email;
+        return this;
+    }
+
     public Client build() {
         Client client = new Client(name, phone, email);
         client.setId(id);
