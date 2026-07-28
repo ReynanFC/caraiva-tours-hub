@@ -20,12 +20,18 @@ public interface UserRepository extends JpaRepository<User, Long> {
         )
         FROM User u
           LEFT JOIN u.permission p
-            WHERE (:search = '' OR LOWER(u.userName) LIKE LOWER(CONCAT('%', :search, '%'))
+            WHERE (:search IS NULL OR :search = ''
+                            OR LOWER(u.userName) LIKE LOWER(CONCAT('%', :search, '%'))
                             OR LOWER(u.email) LIKE LOWER(CONCAT('%', :search, '%')))
     """)
     Page<UserSummaryDTO> findAll(@Param("search") String search, Pageable pageable);
 
-    @Query("SELECT u.userName, p.role FROM User u JOIN u.permission p WHERE u.id = :id")
+    @Query("""
+        SELECT u.userName AS name, p.role AS role
+        FROM User u
+          JOIN u.permission p
+        WHERE u.id = :id
+    """)
     Optional<UserHeaderProjection> findHeaderDataById(@Param("id") Long id);
 
     Optional<User> findByEmail(String email);
