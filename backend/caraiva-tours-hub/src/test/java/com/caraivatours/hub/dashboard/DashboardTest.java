@@ -389,14 +389,17 @@ class DashboardTest extends AbstractIntegrationTest {
                 User attendant = saveUser();
                 Tour corumbau = saveTour("Corumbau");
                 Tour espelho = saveTour("Espelho");
-                LocalDate monday = currentMonday();
+                LocalDate today = LocalDate.now();
+                LocalDate monday = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+                long expectedTodayBookings =
+                        today.equals(monday) || today.equals(monday.plusDays(2)) ? 2 : 1;
 
                 saveBooking(attendant, corumbau, BookingStatus.CONFIRMED, REPORT_START.plusDays(1), "500.00", "50.00");
                 saveBooking(attendant, corumbau, BookingStatus.COMPLETED, REPORT_START.plusDays(2), "700.00", "70.00");
                 saveBooking(attendant, espelho, BookingStatus.DRAFT, REPORT_START.plusDays(3), "300.00", "30.00");
                 saveBooking(attendant, corumbau, BookingStatus.CONFIRMED, monday.atTime(10, 0), "400.00", "40.00");
                 saveBooking(attendant, espelho, BookingStatus.COMPLETED, monday.plusDays(2).atTime(10, 0), "600.00", "60.00");
-                saveBooking(attendant, espelho, BookingStatus.DRAFT, LocalDate.now().atTime(12, 0), "200.00", "20.00");
+                saveBooking(attendant, espelho, BookingStatus.DRAFT, today.atTime(12, 0), "200.00", "20.00");
 
                 UserDashboardDTO result =
                         dashboardService.getUserDashboard(attendant.getId(), REPORT_MONTH, false);
@@ -407,7 +410,7 @@ class DashboardTest extends AbstractIntegrationTest {
                 assertThat(result.employeeMetrics().completedTours()).isEqualTo(1);
                 assertThat(result.employeeMetrics().pendingDraftBookings()).isEqualTo(1);
                 assertThat(result.confirmationStatus()).hasSize(3);
-                assertThat(result.todayBookings()).isEqualTo(2);
+                assertThat(result.todayBookings()).isEqualTo(expectedTodayBookings);
                 assertThat(result.latestBookings()).hasSize(5);
 
                 assertThat(result.mostRequestedTours()).hasSize(2);
