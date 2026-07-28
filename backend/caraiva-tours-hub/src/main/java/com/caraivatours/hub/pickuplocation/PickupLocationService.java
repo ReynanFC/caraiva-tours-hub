@@ -17,8 +17,10 @@ public class PickupLocationService {
     public PickupLocation createPickupLocation(PickupDTO dto) {
         log.debug("Processing pickup location. Postal Code: {}, Name: {}", dto.cep(), dto.locationName());
 
-        return new PickupLocation(
+        PickupLocation pickup = new PickupLocation(
                 dto.cep(), dto.locationName(), dto.referencePoint(), dto.appliedPickupFee()
         );
+
+        return pickupRepository.save(pickup);
     }
 }
