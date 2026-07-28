@@ -37,7 +37,7 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
     /** Searches bookings from the payment view, including DRAFT reservations that may not yet have a Payment entity. */
     @Query("""
             SELECT b FROM Booking b
-            WHERE (:status IS NULL OR b.currentStatus = :status)
+            WHERE b.currentStatus = COALESCE(:status, b.currentStatus)
               AND (:search = '' OR CAST(b.id AS string) LIKE CONCAT('%', :search, '%')
                    OR LOWER(b.client.name) LIKE LOWER(CONCAT('%', :search, '%'))
                    OR b.client.phone LIKE CONCAT('%', :search, '%'))
