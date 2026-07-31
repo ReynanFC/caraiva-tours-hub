@@ -1,3 +1,5 @@
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+
 DO $$
     BEGIN
         IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'user_role_enum') THEN
@@ -153,6 +155,18 @@ ALTER TABLE status_history ADD CONSTRAINT fk_status_history_booking FOREIGN KEY 
 ALTER TABLE status_history ADD CONSTRAINT fk_status_history_user FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE RESTRICT;
 
 CREATE INDEX idx_client_phone ON client(phone);
+CREATE INDEX idx_client_name_fts ON client USING GIN (
+    to_tsvector('portuguese', COALESCE(name, ''))
+);
+CREATE INDEX idx_client_phone_trgm ON client USING GIN (phone gin_trgm_ops);
+CREATE INDEX idx_client_email_trgm ON client USING GIN (LOWER(email) gin_trgm_ops);
+
+CREATE INDEX idx_users_user_name_trgm ON users USING GIN (LOWER(user_name) gin_trgm_ops);
+CREATE INDEX idx_users_email_trgm ON users USING GIN (LOWER(email) gin_trgm_ops);
+
+CREATE INDEX idx_category_tour_name_fts ON category_tour USING GIN (
+    to_tsvector('portuguese', COALESCE(name, ''))
+);
 
 CREATE INDEX idx_booking_tour_id ON booking(tour_id);
 CREATE INDEX idx_booking_client_id ON booking(client_id);
@@ -162,6 +176,9 @@ CREATE INDEX idx_booking_status ON booking(current_status);
 CREATE UNIQUE INDEX idx_booking_payment_id ON booking(payment_id);
 
 CREATE INDEX idx_tour_category_id ON tour(category_id);
+CREATE INDEX idx_tour_search_fts ON tour USING GIN (
+    to_tsvector('portuguese', COALESCE(name, ''))
+);
 
 CREATE INDEX idx_group_member_booking_id ON group_member(booking_id);
 

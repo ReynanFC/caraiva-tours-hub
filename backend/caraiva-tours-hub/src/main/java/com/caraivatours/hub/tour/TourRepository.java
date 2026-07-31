@@ -19,10 +19,25 @@ public interface TourRepository extends JpaRepository<Tour, Long> {
     @Query("UPDATE Tour t SET t.available = :available WHERE t.id = :id")
     int updateAvailability(@Param("id") Long id, @Param("available") boolean available);
 
-    @Query("""
-        SELECT t FROM Tour t
-        WHERE (:search = '' OR LOWER(t.name) LIKE LOWER(CONCAT('%', :search, '%')))
-    """)
+    @Query(value = """
+        SELECT t.*
+        FROM tour t
+        WHERE :search = ''
+           OR to_tsvector(
+                'portuguese',
+                COALESCE(t.name, '')
+              ) @@ websearch_to_tsquery('portuguese', :search)
+        """,
+        countQuery = """
+        SELECT COUNT(*)
+        FROM tour t
+        WHERE :search = ''
+           OR to_tsvector(
+                'portuguese',
+                COALESCE(t.name, '')
+              ) @@ websearch_to_tsquery('portuguese', :search)
+        """,
+        nativeQuery = true)
     Page<Tour> findAll(@Param("search") String search, Pageable pageable);
 
     @Query("""

@@ -34,7 +34,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     )
     FROM Booking b
     WHERE :search = ''
-       OR LOWER(b.client.phone) LIKE LOWER(CONCAT('%', :search, '%'))
+       OR b.client.phone LIKE CONCAT('%', :search, '%')
        OR LOWER(b.client.email) LIKE LOWER(CONCAT('%', :search, '%'))
 """)
     Page<BookingSummaryDTO> findAll(@Param("search") String search, Pageable pageable);

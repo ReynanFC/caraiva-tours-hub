@@ -13,14 +13,29 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
-    /** Searches persisted payments by payment identifier and/or client-name fragment. */
-    @Query("""
-    SELECT p FROM Payment p
-        JOIN p.booking b
-            WHERE (:idPayment IS NULL OR p.id = :idPayment)
-                AND (:nameClient IS NULL OR LOWER(b.client.name) LIKE LOWER(CONCAT('%', :nameClient, '%')))
-                    ORDER BY p.paidAt DESC
-    """)
+    /** Searches persisted payments by payment identifier and/or terms from the client name. */
+    @Query(value = """
+            SELECT p.*
+            FROM payment p
+            JOIN booking b ON b.payment_id = p.payment_id
+            JOIN client c ON c.client_id = b.client_id
+            WHERE (:idPayment IS NULL OR p.payment_id = :idPayment)
+              AND (:nameClient IS NULL OR :nameClient = ''
+                   OR to_tsvector('portuguese', COALESCE(c.name, ''))
+                        @@ websearch_to_tsquery('portuguese', :nameClient))
+            ORDER BY p.paid_at DESC
+            """,
+            countQuery = """
+            SELECT COUNT(*)
+            FROM payment p
+            JOIN booking b ON b.payment_id = p.payment_id
+            JOIN client c ON c.client_id = b.client_id
+            WHERE (:idPayment IS NULL OR p.payment_id = :idPayment)
+              AND (:nameClient IS NULL OR :nameClient = ''
+                   OR to_tsvector('portuguese', COALESCE(c.name, ''))
+                        @@ websearch_to_tsquery('portuguese', :nameClient))
+            """,
+            nativeQuery = true)
     Page<Payment> findAllByFilters(@Param("idPayment") Long idPayment,
                                    @Param("nameClient") String nameClient,
                                    Pageable pageable);
@@ -35,15 +50,46 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
     Page<Payment> findByStatusBooking(@Param("status") BookingStatus status, Pageable pageable);
 
     /** Searches bookings from the payment view, including DRAFT reservations that may not yet have a Payment entity. */
-    @Query("""
-            SELECT b FROM Booking b
-            WHERE b.currentStatus = COALESCE(:status, b.currentStatus)
-              AND (:search = '' OR CAST(b.id AS string) LIKE CONCAT('%', :search, '%')
-                   OR LOWER(b.client.name) LIKE LOWER(CONCAT('%', :search, '%'))
-                   OR b.client.phone LIKE CONCAT('%', :search, '%'))
-            ORDER BY b.createdAt DESC
-            """)
-    Page<Booking> findReservationsForPayment(@Param("status") BookingStatus status, @Param("search") String search, Pageable pageable);
+    @Query(value = """
+            SELECT b.*
+            FROM booking b
+            JOIN client c ON c.client_id = b.client_id
+            WHERE b.current_status = COALESCE(CAST(:status AS booking_status_enum), b.current_status)
+              AND (:search = ''
+                   OR b.booking_id = CASE
+                        WHEN :search ~ '^[0-9]+$' THEN CAST(:search AS BIGINT)
+                        ELSE NULL
+                      END
+                   OR to_tsvector('portuguese', COALESCE(c.name, ''))
+                        @@ websearch_to_tsquery('portuguese', :search)
+                   OR c.phone LIKE CONCAT('%', :search, '%'))
+            ORDER BY b.created_at DESC
+            """,
+            countQuery = """
+            SELECT COUNT(*)
+            FROM booking b
+            JOIN client c ON c.client_id = b.client_id
+            WHERE b.current_status = COALESCE(CAST(:status AS booking_status_enum), b.current_status)
+              AND (:search = ''
+                   OR b.booking_id = CASE
+                        WHEN :search ~ '^[0-9]+$' THEN CAST(:search AS BIGINT)
+                        ELSE NULL
+                      END
+                   OR to_tsvector('portuguese', COALESCE(c.name, ''))
+                        @@ websearch_to_tsquery('portuguese', :search)
+                   OR c.phone LIKE CONCAT('%', :search, '%'))
+            """,
+            nativeQuery = true)
+    Page<Booking> findReservationsForPaymentQuery(@Param("status") String status,
+                                                  @Param("search") String search,
+                                                  Pageable pageable);
+
+    default Page<Booking> findReservationsForPayment(BookingStatus status,
+                                                     String search,
+                                                     Pageable pageable) {
+        String statusName = status == null ? null : status.name();
+        return findReservationsForPaymentQuery(statusName, search, pageable);
+    }
 
     /** Aggregates received deposits, deposits awaiting proof and the 80% balance due. */
     @Query("""

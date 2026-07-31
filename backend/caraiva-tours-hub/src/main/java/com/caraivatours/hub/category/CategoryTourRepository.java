@@ -19,26 +19,32 @@ public interface CategoryTourRepository extends JpaRepository<CategoryTour, Long
 
     boolean existsByName(String name);
 
-    @Query("""
-            SELECT new com.caraivatours.hub.category.dto.response.CategoryOptionDTO(c.id, c.name)
-            FROM CategoryTour c
-            WHERE (:search IS NULL OR LOWER(c.name) LIKE LOWER(CONCAT('%', :search, '%')))
+    @Query(value = """
+            SELECT c.category_id AS id, c.name
+            FROM category_tour c
+            WHERE :search IS NULL OR :search = ''
+               OR to_tsvector('portuguese', COALESCE(c.name, ''))
+                    @@ websearch_to_tsquery('portuguese', :search)
             ORDER BY c.name
-            """)
+            """, nativeQuery = true)
     List<CategoryOptionDTO> findOptions(@Param("search") String search, Pageable limit);
 
     @Query(value = """
-            SELECT new com.caraivatours.hub.category.dto.response.CategoryListItemDTO(
-                c.id, c.name, COUNT(t)
-            )
-            FROM CategoryTour c
-            LEFT JOIN c.tours t
-            WHERE (:search IS NULL OR LOWER(c.name) LIKE LOWER(CONCAT('%', :search, '%')))
-            GROUP BY c.id, c.name
+            SELECT c.category_id AS id, c.name, COUNT(t.tour_id) AS "tourCount"
+            FROM category_tour c
+            LEFT JOIN tour t ON t.category_id = c.category_id
+            WHERE :search IS NULL OR :search = ''
+               OR to_tsvector('portuguese', COALESCE(c.name, ''))
+                    @@ websearch_to_tsquery('portuguese', :search)
+            GROUP BY c.category_id, c.name
             """,
             countQuery = """
-            SELECT COUNT(c) FROM CategoryTour c
-            WHERE (:search IS NULL OR LOWER(c.name) LIKE LOWER(CONCAT('%', :search, '%')))
-            """)
+            SELECT COUNT(*)
+            FROM category_tour c
+            WHERE :search IS NULL OR :search = ''
+               OR to_tsvector('portuguese', COALESCE(c.name, ''))
+                    @@ websearch_to_tsquery('portuguese', :search)
+            """,
+            nativeQuery = true)
     Page<CategoryListItemDTO> findAllWithTourCount(@Param("search") String search, Pageable pageable);
 }
