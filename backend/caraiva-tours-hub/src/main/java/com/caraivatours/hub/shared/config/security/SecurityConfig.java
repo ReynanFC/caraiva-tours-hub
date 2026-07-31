@@ -2,6 +2,8 @@ package com.caraivatours.hub.shared.config.security;
 
 import com.caraivatours.hub.auth.jwt.JwtTokenFilter;
 import com.caraivatours.hub.auth.jwt.JwtTokenProvider;
+import com.caraivatours.hub.ratelimit.RateLimitFilter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,13 +25,11 @@ import java.util.Map;
 @EnableWebSecurity
 @EnableMethodSecurity
 @Configuration
+@RequiredArgsConstructor
 public class SecurityConfig {
 
     private final JwtTokenProvider tokenProvider;
-
-    public SecurityConfig(JwtTokenProvider tokenProvider) {
-        this.tokenProvider = tokenProvider;
-    }
+    private final RateLimitFilter rateLimitFilter;
 
     @Bean
     PasswordEncoder passwordEncoder() {
@@ -55,6 +55,7 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer :: disable)
                 .csrf(AbstractHttpConfigurer :: disable)
                 .addFilterBefore(new JwtTokenFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(rateLimitFilter, JwtTokenFilter.class)
                 .sessionManagement(
                         session -> session
                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
