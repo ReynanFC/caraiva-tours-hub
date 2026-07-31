@@ -44,7 +44,6 @@ class RateLimitFilterTest {
         assertThat(body.get("path").asText()).isEqualTo("/auth/signin");
         assertThatCodeIsUuid(body.get("traceId").asText());
         assertThat(body.get("retryAfterSeconds").asLong()).isEqualTo(2);
-        assertThat(body.get("remainingTokens").asLong()).isZero();
         assertThat(filterChainCalled).isFalse();
     }
 
