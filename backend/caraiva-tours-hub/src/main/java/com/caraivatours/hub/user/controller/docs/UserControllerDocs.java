@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 
@@ -92,6 +93,29 @@ public interface UserControllerDocs {
     )
     ResponseEntity<UserHeaderProjection> findHeaderData(
             @Parameter(hidden = true) AuthenticatedUser authenticatedUser
+    );
+
+    @Operation(
+            summary = "Generate employee commission report",
+            description = "Generates the employee commission report for the selected month and returns it as a PDF for inline viewing. \n\n**Role Required:** `EMPLOYEE`",
+            responses = {
+                    @ApiResponse(
+                            description = "Commission report generated successfully",
+                            responseCode = "200",
+                            content = @Content(
+                                    mediaType = "application/pdf",
+                                    schema = @Schema(type = "string", format = "binary")
+                            )
+                    ),
+                    @ApiResponse(description = "Unauthorized - Missing or invalid token", responseCode = "401", content = @Content),
+                    @ApiResponse(description = "Forbidden - Employee privileges required", responseCode = "403", content = @Content),
+                    @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content)
+            }
+    )
+    ResponseEntity<Resource> generatePdfCommission(
+            @Parameter(description = "The database ID of the employee", required = true) Long id,
+            @Parameter(description = "Commission month, from 1 to 12", required = true, example = "8") int month,
+            @Parameter(description = "Commission year", required = true, example = "2026") int year
     );
 
     @Operation(
