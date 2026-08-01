@@ -286,6 +286,23 @@ class AuthTest extends AbstractIntegrationTest {
                         .isInstanceOf(InvalidJwtAuthenticationException.class)
                         .hasMessage("User account is disabled or inactive");
             }
+
+            @Test
+            @DisplayName("should reject a refresh token used as an access token")
+            void shouldRejectRefreshTokenAsAccessToken() {
+                User user = saveUser(
+                        "employee@caraivatours.com",
+                        RAW_PASSWORD,
+                        true,
+                        UserRole.EMPLOYEE
+                );
+                TokenDTO token = signIn(user);
+
+                assertThatThrownBy(() ->
+                        jwtTokenProvider.getAuthenticationFromToken(token.refreshToken()))
+                        .isInstanceOf(InvalidJwtAuthenticationException.class)
+                        .hasMessage("Provided token is not a valid access token");
+            }
         }
     }
 

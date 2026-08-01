@@ -25,6 +25,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -74,6 +75,7 @@ public class UserController implements UserControllerDocs {
         return ResponseEntity.ok(userService.findHeaderDataById(authenticatedUser.id()));
     }
 
+    @PreAuthorize("hasAuthority('EMPLOYEE')")
     @GetMapping("/finance/{id}")
     public ResponseEntity<Resource> generatePdfCommission(@PathVariable Long id,
                                                           @RequestParam int month, @RequestParam int year) {

@@ -109,6 +109,7 @@ public class JwtTokenProvider {
 
     public Authentication getAuthenticationFromToken(String token) {
         DecodedJWT decodedJWT = decodedToken(token);
+        validateAccessTokenType(decodedJWT.getClaim(CLAIM_TYPE).asString());
 
         UUID uuid = UUID.fromString(decodedJWT.getSubject());
         Long id = decodedJWT.getClaim(CLAIM_USER_ID).asLong();
@@ -154,6 +155,12 @@ public class JwtTokenProvider {
     private void validateRefreshTokenType(String tokenType) {
         if (!TYPE_REFRESH.equals(tokenType)) {
             throw new InvalidJwtAuthenticationException("Provided token is not a valid refresh token");
+        }
+    }
+
+    private void validateAccessTokenType(String tokenType) {
+        if (!TYPE_ACCESS.equals(tokenType)) {
+            throw new InvalidJwtAuthenticationException("Provided token is not a valid access token");
         }
     }
 

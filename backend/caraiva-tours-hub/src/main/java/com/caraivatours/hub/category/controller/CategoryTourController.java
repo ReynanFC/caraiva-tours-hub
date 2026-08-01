@@ -43,7 +43,7 @@ public class CategoryTourController implements CategoryTourControllerDocs {
     @GetMapping
     public ResponseEntity<PagedResult<CategoryListItemDTO>> findAll(
             @RequestParam(value = "search", required = false) String search,
-            @PageableDefault(size = 10, sort = "name") Pageable pageable) {
+            @PageableDefault(size = 10, sort = "customSchedule") Pageable pageable) {
 
         return ResponseEntity.ok(categoryService.findAll(normalize(search), pageable));
     }
