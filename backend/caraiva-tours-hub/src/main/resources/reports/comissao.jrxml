@@ -1,0 +1,164 @@
+<!-- Created with Jaspersoft Studio version 7.0.6.final using JasperReports Library version 7.0.6-5d2a603fdc6b3db8f842a83383e594f41891534d  -->
+<jasperReport name="comissao" language="java" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="c43097bc-faea-4e6e-97e2-2444f4454a3a">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="Postgres connection"/>
+	<parameter name="P_USER_ID" class="java.lang.Long"/>
+	<parameter name="P_PERIOD_START" class="java.sql.Timestamp"/>
+	<parameter name="P_PERIOD_END" class="java.sql.Timestamp"/>
+	<query language="SQL"><![CDATA[SELECT
+    u.user_name AS funcionario,
+    b.custom_schedule AS data_reserva,
+    b.total_price_snapshot AS valor_total,
+    b.commission_snapshot AS comissao_reserva,
+    SUM(b.commission_snapshot) OVER() AS total_comissao_mes,
+    COUNT(*) OVER() AS qtd_reservas,
+    t.name AS passeio,
+    t.commission_type,
+    t.commission_value,
+    c.name AS cliente,
+    c.phone AS telefone_cliente,
+    b.current_status
+FROM users u
+    INNER JOIN booking b ON b.user_id = u.user_id
+    INNER JOIN Tour t ON t.tour_id = b.tour_id
+    INNER JOIN client c ON c.client_id = b.client_id
+WHERE u.user_id = $P{P_USER_ID}
+  AND b.custom_schedule >= $P{P_PERIOD_START}
+  AND b.custom_schedule < $P{P_PERIOD_END}
+  AND b.current_status IN ('CONFIRMED', 'COMPLETED', 'CANCELLED')
+ORDER BY b.custom_schedule DESC]]></query>
+	<field name="funcionario" class="java.lang.String"/>
+	<field name="data_reserva" class="java.time.LocalDateTime"/>
+	<field name="valor_total" class="java.math.BigDecimal"/>
+	<field name="comissao_reserva" class="java.math.BigDecimal"/>
+	<field name="total_comissao_mes" class="java.math.BigDecimal"/>
+	<field name="qtd_reservas" class="java.lang.Long"/>
+	<field name="passeio" class="java.lang.String"/>
+	<field name="commission_type" class="java.lang.String"/>
+	<field name="commission_value" class="java.math.BigDecimal"/>
+	<field name="cliente" class="java.lang.String"/>
+	<field name="telefone_cliente" class="java.lang.String"/>
+	<field name="current_status" class="java.lang.String"/>
+	<background splitType="Stretch"/>
+	<title height="150" splitType="Stretch">
+		<element kind="rectangle" uuid="a1000000-0000-0000-0000-000000000001" mode="Opaque" x="0" y="0" width="555" height="4" backcolor="#B91C1C" radius="0">
+			<pen lineWidth="0.0"/>
+		</element>
+		<element kind="ellipse" uuid="a1000000-0000-0000-0000-000000000002" mode="Opaque" x="0" y="14" width="46" height="46" backcolor="#B91C1C">
+			<pen lineWidth="0.0"/>
+		</element>
+		<element kind="staticText" uuid="a1000000-0000-0000-0000-000000000003" x="0" y="14" width="46" height="46" forecolor="#FFFFFF" fontSize="16.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[CT]]></text>
+		</element>
+		<element kind="staticText" uuid="a1000000-0000-0000-0000-000000000004" x="56" y="16" width="250" height="24" forecolor="#B91C1C" fontSize="16.0" bold="true">
+			<text><![CDATA[Caraiva Tours]]></text>
+		</element>
+		<element kind="staticText" uuid="a1000000-0000-0000-0000-000000000005" x="56" y="40" width="250" height="16" forecolor="#6B7280" fontSize="9.0">
+			<text><![CDATA[Passeios & Turismo Receptivo]]></text>
+		</element>
+		<element kind="staticText" uuid="a1000000-0000-0000-0000-000000000006" x="355" y="14" width="200" height="14" forecolor="#6B7280" fontSize="9.0" hTextAlign="Right">
+			<text><![CDATA[FECHAMENTO DE COMISSÃO]]></text>
+		</element>
+		<element kind="textField" uuid="a1000000-0000-0000-0000-000000000007" x="355" y="30" width="200" height="20" forecolor="#B91C1C" fontSize="14.0" bold="true" hTextAlign="Right">
+			<expression><![CDATA["Ref. " + $P{P_PERIOD_START}.toLocalDateTime().format(java.time.format.DateTimeFormatter.ofPattern("MM/yyyy"))]]></expression>
+		</element>
+		<element kind="line" uuid="a1000000-0000-0000-0000-000000000008" x="0" y="66" width="555" height="1" forecolor="#E5E7EB"/>
+		<element kind="rectangle" uuid="a1000000-0000-0000-0000-000000000009" mode="Opaque" x="0" y="82" width="555" height="56" backcolor="#FEF2F2" radius="8">
+			<pen lineWidth="1.0" lineColor="#FEE2E2"/>
+		</element>
+		<element kind="staticText" uuid="a1000000-0000-0000-0000-00000000000a" x="18" y="90" width="62" height="12" forecolor="#9CA3AF" fontSize="8.0">
+			<text><![CDATA[FUNCIONÁRIO]]></text>
+		</element>
+		<element kind="textField" uuid="a1000000-0000-0000-0000-00000000000b" x="18" y="104" width="260" height="22" forecolor="#1F2937" fontSize="14.0" bold="true">
+			<expression><![CDATA[$F{funcionario}]]></expression>
+		</element>
+		<element kind="staticText" uuid="a1000000-0000-0000-0000-00000000000c" x="380" y="90" width="157" height="12" forecolor="#9CA3AF" fontSize="8.0" hTextAlign="Right">
+			<text><![CDATA[MÊS DE REFERÊNCIA]]></text>
+		</element>
+		<element kind="textField" uuid="a1000000-0000-0000-0000-00000000000d" x="380" y="104" width="157" height="20" forecolor="#B91C1C" fontSize="12.0" bold="true" hTextAlign="Right">
+			<expression><![CDATA[$P{P_PERIOD_START}.toLocalDateTime().format(java.time.format.DateTimeFormatter.ofPattern("MMMM / yyyy", new java.util.Locale("pt","BR")))]]></expression>
+		</element>
+	</title>
+	<pageHeader splitType="Stretch"/>
+	<columnHeader height="26" splitType="Stretch">
+		<element kind="rectangle" uuid="a2000000-0000-0000-0000-000000000001" mode="Opaque" x="0" y="0" width="555" height="26" backcolor="#B91C1C">
+			<pen lineWidth="0.0"/>
+		</element>
+		<element kind="staticText" uuid="a2000000-0000-0000-0000-000000000002" x="8" y="0" width="120" height="26" forecolor="#FFFFFF" fontSize="9.0" bold="true" vTextAlign="Middle">
+			<text><![CDATA[CLIENTE]]></text>
+		</element>
+		<element kind="staticText" uuid="a2000000-0000-0000-0000-000000000003" x="128" y="0" width="150" height="26" forecolor="#FFFFFF" fontSize="9.0" bold="true" vTextAlign="Middle">
+			<text><![CDATA[PASSEIO]]></text>
+		</element>
+		<element kind="staticText" uuid="a2000000-0000-0000-0000-000000000004" x="278" y="0" width="65" height="26" forecolor="#FFFFFF" fontSize="9.0" bold="true" vTextAlign="Middle">
+			<text><![CDATA[DATA]]></text>
+		</element>
+		<element kind="staticText" uuid="a2000000-0000-0000-0000-000000000005" x="343" y="0" width="85" height="26" forecolor="#FFFFFF" fontSize="9.0" bold="true" hTextAlign="Right" vTextAlign="Middle">
+			<text><![CDATA[VALOR RESERVA]]></text>
+		</element>
+		<element kind="staticText" uuid="a2000000-0000-0000-0000-000000000006" x="428" y="0" width="75" height="26" forecolor="#FFFFFF" fontSize="9.0" bold="true" hTextAlign="Right" vTextAlign="Middle">
+			<text><![CDATA[COMISSÃO]]></text>
+		</element>
+		<element kind="staticText" uuid="a2000000-0000-0000-0000-000000000007" x="503" y="0" width="52" height="26" forecolor="#FFFFFF" fontSize="9.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[STATUS]]></text>
+		</element>
+	</columnHeader>
+	<detail>
+		<band height="31" splitType="Stretch">
+			<element kind="rectangle" uuid="a3000000-0000-0000-0000-000000000000" mode="Opaque" x="0" y="0" width="555" height="30" backcolor="#FFFFFF">
+				<printWhenExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue() % 2 == 0)]]></printWhenExpression>
+				<pen lineWidth="0.0"/>
+			</element>
+			<element kind="rectangle" uuid="a3000000-0000-0000-0000-000000000001" mode="Opaque" x="0" y="0" width="555" height="30" backcolor="#FEF2F2">
+				<printWhenExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue() % 2 != 0)]]></printWhenExpression>
+				<pen lineWidth="0.0"/>
+			</element>
+			<element kind="line" uuid="a3000000-0000-0000-0000-000000000002" x="0" y="29" width="555" height="1" forecolor="#F0F0F0"/>
+			<element kind="textField" uuid="a3000000-0000-0000-0000-000000000003" x="8" y="0" width="120" height="30" forecolor="#374151" fontSize="9.0" textAdjust="StretchHeight" vTextAlign="Middle">
+				<expression><![CDATA[$F{cliente}]]></expression>
+			</element>
+			<element kind="textField" uuid="a3000000-0000-0000-0000-000000000004" x="128" y="0" width="150" height="30" forecolor="#374151" fontSize="9.0" textAdjust="StretchHeight" vTextAlign="Middle">
+				<expression><![CDATA[$F{passeio}]]></expression>
+			</element>
+			<element kind="textField" uuid="a3000000-0000-0000-0000-000000000005" x="278" y="0" width="65" height="30" forecolor="#374151" fontSize="9.0" pattern="dd/MM/yyyy" vTextAlign="Middle">
+				<expression><![CDATA[$F{data_reserva}]]></expression>
+			</element>
+			<element kind="textField" uuid="a3000000-0000-0000-0000-000000000006" x="343" y="0" width="85" height="30" forecolor="#374151" fontSize="9.0" pattern="R$ #,##0.00" hTextAlign="Right" vTextAlign="Middle">
+				<expression><![CDATA[$F{valor_total}]]></expression>
+			</element>
+			<element kind="textField" uuid="a3000000-0000-0000-0000-000000000007" x="421" y="0" width="75" height="30" forecolor="#B91C1C" fontSize="9.0" pattern="R$ #,##0.00" bold="true" hTextAlign="Right" vTextAlign="Middle">
+				<expression><![CDATA[$F{comissao_reserva}]]></expression>
+			</element>
+			<element kind="rectangle" uuid="a3000000-0000-0000-0000-000000000008" mode="Opaque" x="507" y="7" width="45" height="16" backcolor="#FCA5A5" radius="7">
+				<pen lineWidth="0.0"/>
+			</element>
+			<element kind="textField" uuid="a3000000-0000-0000-0000-000000000009" x="503" y="8" width="52" height="14" forecolor="#7F1D1D" fontSize="6.5" bold="true" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{current_status}]]></expression>
+			</element>
+		</band>
+	</detail>
+	<columnFooter splitType="Stretch"/>
+	<pageFooter height="34" splitType="Stretch">
+		<element kind="line" uuid="a4000000-0000-0000-0000-000000000001" x="0" y="0" width="555" height="1" forecolor="#E5E7EB"/>
+		<element kind="staticText" uuid="a4000000-0000-0000-0000-000000000002" x="0" y="10" width="300" height="14" forecolor="#6B7280" fontSize="8.0">
+			<text><![CDATA[Documento gerado automaticamente pelo sistema]]></text>
+		</element>
+		<element kind="textField" uuid="a4000000-0000-0000-0000-000000000003" x="355" y="10" width="200" height="14" forecolor="#6B7280" fontSize="8.0" hTextAlign="Right">
+			<expression><![CDATA["Emitido em " + new java.text.SimpleDateFormat("dd/MM/yyyy").format(new java.util.Date()) + " — Caraiva Tours"]]></expression>
+		</element>
+	</pageFooter>
+	<summary height="60" splitType="Stretch">
+		<element kind="rectangle" uuid="a5000000-0000-0000-0000-000000000001" mode="Opaque" x="0" y="6" width="555" height="48" backcolor="#B91C1C" radius="8">
+			<pen lineWidth="0.0"/>
+		</element>
+		<element kind="staticText" uuid="a5000000-0000-0000-0000-000000000002" x="20" y="14" width="250" height="14" forecolor="#FFFFFF" fontSize="9.0" bold="true">
+			<text><![CDATA[TOTAL DE COMISSÃO A PAGAR]]></text>
+		</element>
+		<element kind="textField" uuid="a5000000-0000-0000-0000-000000000003" x="20" y="30" width="250" height="16" forecolor="#FEE2E2" fontSize="8.0">
+			<expression><![CDATA[$F{qtd_reservas} + " reserva(s) no período"]]></expression>
+		</element>
+		<element kind="textField" uuid="a5000000-0000-0000-0000-000000000004" x="335" y="12" width="200" height="32" forecolor="#FFFFFF" fontSize="20.0" pattern="R$ #,##0.00" bold="true" hTextAlign="Right" vTextAlign="Middle">
+			<expression><![CDATA[$F{total_comissao_mes}]]></expression>
+		</element>
+	</summary>
+</jasperReport>

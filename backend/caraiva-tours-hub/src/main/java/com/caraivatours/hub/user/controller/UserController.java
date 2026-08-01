@@ -1,6 +1,8 @@
 package com.caraivatours.hub.user.controller;
 
 import com.caraivatours.hub.auth.dto.AuthenticatedUser;
+import com.caraivatours.hub.jasper.JasperFillService;
+import com.caraivatours.hub.jasper.JasperService;
 import com.caraivatours.hub.shared.dto.PagedResult;
 import com.caraivatours.hub.shared.validation.IsAdmin;
 import com.caraivatours.hub.user.UserService;
@@ -14,9 +16,13 @@ import com.caraivatours.hub.user.dto.response.UserProfileDTO;
 import com.caraivatours.hub.user.dto.response.UserSummaryDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import net.sf.jasperreports.engine.JasperPrint;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,6 +30,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -32,6 +42,8 @@ import java.util.UUID;
 public class UserController implements UserControllerDocs {
 
     private final UserService userService;
+    private final JasperFillService jasperFillService;
+    private final JasperService jasperService;
 
     @IsAdmin
     @GetMapping
@@ -60,6 +72,26 @@ public class UserController implements UserControllerDocs {
             @AuthenticationPrincipal AuthenticatedUser authenticatedUser) {
 
         return ResponseEntity.ok(userService.findHeaderDataById(authenticatedUser.id()));
+    }
+
+    @GetMapping("/finance/{id}")
+    public ResponseEntity<Resource> generatePdfCommission(@PathVariable Long id,
+                                                          @RequestParam int month, @RequestParam int year) {
+        LocalDate start = LocalDate.of(year, month, 1);
+        LocalDate end = start.plusMonths(1);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("P_USER_ID", id);
+        params.put("P_PERIOD_START", Timestamp.valueOf(start.atStartOfDay()));
+        params.put("P_PERIOD_END", Timestamp.valueOf(end.atStartOfDay()));
+
+        JasperPrint print = jasperFillService.fillReport("comissao.jasper", params);
+        Resource pdf = jasperService.generatePdfResource(print);
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_PDF)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=comissao-" + id + "pdf")
+                .body(pdf);
     }
 
     @IsAdmin
