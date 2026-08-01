@@ -9,13 +9,19 @@ import com.caraivatours.hub.booking.dto.response.BookingDetailDTO;
 import com.caraivatours.hub.booking.dto.response.BookingSummaryDTO;
 import com.caraivatours.hub.booking.enums.BookingStatus;
 import com.caraivatours.hub.groupmember.dto.GroupMemberDTO;
+import com.caraivatours.hub.jasper.JasperFillService;
+import com.caraivatours.hub.jasper.JasperService;
 import com.caraivatours.hub.shared.dto.PagedResult;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import net.sf.jasperreports.engine.JasperPrint;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,6 +35,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 @RestController
@@ -37,6 +45,8 @@ import java.util.Set;
 public class BookingController implements BookingControllerDocs {
 
     private final BookingService bookingService;
+    private final JasperFillService jasperFillService;
+    private final JasperService jasperService;
 
     @GetMapping
     public ResponseEntity<PagedResult<BookingSummaryDTO>> findAll(
@@ -55,6 +65,20 @@ public class BookingController implements BookingControllerDocs {
     @GetMapping("/{id}")
     public ResponseEntity<BookingDetailDTO> findDetails(@PathVariable Long id) {
         return ResponseEntity.ok(bookingService.findDetailsBooking(id));
+    }
+
+    @GetMapping("/{id}/receipt")
+    public ResponseEntity<Resource> generateReceipt(@PathVariable Long id) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("bookingId", id);
+
+        JasperPrint print = jasperFillService.fillReport("nota.jasper", params);
+        Resource pdf = jasperService.generatePdfResource(print);
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_PDF)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=recibo-" + id + "pdf")
+                .body(pdf);
     }
 
     @PostMapping

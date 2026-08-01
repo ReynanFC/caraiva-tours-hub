@@ -26,6 +26,7 @@
 		<springdoc.version>3.0.2</springdoc.version>
 		<jwt.version>4.5.2</jwt.version>
 		<org.mapstruct.version>1.6.3</org.mapstruct.version>
+		<jasperreports.version>7.0.6</jasperreports.version>
 	</properties>
 
 	<dependencies>
@@ -86,6 +87,21 @@
 			<groupId>com.auth0</groupId>
 			<artifactId>java-jwt</artifactId>
 			<version>${jwt.version}</version>
+			<scope>compile</scope>
+		</dependency>
+
+		<!-- JasperReports -->
+		<dependency>
+			<groupId>net.sf.jasperreports</groupId>
+			<artifactId>jasperreports</artifactId>
+			<version>${jasperreports.version}</version>
+			<scope>compile</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>net.sf.jasperreports</groupId>
+			<artifactId>jasperreports-pdf</artifactId>
+			<version>${jasperreports.version}</version>
 			<scope>compile</scope>
 		</dependency>
 
@@ -227,6 +243,23 @@
 							<version>${org.mapstruct.version}</version>
 						</path>
 					</annotationProcessorPaths>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>net.sf.jasperreports</groupId>
+				<artifactId>jasperreports-maven-plugin</artifactId>
+				<version>${jasperreports.version}</version>
+				<executions>
+					<execution>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>compile</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<sourceDirectory>src/main/resources/reports</sourceDirectory>
+					<outputDirectory>${project.build.outputDirectory}/reports</outputDirectory>
 				</configuration>
 			</plugin>
 		</plugins>

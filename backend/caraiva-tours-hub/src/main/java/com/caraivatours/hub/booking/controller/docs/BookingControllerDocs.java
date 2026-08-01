@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -39,6 +40,27 @@ public interface BookingControllerDocs {
             @ApiResponse(responseCode = "404", description = "Booking not found", content = @Content)
     })
     ResponseEntity<BookingDetailDTO> findDetails(@Parameter(description = "Booking ID") Long id);
+
+    @Operation(
+            summary = "Generate booking receipt",
+            description = "Generates and returns the booking receipt as a PDF for inline viewing.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Receipt generated successfully",
+                            content = @Content(
+                                    mediaType = "application/pdf",
+                                    schema = @Schema(type = "string", format = "binary")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "Error generating or exporting the receipt",
+                            content = @Content
+                    )
+            }
+    )
+    ResponseEntity<Resource> generateReceipt(@Parameter(description = "Booking ID") Long id);
 
     @Operation(summary = "Create a booking", responses = {
             @ApiResponse(responseCode = "201", description = "Booking created", content = @Content(schema = @Schema(implementation = BookingSummaryDTO.class))),

@@ -3,6 +3,8 @@ package com.caraivatours.hub.shared.exceptions.handler;
 import com.caraivatours.hub.shared.exceptions.EmailAlreadyExistsException;
 import com.caraivatours.hub.shared.exceptions.EntityInUseException;
 import com.caraivatours.hub.shared.exceptions.InvalidJwtAuthenticationException;
+import com.caraivatours.hub.shared.exceptions.JasperPdfExportException;
+import com.caraivatours.hub.shared.exceptions.JasperReportGenerationException;
 import com.caraivatours.hub.shared.exceptions.ResourceNotFoundException;
 import com.caraivatours.hub.shared.exceptions.model.StandardError;
 import com.caraivatours.hub.shared.exceptions.model.ValidationError;
@@ -157,6 +159,32 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(getStatus(exception))
+                .body(buildError(exception.getMessage(), request, traceId));
+    }
+
+    @ExceptionHandler(JasperReportGenerationException.class)
+    public ResponseEntity<StandardError> handleJasperReportGenerationException(
+            JasperReportGenerationException exception,
+            HttpServletRequest request
+    ) {
+        UUID traceId = UUID.randomUUID();
+        log.error("[TraceID: {}] Jasper report generation failed at path: {} | Reason: {}", traceId, request.getRequestURI(), exception.getMessage(), exception);
+
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(buildError(exception.getMessage(), request, traceId));
+    }
+
+    @ExceptionHandler(JasperPdfExportException.class)
+    public ResponseEntity<StandardError> handleJasperPdfExportException(
+            JasperPdfExportException exception,
+            HttpServletRequest request
+    ) {
+        UUID traceId = UUID.randomUUID();
+        log.error("[TraceID: {}] Jasper PDF export failed at path: {} | Reason: {}", traceId, request.getRequestURI(), exception.getMessage(), exception);
+
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(buildError(exception.getMessage(), request, traceId));
     }
 
