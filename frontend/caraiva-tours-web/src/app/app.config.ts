@@ -1,5 +1,6 @@
 import {
   ApplicationConfig,
+  provideAppInitializer,
   provideBrowserGlobalErrorListeners,
   provideZonelessChangeDetection,
 } from '@angular/core';
@@ -9,6 +10,9 @@ import { routes } from './app.routes';
 import { providePrimeNG } from 'primeng/config';
 import Aura from '@primeuix/themes/aura';
 import { definePreset } from '@primeuix/themes';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { authInterceptor } from './core/interceptor/auth-interceptor';
+import { initSession } from './core/auth/session-init';
 
 const CaraivaPreset = definePreset(Aura, {
   semantic: {
@@ -30,6 +34,8 @@ const CaraivaPreset = definePreset(Aura, {
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    provideHttpClient(withInterceptors([authInterceptor])),
+    provideAppInitializer(initSession()),
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
     provideZonelessChangeDetection(),

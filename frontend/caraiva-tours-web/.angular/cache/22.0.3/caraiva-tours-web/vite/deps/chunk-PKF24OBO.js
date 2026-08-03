@@ -13,7 +13,7 @@ import {
 } from "./chunk-6Q7RQFXE.js";
 import {
   CommonModule
-} from "./chunk-OOBH3RC4.js";
+} from "./chunk-PJ5YYORM.js";
 import {
   Component,
   DOCUMENT,
@@ -23,7 +23,6 @@ import {
   Input,
   NgModule,
   PLATFORM_ID,
-  Subject,
   TemplateRef,
   effect,
   inject,
@@ -41,7 +40,10 @@ import {
   ɵɵgetInheritedFactory,
   ɵɵprojection,
   ɵɵprojectionDef
-} from "./chunk-IFQMPNEI.js";
+} from "./chunk-YP6ZCA5L.js";
+import {
+  Subject
+} from "./chunk-RSS3ODKE.js";
 import {
   __spreadValues
 } from "./chunk-GOMI4DH3.js";
@@ -2567,4 +2569,4 @@ export {
   PRIME_NG_CONFIG,
   providePrimeNG
 };
-//# sourceMappingURL=chunk-7TMKGJG6.js.map
+//# sourceMappingURL=chunk-PKF24OBO.js.map
