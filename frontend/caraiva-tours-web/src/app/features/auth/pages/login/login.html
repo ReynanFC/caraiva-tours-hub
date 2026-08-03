@@ -1,0 +1,182 @@
+<main class="login-shell">
+  <aside class="brand-panel" aria-label="Porto Caraíva Turismo">
+    <img
+      class="brand-photo"
+      src="/login-fundo.jpg"
+      alt="Vista aérea da praia e do rio em Caraíva"
+    />
+    <div class="brand-veil" aria-hidden="true"></div>
+    <div class="brand-blob brand-blob-top" aria-hidden="true"></div>
+    <div class="brand-blob brand-blob-bottom" aria-hidden="true"></div>
+
+    <div class="brand-content">
+      <div class="brand-lockup">
+        <span class="brand-mark">
+          <img src="/logo.png" alt="Porto Caraíva Turismo" />
+        </span>
+        <span class="brand-wordmark">
+          <strong>PORTO CARAÍVA</strong>
+          <small>TURISMO</small>
+        </span>
+      </div>
+
+      <div class="brand-message">
+        <h2>Gestão completa<br />dos seus passeios</h2>
+        <p>Reservas, logística, comissões e financeiro da Porto Caraíva em um só lugar.</p>
+
+        <ul class="benefit-list">
+          <li>
+            <span class="benefit-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path d="M7 3v3M17 3v3M4 9h16M5 5h14a1 1 0 0 1 1 1v14H4V6a1 1 0 0 1 1-1Z" />
+              </svg>
+            </span>
+            Agenda de passeios e lotação em tempo real
+          </li>
+          <li>
+            <span class="benefit-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path d="M12 3 5 6v5c0 4.6 2.8 8.2 7 10 4.2-1.8 7-5.4 7-10V6l-7-3Z" />
+                <path d="m9 12 2 2 4-4" />
+              </svg>
+            </span>
+            Controle de sinal e comprovantes
+          </li>
+          <li>
+            <span class="benefit-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path d="M5 20V10M12 20V4M19 20v-7" />
+              </svg>
+            </span>
+            Relatórios de faturamento e comissões
+          </li>
+        </ul>
+      </div>
+
+      <p class="brand-footer">© {{ currentYear }} Porto Caraíva Turismo</p>
+    </div>
+  </aside>
+
+  <section class="form-panel">
+    <div class="form-wrapper">
+      <div class="brand-lockup mobile-lockup">
+        <span class="brand-mark">
+          <img src="/logo.png" alt="" />
+        </span>
+        <span class="brand-wordmark">
+          <strong>PORTO CARAÍVA</strong>
+          <small>TURISMO</small>
+        </span>
+      </div>
+
+      <header class="form-header">
+        <p class="form-eyebrow">Painel administrativo</p>
+        <h1>Bem-vindo de volta</h1>
+        <p>Entre com suas credenciais para continuar.</p>
+      </header>
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
+        <div class="form-field">
+          <label for="email">E-mail</label>
+          <input
+            pInputText
+            id="email"
+            type="email"
+            formControlName="email"
+            placeholder="seuemail@exemplo.com"
+            autocomplete="email"
+            maxlength="100"
+            [invalid]="emailControl.invalid && emailControl.touched"
+            [class.input-error]="emailControl.invalid && emailControl.touched"
+            [attr.aria-invalid]="emailControl.invalid && emailControl.touched"
+            [attr.aria-describedby]="emailControl.invalid && emailControl.touched ? 'email-error' : null"
+          />
+
+          @if (emailControl.invalid && emailControl.touched) {
+            <small id="email-error" class="field-error">
+              @if (emailControl.hasError('required')) {
+                Informe seu e-mail.
+              } @else if (emailControl.hasError('email')) {
+                Informe um e-mail válido.
+              } @else if (emailControl.hasError('maxlength')) {
+                O e-mail deve ter no máximo 100 caracteres.
+              }
+            </small>
+          }
+        </div>
+
+        <div class="form-field">
+          <label for="password">Senha</label>
+          <div class="password-field">
+            <input
+              pInputPassword
+              id="password"
+              formControlName="password"
+              placeholder="Digite sua senha"
+              autocomplete="current-password"
+              maxlength="255"
+              [(mask)]="isPasswordMasked"
+              [invalid]="passwordControl.invalid && passwordControl.touched"
+              [class.input-error]="passwordControl.invalid && passwordControl.touched"
+              [attr.aria-invalid]="passwordControl.invalid && passwordControl.touched"
+              [attr.aria-describedby]="passwordControl.invalid && passwordControl.touched ? 'password-error' : null"
+            />
+            <button
+              pButton
+              type="button"
+              class="password-toggle"
+              [text]="true"
+              [rounded]="true"
+              [iconOnly]="true"
+              (click)="isPasswordMasked = !isPasswordMasked"
+              [attr.aria-label]="isPasswordMasked ? 'Mostrar senha' : 'Ocultar senha'"
+              [attr.aria-pressed]="!isPasswordMasked"
+            >
+              @if (isPasswordMasked) {
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M2.1 12s3.6-6 9.9-6 9.9 6 9.9 6-3.6 6-9.9 6-9.9-6-9.9-6Z" />
+                  <circle cx="12" cy="12" r="2.75" />
+                </svg>
+              } @else {
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="m3 3 18 18M10.6 6.2A10.8 10.8 0 0 1 12 6c6.3 0 9.9 6 9.9 6a17.8 17.8 0 0 1-2.1 2.8M6.2 6.2C3.5 8 2.1 12 2.1 12s3.6 6 9.9 6c1 0 1.9-.2 2.7-.4M9.9 9.9a3 3 0 0 0 4.2 4.2" />
+                </svg>
+              }
+            </button>
+          </div>
+
+          @if (passwordControl.invalid && passwordControl.touched) {
+            <small id="password-error" class="field-error">
+              @if (passwordControl.hasError('required')) {
+                Informe sua senha.
+              } @else if (passwordControl.hasError('maxlength')) {
+                A senha deve ter no máximo 255 caracteres.
+              }
+            </small>
+          }
+        </div>
+
+        @if (authenticationError) {
+          <p class="authentication-error" role="alert">{{ authenticationError }}</p>
+        }
+
+        <button
+          pButton
+          class="submit-button"
+          type="submit"
+          [disabled]="isLoading"
+          [attr.aria-busy]="isLoading"
+        >
+          @if (isLoading) {
+            <span class="spinner" aria-hidden="true"></span>
+            Entrando...
+          } @else {
+            Entrar
+          }
+        </button>
+      </form>
+
+      <p class="mt-8 text-center text-xs text-muted">Acesso exclusivo para a equipe Porto Caraíva.</p>
+    </div>
+  </section>
+</main>

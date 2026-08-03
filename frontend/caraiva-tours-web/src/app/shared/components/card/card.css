@@ -1,0 +1,38 @@
+@reference '../../../../styles.css';
+
+:host {
+  @apply block;
+}
+
+:host ::ng-deep .p-card {
+  @apply relative overflow-hidden rounded-2xl border bg-white text-stone-900 shadow-[0_20px_55px_rgb(61_43_36/0.13)];
+  border-color: #e5ddd7;
+  background-color: #fffdfb;
+}
+
+:host ::ng-deep .p-card::before {
+  @apply absolute inset-x-0 top-0 h-1 content-[''];
+  background-color: #dc171f;
+}
+
+:host ::ng-deep .p-card-header {
+  @apply px-8 pt-8 pb-0 text-center text-xs font-extrabold tracking-[0.2em] text-red-700;
+}
+
+:host ::ng-deep .p-card-body {
+  @apply px-8 pt-6 pb-8;
+}
+
+:host ::ng-deep .p-card-content {
+  @apply p-0;
+}
+
+@media (max-width: 480px) {
+  :host ::ng-deep .p-card-header {
+    @apply px-6 pt-6;
+  }
+
+  :host ::ng-deep .p-card-body {
+    @apply px-6 pt-5 pb-6;
+  }
+}

@@ -1,3 +1,26 @@
-/* You can add global styles to this file, and also import other style files */
-
 @import 'tailwindcss';
+
+@theme {
+  --color-background: #f7f8fa;
+  --color-foreground: #1a1d21;
+  --color-surface: #ffffff;
+  --color-primary: #e63946;
+  --color-primary-hover: #d62839;
+  --color-primary-dark: #9d1c28;
+  --color-primary-light: #fce8ea;
+  --color-muted: #8a929e;
+  --color-border: #e5e8ec;
+  --color-danger: #c92a2a;
+  --color-on-primary: #ffffff;
+  --color-on-primary-soft: rgb(255 255 255 / 90%);
+  --color-on-primary-muted: rgb(255 255 255 / 60%);
+  --color-brand-glow: rgb(255 255 255 / 10%);
+  --color-brand-highlight: rgb(255 255 255 / 15%);
+  --color-brand-shadow: rgb(0 0 0 / 20%);
+  --color-focus-ring: rgb(230 57 70 / 10%);
+  --font-display: 'Plus Jakarta Sans', sans-serif;
+  --font-ui: 'Inter', sans-serif;
+  --radius-control: 0.75rem;
+  --shadow-button: 0 10px 15px -3px rgb(230 57 70 / 25%);
+  --shadow-brand-tile: 0 10px 20px rgb(0 0 0 / 20%);
+}

@@ -1,0 +1,4449 @@
+import {
+  Fluid
+} from "./chunk-V3IAQIPP.js";
+import {
+  BaseComponent,
+  PARENT_INSTANCE
+} from "./chunk-PG6XWJJ4.js";
+import {
+  BaseStyle
+} from "./chunk-NETSQRFO.js";
+import {
+  Bind
+} from "./chunk-UANOYDBT.js";
+import "./chunk-6JVMDVTH.js";
+import {
+  SharedModule
+} from "./chunk-LZ5MMXQW.js";
+import {
+  C2 as C,
+  E,
+  Pt,
+  R,
+  W,
+  c2 as c,
+  ie,
+  jt,
+  k,
+  l,
+  p,
+  st
+} from "./chunk-P76MA2VQ.js";
+import {
+  NgTemplateOutlet,
+  isPlatformBrowser
+} from "./chunk-OOBH3RC4.js";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ContentChild,
+  Directive,
+  ElementRef,
+  HostBinding,
+  Injectable,
+  InjectionToken,
+  Input,
+  NgModule,
+  Output,
+  ViewEncapsulation,
+  booleanAttribute,
+  computed,
+  contentChild,
+  effect,
+  forwardRef,
+  inject,
+  input,
+  numberAttribute,
+  output,
+  setClassMetadata,
+  signal,
+  ɵɵHostDirectivesFeature,
+  ɵɵInheritDefinitionFeature,
+  ɵɵProvidersFeature,
+  ɵɵadvance,
+  ɵɵattribute,
+  ɵɵclassMap,
+  ɵɵclassProp,
+  ɵɵconditional,
+  ɵɵconditionalCreate,
+  ɵɵcontentQuerySignal,
+  ɵɵdefineComponent,
+  ɵɵdefineDirective,
+  ɵɵdefineInjectable,
+  ɵɵdefineInjector,
+  ɵɵdefineNgModule,
+  ɵɵdomElement,
+  ɵɵelement,
+  ɵɵelementContainer,
+  ɵɵelementEnd,
+  ɵɵelementStart,
+  ɵɵgetInheritedFactory,
+  ɵɵlistener,
+  ɵɵnamespaceSVG,
+  ɵɵnextContext,
+  ɵɵprojection,
+  ɵɵprojectionDef,
+  ɵɵproperty,
+  ɵɵqueryAdvance,
+  ɵɵrepeater,
+  ɵɵrepeaterCreate,
+  ɵɵstyleMap,
+  ɵɵstyleProp,
+  ɵɵtemplate,
+  ɵɵtext,
+  ɵɵtextInterpolate
+} from "./chunk-IFQMPNEI.js";
+import {
+  __spreadProps,
+  __spreadValues
+} from "./chunk-GOMI4DH3.js";
+
+// node_modules/@primeuix/styles/dist/ripple/index.mjs
+var style = "\n    .p-ink {\n        display: block;\n        position: absolute;\n        background: dt('ripple.background');\n        border-radius: 100%;\n        transform: scale(0);\n        pointer-events: none;\n    }\n\n    .p-ink-active {\n        animation: ripple 0.4s linear;\n    }\n\n    @keyframes ripple {\n        100% {\n            opacity: 0;\n            transform: scale(2.5);\n        }\n    }\n";
+
+// node_modules/primeng/fesm2022/primeng-ripple.mjs
+var style2 = (
+  /*css*/
+  `
+    ${style}
+
+    /* For PrimeNG */
+    .p-ripple {
+        overflow: hidden;
+        position: relative;
+    }
+
+    .p-ripple-disabled .p-ink {
+        display: none !important;
+    }
+
+    @keyframes ripple {
+        100% {
+            opacity: 0;
+            transform: scale(2.5);
+        }
+    }
+`
+);
+var classes = {
+  root: "p-ink"
+};
+var RippleStyle = class _RippleStyle extends BaseStyle {
+  name = "ripple";
+  style = style2;
+  classes = classes;
+  static ɵfac = /* @__PURE__ */ (() => {
+    let ɵRippleStyle_BaseFactory;
+    return function RippleStyle_Factory(__ngFactoryType__) {
+      return (ɵRippleStyle_BaseFactory || (ɵRippleStyle_BaseFactory = ɵɵgetInheritedFactory(_RippleStyle)))(__ngFactoryType__ || _RippleStyle);
+    };
+  })();
+  static ɵprov = ɵɵdefineInjectable({
+    token: _RippleStyle,
+    factory: _RippleStyle.ɵfac
+  });
+};
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(RippleStyle, [{
+    type: Injectable
+  }], null, null);
+})();
+var RippleClasses;
+(function(RippleClasses2) {
+  RippleClasses2["root"] = "p-ink";
+})(RippleClasses || (RippleClasses = {}));
+var Ripple = class _Ripple extends BaseComponent {
+  componentName = "Ripple";
+  _componentStyle = inject(RippleStyle);
+  animationListener;
+  mouseDownListener;
+  timeout;
+  constructor() {
+    super();
+    effect(() => {
+      if (isPlatformBrowser(this.platformId)) {
+        if (this.config.ripple()) {
+          this.create();
+          this.mouseDownListener = this.renderer.listen(this.el.nativeElement, "mousedown", this.onMouseDown.bind(this));
+        } else {
+          this.remove();
+        }
+      }
+    });
+  }
+  onMouseDown(event) {
+    let ink = this.getInk();
+    if (!ink || this.document.defaultView?.getComputedStyle(ink, null).display === "none") {
+      return;
+    }
+    !this.$unstyled() && W(ink, "p-ink-active");
+    ink.setAttribute("data-p-ink-active", "false");
+    if (!Pt(ink) && !jt(ink)) {
+      let d = Math.max(C(this.el.nativeElement), k(this.el.nativeElement));
+      ink.style.height = d + "px";
+      ink.style.width = d + "px";
+    }
+    const offset = st(this.el.nativeElement);
+    let x = event.pageX - offset.left + this.document.body.scrollTop - jt(ink) / 2;
+    let y = event.pageY - offset.top + this.document.body.scrollLeft - Pt(ink) / 2;
+    this.renderer.setStyle(ink, "top", y + "px");
+    this.renderer.setStyle(ink, "left", x + "px");
+    !this.$unstyled() && R(ink, "p-ink-active");
+    ink.setAttribute("data-p-ink-active", "true");
+    this.timeout = setTimeout(() => {
+      let ink2 = this.getInk();
+      if (ink2) {
+        !this.$unstyled() && W(ink2, "p-ink-active");
+        ink2.setAttribute("data-p-ink-active", "false");
+      }
+    }, 401);
+  }
+  getInk() {
+    const children = this.el.nativeElement.children;
+    for (let i = 0; i < children.length; i++) {
+      if (typeof children[i].className === "string" && children[i].className.indexOf("p-ink") !== -1) {
+        return children[i];
+      }
+    }
+    return null;
+  }
+  resetInk() {
+    let ink = this.getInk();
+    if (ink) {
+      !this.$unstyled() && W(ink, "p-ink-active");
+      ink.setAttribute("data-p-ink-active", "false");
+    }
+  }
+  onAnimationEnd(event) {
+    if (this.timeout) {
+      clearTimeout(this.timeout);
+    }
+    !this.$unstyled() && W(event.currentTarget, "p-ink-active");
+    event.currentTarget.setAttribute("data-p-ink-active", "false");
+  }
+  create() {
+    let ink = this.renderer.createElement("span");
+    this.renderer.addClass(ink, "p-ink");
+    this.renderer.appendChild(this.el.nativeElement, ink);
+    this.renderer.setAttribute(ink, "data-p-ink", "true");
+    this.renderer.setAttribute(ink, "data-p-ink-active", "false");
+    this.renderer.setAttribute(ink, "aria-hidden", "true");
+    this.renderer.setAttribute(ink, "role", "presentation");
+    if (!this.animationListener) {
+      this.animationListener = this.renderer.listen(ink, "animationend", this.onAnimationEnd.bind(this));
+    }
+  }
+  remove() {
+    let ink = this.getInk();
+    if (ink) {
+      this.mouseDownListener && this.mouseDownListener();
+      this.animationListener && this.animationListener();
+      this.mouseDownListener = null;
+      this.animationListener = null;
+      ie(ink);
+    }
+  }
+  onDestroy() {
+    if (this.config && this.config.ripple()) {
+      this.remove();
+    }
+  }
+  static ɵfac = function Ripple_Factory(__ngFactoryType__) {
+    return new (__ngFactoryType__ || _Ripple)();
+  };
+  static ɵdir = ɵɵdefineDirective({
+    type: _Ripple,
+    selectors: [["", "pRipple", ""]],
+    hostAttrs: [1, "p-ripple"],
+    features: [ɵɵProvidersFeature([RippleStyle]), ɵɵInheritDefinitionFeature]
+  });
+};
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(Ripple, [{
+    type: Directive,
+    args: [{
+      selector: "[pRipple]",
+      host: {
+        class: "p-ripple"
+      },
+      standalone: true,
+      providers: [RippleStyle]
+    }]
+  }], () => [], null);
+})();
+var RippleModule = class _RippleModule {
+  static ɵfac = function RippleModule_Factory(__ngFactoryType__) {
+    return new (__ngFactoryType__ || _RippleModule)();
+  };
+  static ɵmod = ɵɵdefineNgModule({
+    type: _RippleModule,
+    imports: [Ripple],
+    exports: [Ripple]
+  });
+  static ɵinj = ɵɵdefineInjector({});
+};
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(RippleModule, [{
+    type: NgModule,
+    args: [{
+      imports: [Ripple],
+      exports: [Ripple]
+    }]
+  }], null, null);
+})();
+
+// node_modules/@primeuix/styles/dist/button/index.mjs
+var style3 = `
+    .p-button {
+        display: inline-flex;
+        cursor: pointer;
+        user-select: none;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        position: relative;
+        color: dt('button.primary.color');
+        background: dt('button.primary.background');
+        border: 1px solid dt('button.primary.border.color');
+        padding: dt('button.padding.y') dt('button.padding.x');
+        font-size: dt('button.font.size');
+        font-weight: dt('button.label.font.weight');
+        transition:
+            background dt('button.transition.duration'),
+            color dt('button.transition.duration'),
+            border-color dt('button.transition.duration'),
+            outline-color dt('button.transition.duration'),
+            box-shadow dt('button.transition.duration');
+        border-radius: dt('button.border.radius');
+        outline-color: transparent;
+        gap: dt('button.gap');
+    }
+
+    .p-button:disabled {
+        cursor: default;
+    }
+
+    .p-button-icon-right {
+        order: 1;
+    }
+
+    .p-button-icon-right:dir(rtl) {
+        order: -1;
+    }
+
+    .p-button:not(.p-button-vertical) .p-button-icon:not(.p-button-icon-right):dir(rtl) {
+        order: 1;
+    }
+
+    .p-button-icon-bottom {
+        order: 2;
+    }
+
+    .p-button-icon-only {
+        width: dt('button.icon.only.width');
+        padding-inline-start: 0;
+        padding-inline-end: 0;
+        gap: 0;
+    }
+
+    .p-button-icon-only.p-button-rounded {
+        border-radius: 50%;
+        height: dt('button.icon.only.width');
+    }
+
+    .p-button-icon-only .p-button-label {
+        visibility: hidden;
+        width: 0;
+    }
+
+    .p-button-icon-only::after {
+        content: " ";
+        visibility: hidden;
+        width: 0;
+    }
+
+    .p-button-sm {
+        font-size: dt('button.sm.font.size');
+        padding: dt('button.sm.padding.y') dt('button.sm.padding.x');
+    }
+
+    .p-button-sm .p-button-icon {
+        font-size: dt('button.sm.font.size');
+    }
+
+    .p-button-sm.p-button-icon-only {
+        width: dt('button.sm.icon.only.width');
+    }
+
+    .p-button-sm.p-button-icon-only.p-button-rounded {
+        height: dt('button.sm.icon.only.width');
+    }
+
+    .p-button-lg {
+        font-size: dt('button.lg.font.size');
+        padding: dt('button.lg.padding.y') dt('button.lg.padding.x');
+    }
+
+    .p-button-lg .p-button-icon {
+        font-size: dt('button.lg.font.size');
+    }
+
+    .p-button-lg.p-button-icon-only {
+        width: dt('button.lg.icon.only.width');
+    }
+
+    .p-button-lg.p-button-icon-only.p-button-rounded {
+        height: dt('button.lg.icon.only.width');
+    }
+
+    .p-button-vertical {
+        flex-direction: column;
+    }
+
+    .p-button-label {
+        font-weight: dt('button.label.font.weight');
+    }
+
+    .p-button-fluid {
+        width: 100%;
+    }
+
+    .p-button-fluid.p-button-icon-only {
+        width: dt('button.icon.only.width');
+    }
+
+    .p-button:not(:disabled):hover {
+        background: dt('button.primary.hover.background');
+        border: 1px solid dt('button.primary.hover.border.color');
+        color: dt('button.primary.hover.color');
+    }
+
+    .p-button:not(:disabled):active {
+        background: dt('button.primary.active.background');
+        border: 1px solid dt('button.primary.active.border.color');
+        color: dt('button.primary.active.color');
+    }
+
+    .p-button:focus-visible {
+        box-shadow: dt('button.primary.focus.ring.shadow');
+        outline: dt('button.focus.ring.width') dt('button.focus.ring.style') dt('button.primary.focus.ring.color');
+        outline-offset: dt('button.focus.ring.offset');
+    }
+
+    .p-button .p-badge {
+        min-width: dt('button.badge.size');
+        height: dt('button.badge.size');
+        line-height: dt('button.badge.size');
+    }
+
+    .p-button-raised {
+        box-shadow: dt('button.raised.shadow');
+    }
+
+    .p-button-rounded {
+        border-radius: dt('button.rounded.border.radius');
+    }
+
+    .p-button-secondary {
+        background: dt('button.secondary.background');
+        border: 1px solid dt('button.secondary.border.color');
+        color: dt('button.secondary.color');
+    }
+
+    .p-button-secondary:not(:disabled):hover {
+        background: dt('button.secondary.hover.background');
+        border: 1px solid dt('button.secondary.hover.border.color');
+        color: dt('button.secondary.hover.color');
+    }
+
+    .p-button-secondary:not(:disabled):active {
+        background: dt('button.secondary.active.background');
+        border: 1px solid dt('button.secondary.active.border.color');
+        color: dt('button.secondary.active.color');
+    }
+
+    .p-button-secondary:focus-visible {
+        outline-color: dt('button.secondary.focus.ring.color');
+        box-shadow: dt('button.secondary.focus.ring.shadow');
+    }
+
+    .p-button-success {
+        background: dt('button.success.background');
+        border: 1px solid dt('button.success.border.color');
+        color: dt('button.success.color');
+    }
+
+    .p-button-success:not(:disabled):hover {
+        background: dt('button.success.hover.background');
+        border: 1px solid dt('button.success.hover.border.color');
+        color: dt('button.success.hover.color');
+    }
+
+    .p-button-success:not(:disabled):active {
+        background: dt('button.success.active.background');
+        border: 1px solid dt('button.success.active.border.color');
+        color: dt('button.success.active.color');
+    }
+
+    .p-button-success:focus-visible {
+        outline-color: dt('button.success.focus.ring.color');
+        box-shadow: dt('button.success.focus.ring.shadow');
+    }
+
+    .p-button-info {
+        background: dt('button.info.background');
+        border: 1px solid dt('button.info.border.color');
+        color: dt('button.info.color');
+    }
+
+    .p-button-info:not(:disabled):hover {
+        background: dt('button.info.hover.background');
+        border: 1px solid dt('button.info.hover.border.color');
+        color: dt('button.info.hover.color');
+    }
+
+    .p-button-info:not(:disabled):active {
+        background: dt('button.info.active.background');
+        border: 1px solid dt('button.info.active.border.color');
+        color: dt('button.info.active.color');
+    }
+
+    .p-button-info:focus-visible {
+        outline-color: dt('button.info.focus.ring.color');
+        box-shadow: dt('button.info.focus.ring.shadow');
+    }
+
+    .p-button-warn {
+        background: dt('button.warn.background');
+        border: 1px solid dt('button.warn.border.color');
+        color: dt('button.warn.color');
+    }
+
+    .p-button-warn:not(:disabled):hover {
+        background: dt('button.warn.hover.background');
+        border: 1px solid dt('button.warn.hover.border.color');
+        color: dt('button.warn.hover.color');
+    }
+
+    .p-button-warn:not(:disabled):active {
+        background: dt('button.warn.active.background');
+        border: 1px solid dt('button.warn.active.border.color');
+        color: dt('button.warn.active.color');
+    }
+
+    .p-button-warn:focus-visible {
+        outline-color: dt('button.warn.focus.ring.color');
+        box-shadow: dt('button.warn.focus.ring.shadow');
+    }
+
+    .p-button-help {
+        background: dt('button.help.background');
+        border: 1px solid dt('button.help.border.color');
+        color: dt('button.help.color');
+    }
+
+    .p-button-help:not(:disabled):hover {
+        background: dt('button.help.hover.background');
+        border: 1px solid dt('button.help.hover.border.color');
+        color: dt('button.help.hover.color');
+    }
+
+    .p-button-help:not(:disabled):active {
+        background: dt('button.help.active.background');
+        border: 1px solid dt('button.help.active.border.color');
+        color: dt('button.help.active.color');
+    }
+
+    .p-button-help:focus-visible {
+        outline-color: dt('button.help.focus.ring.color');
+        box-shadow: dt('button.help.focus.ring.shadow');
+    }
+
+    .p-button-danger {
+        background: dt('button.danger.background');
+        border: 1px solid dt('button.danger.border.color');
+        color: dt('button.danger.color');
+    }
+
+    .p-button-danger:not(:disabled):hover {
+        background: dt('button.danger.hover.background');
+        border: 1px solid dt('button.danger.hover.border.color');
+        color: dt('button.danger.hover.color');
+    }
+
+    .p-button-danger:not(:disabled):active {
+        background: dt('button.danger.active.background');
+        border: 1px solid dt('button.danger.active.border.color');
+        color: dt('button.danger.active.color');
+    }
+
+    .p-button-danger:focus-visible {
+        outline-color: dt('button.danger.focus.ring.color');
+        box-shadow: dt('button.danger.focus.ring.shadow');
+    }
+
+    .p-button-contrast {
+        background: dt('button.contrast.background');
+        border: 1px solid dt('button.contrast.border.color');
+        color: dt('button.contrast.color');
+    }
+
+    .p-button-contrast:not(:disabled):hover {
+        background: dt('button.contrast.hover.background');
+        border: 1px solid dt('button.contrast.hover.border.color');
+        color: dt('button.contrast.hover.color');
+    }
+
+    .p-button-contrast:not(:disabled):active {
+        background: dt('button.contrast.active.background');
+        border: 1px solid dt('button.contrast.active.border.color');
+        color: dt('button.contrast.active.color');
+    }
+
+    .p-button-contrast:focus-visible {
+        outline-color: dt('button.contrast.focus.ring.color');
+        box-shadow: dt('button.contrast.focus.ring.shadow');
+    }
+
+    .p-button-outlined {
+        background: transparent;
+        border-color: dt('button.outlined.primary.border.color');
+        color: dt('button.outlined.primary.color');
+    }
+
+    .p-button-outlined:not(:disabled):hover {
+        background: dt('button.outlined.primary.hover.background');
+        border-color: dt('button.outlined.primary.border.color');
+        color: dt('button.outlined.primary.color');
+    }
+
+    .p-button-outlined:not(:disabled):active {
+        background: dt('button.outlined.primary.active.background');
+        border-color: dt('button.outlined.primary.border.color');
+        color: dt('button.outlined.primary.color');
+    }
+
+    .p-button-outlined.p-button-secondary {
+        border-color: dt('button.outlined.secondary.border.color');
+        color: dt('button.outlined.secondary.color');
+    }
+
+    .p-button-outlined.p-button-secondary:not(:disabled):hover {
+        background: dt('button.outlined.secondary.hover.background');
+        border-color: dt('button.outlined.secondary.border.color');
+        color: dt('button.outlined.secondary.color');
+    }
+
+    .p-button-outlined.p-button-secondary:not(:disabled):active {
+        background: dt('button.outlined.secondary.active.background');
+        border-color: dt('button.outlined.secondary.border.color');
+        color: dt('button.outlined.secondary.color');
+    }
+
+    .p-button-outlined.p-button-success {
+        border-color: dt('button.outlined.success.border.color');
+        color: dt('button.outlined.success.color');
+    }
+
+    .p-button-outlined.p-button-success:not(:disabled):hover {
+        background: dt('button.outlined.success.hover.background');
+        border-color: dt('button.outlined.success.border.color');
+        color: dt('button.outlined.success.color');
+    }
+
+    .p-button-outlined.p-button-success:not(:disabled):active {
+        background: dt('button.outlined.success.active.background');
+        border-color: dt('button.outlined.success.border.color');
+        color: dt('button.outlined.success.color');
+    }
+
+    .p-button-outlined.p-button-info {
+        border-color: dt('button.outlined.info.border.color');
+        color: dt('button.outlined.info.color');
+    }
+
+    .p-button-outlined.p-button-info:not(:disabled):hover {
+        background: dt('button.outlined.info.hover.background');
+        border-color: dt('button.outlined.info.border.color');
+        color: dt('button.outlined.info.color');
+    }
+
+    .p-button-outlined.p-button-info:not(:disabled):active {
+        background: dt('button.outlined.info.active.background');
+        border-color: dt('button.outlined.info.border.color');
+        color: dt('button.outlined.info.color');
+    }
+
+    .p-button-outlined.p-button-warn {
+        border-color: dt('button.outlined.warn.border.color');
+        color: dt('button.outlined.warn.color');
+    }
+
+    .p-button-outlined.p-button-warn:not(:disabled):hover {
+        background: dt('button.outlined.warn.hover.background');
+        border-color: dt('button.outlined.warn.border.color');
+        color: dt('button.outlined.warn.color');
+    }
+
+    .p-button-outlined.p-button-warn:not(:disabled):active {
+        background: dt('button.outlined.warn.active.background');
+        border-color: dt('button.outlined.warn.border.color');
+        color: dt('button.outlined.warn.color');
+    }
+
+    .p-button-outlined.p-button-help {
+        border-color: dt('button.outlined.help.border.color');
+        color: dt('button.outlined.help.color');
+    }
+
+    .p-button-outlined.p-button-help:not(:disabled):hover {
+        background: dt('button.outlined.help.hover.background');
+        border-color: dt('button.outlined.help.border.color');
+        color: dt('button.outlined.help.color');
+    }
+
+    .p-button-outlined.p-button-help:not(:disabled):active {
+        background: dt('button.outlined.help.active.background');
+        border-color: dt('button.outlined.help.border.color');
+        color: dt('button.outlined.help.color');
+    }
+
+    .p-button-outlined.p-button-danger {
+        border-color: dt('button.outlined.danger.border.color');
+        color: dt('button.outlined.danger.color');
+    }
+
+    .p-button-outlined.p-button-danger:not(:disabled):hover {
+        background: dt('button.outlined.danger.hover.background');
+        border-color: dt('button.outlined.danger.border.color');
+        color: dt('button.outlined.danger.color');
+    }
+
+    .p-button-outlined.p-button-danger:not(:disabled):active {
+        background: dt('button.outlined.danger.active.background');
+        border-color: dt('button.outlined.danger.border.color');
+        color: dt('button.outlined.danger.color');
+    }
+
+    .p-button-outlined.p-button-contrast {
+        border-color: dt('button.outlined.contrast.border.color');
+        color: dt('button.outlined.contrast.color');
+    }
+
+    .p-button-outlined.p-button-contrast:not(:disabled):hover {
+        background: dt('button.outlined.contrast.hover.background');
+        border-color: dt('button.outlined.contrast.border.color');
+        color: dt('button.outlined.contrast.color');
+    }
+
+    .p-button-outlined.p-button-contrast:not(:disabled):active {
+        background: dt('button.outlined.contrast.active.background');
+        border-color: dt('button.outlined.contrast.border.color');
+        color: dt('button.outlined.contrast.color');
+    }
+
+    .p-button-outlined.p-button-plain {
+        border-color: dt('button.outlined.plain.border.color');
+        color: dt('button.outlined.plain.color');
+    }
+
+    .p-button-outlined.p-button-plain:not(:disabled):hover {
+        background: dt('button.outlined.plain.hover.background');
+        border-color: dt('button.outlined.plain.border.color');
+        color: dt('button.outlined.plain.color');
+    }
+
+    .p-button-outlined.p-button-plain:not(:disabled):active {
+        background: dt('button.outlined.plain.active.background');
+        border-color: dt('button.outlined.plain.border.color');
+        color: dt('button.outlined.plain.color');
+    }
+
+    .p-button-text {
+        background: transparent;
+        border-color: transparent;
+        color: dt('button.text.primary.color');
+    }
+
+    .p-button-text:not(:disabled):hover {
+        background: dt('button.text.primary.hover.background');
+        border-color: transparent;
+        color: dt('button.text.primary.color');
+    }
+
+    .p-button-text:not(:disabled):active {
+        background: dt('button.text.primary.active.background');
+        border-color: transparent;
+        color: dt('button.text.primary.color');
+    }
+
+    .p-button-text.p-button-secondary {
+        background: transparent;
+        border-color: transparent;
+        color: dt('button.text.secondary.color');
+    }
+
+    .p-button-text.p-button-secondary:not(:disabled):hover {
+        background: dt('button.text.secondary.hover.background');
+        border-color: transparent;
+        color: dt('button.text.secondary.color');
+    }
+
+    .p-button-text.p-button-secondary:not(:disabled):active {
+        background: dt('button.text.secondary.active.background');
+        border-color: transparent;
+        color: dt('button.text.secondary.color');
+    }
+
+    .p-button-text.p-button-success {
+        background: transparent;
+        border-color: transparent;
+        color: dt('button.text.success.color');
+    }
+
+    .p-button-text.p-button-success:not(:disabled):hover {
+        background: dt('button.text.success.hover.background');
+        border-color: transparent;
+        color: dt('button.text.success.color');
+    }
+
+    .p-button-text.p-button-success:not(:disabled):active {
+        background: dt('button.text.success.active.background');
+        border-color: transparent;
+        color: dt('button.text.success.color');
+    }
+
+    .p-button-text.p-button-info {
+        background: transparent;
+        border-color: transparent;
+        color: dt('button.text.info.color');
+    }
+
+    .p-button-text.p-button-info:not(:disabled):hover {
+        background: dt('button.text.info.hover.background');
+        border-color: transparent;
+        color: dt('button.text.info.color');
+    }
+
+    .p-button-text.p-button-info:not(:disabled):active {
+        background: dt('button.text.info.active.background');
+        border-color: transparent;
+        color: dt('button.text.info.color');
+    }
+
+    .p-button-text.p-button-warn {
+        background: transparent;
+        border-color: transparent;
+        color: dt('button.text.warn.color');
+    }
+
+    .p-button-text.p-button-warn:not(:disabled):hover {
+        background: dt('button.text.warn.hover.background');
+        border-color: transparent;
+        color: dt('button.text.warn.color');
+    }
+
+    .p-button-text.p-button-warn:not(:disabled):active {
+        background: dt('button.text.warn.active.background');
+        border-color: transparent;
+        color: dt('button.text.warn.color');
+    }
+
+    .p-button-text.p-button-help {
+        background: transparent;
+        border-color: transparent;
+        color: dt('button.text.help.color');
+    }
+
+    .p-button-text.p-button-help:not(:disabled):hover {
+        background: dt('button.text.help.hover.background');
+        border-color: transparent;
+        color: dt('button.text.help.color');
+    }
+
+    .p-button-text.p-button-help:not(:disabled):active {
+        background: dt('button.text.help.active.background');
+        border-color: transparent;
+        color: dt('button.text.help.color');
+    }
+
+    .p-button-text.p-button-danger {
+        background: transparent;
+        border-color: transparent;
+        color: dt('button.text.danger.color');
+    }
+
+    .p-button-text.p-button-danger:not(:disabled):hover {
+        background: dt('button.text.danger.hover.background');
+        border-color: transparent;
+        color: dt('button.text.danger.color');
+    }
+
+    .p-button-text.p-button-danger:not(:disabled):active {
+        background: dt('button.text.danger.active.background');
+        border-color: transparent;
+        color: dt('button.text.danger.color');
+    }
+
+    .p-button-text.p-button-contrast {
+        background: transparent;
+        border-color: transparent;
+        color: dt('button.text.contrast.color');
+    }
+
+    .p-button-text.p-button-contrast:not(:disabled):hover {
+        background: dt('button.text.contrast.hover.background');
+        border-color: transparent;
+        color: dt('button.text.contrast.color');
+    }
+
+    .p-button-text.p-button-contrast:not(:disabled):active {
+        background: dt('button.text.contrast.active.background');
+        border-color: transparent;
+        color: dt('button.text.contrast.color');
+    }
+
+    .p-button-text.p-button-plain {
+        background: transparent;
+        border-color: transparent;
+        color: dt('button.text.plain.color');
+    }
+
+    .p-button-text.p-button-plain:not(:disabled):hover {
+        background: dt('button.text.plain.hover.background');
+        border-color: transparent;
+        color: dt('button.text.plain.color');
+    }
+
+    .p-button-text.p-button-plain:not(:disabled):active {
+        background: dt('button.text.plain.active.background');
+        border-color: transparent;
+        color: dt('button.text.plain.color');
+    }
+
+    .p-button-link {
+        background: transparent;
+        border-color: transparent;
+        color: dt('button.link.color');
+    }
+
+    .p-button-link:not(:disabled):hover {
+        background: transparent;
+        border-color: transparent;
+        color: dt('button.link.hover.color');
+    }
+
+    .p-button-link:not(:disabled):hover .p-button-label {
+        text-decoration: underline;
+    }
+
+    .p-button-link:not(:disabled):active {
+        background: transparent;
+        border-color: transparent;
+        color: dt('button.link.active.color');
+    }
+`;
+
+// node_modules/@primeicons/angular/fesm2022/primeicons-angular-core.mjs
+var ICON_TEMPLATE = `
+        @for (node of iconNodes(); track node[1]['key'] || $index) {
+            @switch (node[0]) {
+                @case ('path') {
+                    <svg:path
+                        [attr.d]="node[1]['d']"
+                        [attr.fill]="node[1]['fill']"
+                        [attr.fill-opacity]="node[1]['fillOpacity']"
+                        [attr.fill-rule]="node[1]['fillRule']"
+                        [attr.clip-rule]="node[1]['clipRule']"
+                        [attr.stroke]="node[1]['stroke']"
+                        [attr.stroke-width]="node[1]['strokeWidth']"
+                        [attr.stroke-opacity]="node[1]['strokeOpacity']"
+                        [attr.opacity]="node[1]['opacity']"
+                    />
+                }
+                @case ('circle') {
+                    <svg:circle
+                        [attr.cx]="node[1]['cx']"
+                        [attr.cy]="node[1]['cy']"
+                        [attr.r]="node[1]['r']"
+                        [attr.fill]="node[1]['fill']"
+                        [attr.fill-opacity]="node[1]['fillOpacity']"
+                        [attr.opacity]="node[1]['opacity']"
+                    />
+                }
+                @case ('rect') {
+                    <svg:rect
+                        [attr.x]="node[1]['x']"
+                        [attr.y]="node[1]['y']"
+                        [attr.width]="node[1]['width']"
+                        [attr.height]="node[1]['height']"
+                        [attr.rx]="node[1]['rx']"
+                        [attr.ry]="node[1]['ry']"
+                        [attr.fill]="node[1]['fill']"
+                        [attr.fill-opacity]="node[1]['fillOpacity']"
+                        [attr.opacity]="node[1]['opacity']"
+                    />
+                }
+                @case ('line') {
+                    <svg:line
+                        [attr.x1]="node[1]['x1']"
+                        [attr.y1]="node[1]['y1']"
+                        [attr.x2]="node[1]['x2']"
+                        [attr.y2]="node[1]['y2']"
+                        [attr.stroke]="node[1]['stroke']"
+                        [attr.stroke-opacity]="node[1]['strokeOpacity']"
+                        [attr.opacity]="node[1]['opacity']"
+                    />
+                }
+                @case ('polyline') {
+                    <svg:polyline
+                        [attr.points]="node[1]['points']"
+                        [attr.fill]="node[1]['fill']"
+                        [attr.fill-opacity]="node[1]['fillOpacity']"
+                        [attr.opacity]="node[1]['opacity']"
+                    />
+                }
+                @case ('polygon') {
+                    <svg:polygon
+                        [attr.points]="node[1]['points']"
+                        [attr.fill]="node[1]['fill']"
+                        [attr.fill-opacity]="node[1]['fillOpacity']"
+                        [attr.opacity]="node[1]['opacity']"
+                    />
+                }
+                @case ('ellipse') {
+                    <svg:ellipse
+                        [attr.cx]="node[1]['cx']"
+                        [attr.cy]="node[1]['cy']"
+                        [attr.rx]="node[1]['rx']"
+                        [attr.ry]="node[1]['ry']"
+                        [attr.fill]="node[1]['fill']"
+                        [attr.fill-opacity]="node[1]['fillOpacity']"
+                        [attr.opacity]="node[1]['opacity']"
+                    />
+                }
+            }
+        }
+`;
+var CoreIcon = class _CoreIcon {
+  _iconSignal = signal(null, ...ngDevMode ? [{
+    debugName: "_iconSignal"
+  }] : (
+    /* istanbul ignore next */
+    []
+  ));
+  get _icon() {
+    return this._iconSignal();
+  }
+  set _icon(value) {
+    this._iconSignal.set(value);
+  }
+  size = input(void 0, ...ngDevMode ? [{
+    debugName: "size"
+  }] : (
+    /* istanbul ignore next */
+    []
+  ));
+  color = input(void 0, ...ngDevMode ? [{
+    debugName: "color"
+  }] : (
+    /* istanbul ignore next */
+    []
+  ));
+  styleClass = input(void 0, ...ngDevMode ? [{
+    debugName: "styleClass"
+  }] : (
+    /* istanbul ignore next */
+    []
+  ));
+  spin = input(void 0, ...ngDevMode ? [{
+    debugName: "spin"
+  }] : (
+    /* istanbul ignore next */
+    []
+  ));
+  iconNodes = computed(() => this._iconSignal()?.nodes ?? [], ...ngDevMode ? [{
+    debugName: "iconNodes"
+  }] : (
+    /* istanbul ignore next */
+    []
+  ));
+  computedSize = computed(() => this.size() ?? 20, ...ngDevMode ? [{
+    debugName: "computedSize"
+  }] : (
+    /* istanbul ignore next */
+    []
+  ));
+  computedClass = computed(() => {
+    const icon = this._iconSignal();
+    return c("p-icon", icon?.name && `p-icon-${icon.name}`, this.spin() && "p-icon-spin", this.styleClass());
+  }, ...ngDevMode ? [{
+    debugName: "computedClass"
+  }] : (
+    /* istanbul ignore next */
+    []
+  ));
+  get hostWidth() {
+    return this.computedSize();
+  }
+  get hostHeight() {
+    return this.computedSize();
+  }
+  get hostViewBox() {
+    return this._iconSignal()?.svg?.viewBox;
+  }
+  get hostFill() {
+    return this._iconSignal()?.svg?.fill;
+  }
+  get hostXmlns() {
+    return this._iconSignal()?.svg?.xmlns;
+  }
+  hostAriaHidden = "true";
+  get hostClass() {
+    return this.computedClass();
+  }
+  get hostColor() {
+    return this.color() || null;
+  }
+  get hostIconSize() {
+    return this.size() ? `${this.size()}px` : null;
+  }
+  static ɵfac = function CoreIcon_Factory(__ngFactoryType__) {
+    return new (__ngFactoryType__ || _CoreIcon)();
+  };
+  static ɵdir = ɵɵdefineDirective({
+    type: _CoreIcon,
+    hostVars: 12,
+    hostBindings: function CoreIcon_HostBindings(rf, ctx) {
+      if (rf & 2) {
+        ɵɵattribute("width", ctx.hostWidth)("height", ctx.hostHeight)("viewBox", ctx.hostViewBox)("fill", ctx.hostFill)("xmlns", ctx.hostXmlns)("aria-hidden", ctx.hostAriaHidden);
+        ɵɵclassMap(ctx.hostClass);
+        ɵɵstyleProp("color", ctx.hostColor)("--px-icon-size", ctx.hostIconSize);
+      }
+    },
+    inputs: {
+      size: [1, "size"],
+      color: [1, "color"],
+      styleClass: [1, "styleClass"],
+      spin: [1, "spin"]
+    }
+  });
+};
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(CoreIcon, [{
+    type: Directive
+  }], null, {
+    size: [{
+      type: Input,
+      args: [{
+        isSignal: true,
+        alias: "size",
+        required: false
+      }]
+    }],
+    color: [{
+      type: Input,
+      args: [{
+        isSignal: true,
+        alias: "color",
+        required: false
+      }]
+    }],
+    styleClass: [{
+      type: Input,
+      args: [{
+        isSignal: true,
+        alias: "styleClass",
+        required: false
+      }]
+    }],
+    spin: [{
+      type: Input,
+      args: [{
+        isSignal: true,
+        alias: "spin",
+        required: false
+      }]
+    }],
+    hostWidth: [{
+      type: HostBinding,
+      args: ["attr.width"]
+    }],
+    hostHeight: [{
+      type: HostBinding,
+      args: ["attr.height"]
+    }],
+    hostViewBox: [{
+      type: HostBinding,
+      args: ["attr.viewBox"]
+    }],
+    hostFill: [{
+      type: HostBinding,
+      args: ["attr.fill"]
+    }],
+    hostXmlns: [{
+      type: HostBinding,
+      args: ["attr.xmlns"]
+    }],
+    hostAriaHidden: [{
+      type: HostBinding,
+      args: ["attr.aria-hidden"]
+    }],
+    hostClass: [{
+      type: HostBinding,
+      args: ["class"]
+    }],
+    hostColor: [{
+      type: HostBinding,
+      args: ["style.color"]
+    }],
+    hostIconSize: [{
+      type: HostBinding,
+      args: ["style.--px-icon-size"]
+    }]
+  });
+})();
+
+// node_modules/@primeicons/core/dist/esm/icons/spinner.mjs
+var e = { name: "spinner", meta: { tags: ["spinner", "loading", "process", "wait", "buffering"] }, svg: { xmlns: "http://www.w3.org/2000/svg", width: 20, height: 20, viewBox: "0 0 20 20", fill: "none" }, nodes: [["path", { d: "M1 10C1 5.02579 5.02579 1 10 1C12.3905 1 14.562 1.9393 16.1738 3.45312C16.4756 3.73669 16.4905 4.21178 16.207 4.51367C15.9235 4.81558 15.4484 4.83039 15.1465 4.54688C13.7983 3.2807 11.9895 2.5 10 2.5C5.85421 2.5 2.5 5.85421 2.5 10C2.5 14.1458 5.85421 17.5 10 17.5C14.1458 17.5 17.5 14.1458 17.5 10C17.5 9.58579 17.8358 9.25 18.25 9.25C18.6642 9.25 19 9.58579 19 10C19 14.9742 14.9742 19 10 19C5.02579 19 1 14.9742 1 10Z", fill: "currentColor", key: "p4wko0" }]] };
+
+// node_modules/@primeicons/angular/fesm2022/primeicons-angular-spinner.mjs
+var _forTrack0 = ($index, $item) => $item[1]["key"] || $index;
+function Spinner_For_1_Case_0_Template(rf, ctx) {
+  if (rf & 1) {
+    ɵɵnamespaceSVG();
+    ɵɵdomElement(0, "path");
+  }
+  if (rf & 2) {
+    const node_r1 = ɵɵnextContext().$implicit;
+    ɵɵattribute("d", node_r1[1]["d"])("fill", node_r1[1]["fill"])("fill-opacity", node_r1[1]["fillOpacity"])("fill-rule", node_r1[1]["fillRule"])("clip-rule", node_r1[1]["clipRule"])("stroke", node_r1[1]["stroke"])("stroke-width", node_r1[1]["strokeWidth"])("stroke-opacity", node_r1[1]["strokeOpacity"])("opacity", node_r1[1]["opacity"]);
+  }
+}
+function Spinner_For_1_Case_1_Template(rf, ctx) {
+  if (rf & 1) {
+    ɵɵnamespaceSVG();
+    ɵɵdomElement(0, "circle");
+  }
+  if (rf & 2) {
+    const node_r1 = ɵɵnextContext().$implicit;
+    ɵɵattribute("cx", node_r1[1]["cx"])("cy", node_r1[1]["cy"])("r", node_r1[1]["r"])("fill", node_r1[1]["fill"])("fill-opacity", node_r1[1]["fillOpacity"])("opacity", node_r1[1]["opacity"]);
+  }
+}
+function Spinner_For_1_Case_2_Template(rf, ctx) {
+  if (rf & 1) {
+    ɵɵnamespaceSVG();
+    ɵɵdomElement(0, "rect");
+  }
+  if (rf & 2) {
+    const node_r1 = ɵɵnextContext().$implicit;
+    ɵɵattribute("x", node_r1[1]["x"])("y", node_r1[1]["y"])("width", node_r1[1]["width"])("height", node_r1[1]["height"])("rx", node_r1[1]["rx"])("ry", node_r1[1]["ry"])("fill", node_r1[1]["fill"])("fill-opacity", node_r1[1]["fillOpacity"])("opacity", node_r1[1]["opacity"]);
+  }
+}
+function Spinner_For_1_Case_3_Template(rf, ctx) {
+  if (rf & 1) {
+    ɵɵnamespaceSVG();
+    ɵɵdomElement(0, "line");
+  }
+  if (rf & 2) {
+    const node_r1 = ɵɵnextContext().$implicit;
+    ɵɵattribute("x1", node_r1[1]["x1"])("y1", node_r1[1]["y1"])("x2", node_r1[1]["x2"])("y2", node_r1[1]["y2"])("stroke", node_r1[1]["stroke"])("stroke-opacity", node_r1[1]["strokeOpacity"])("opacity", node_r1[1]["opacity"]);
+  }
+}
+function Spinner_For_1_Case_4_Template(rf, ctx) {
+  if (rf & 1) {
+    ɵɵnamespaceSVG();
+    ɵɵdomElement(0, "polyline");
+  }
+  if (rf & 2) {
+    const node_r1 = ɵɵnextContext().$implicit;
+    ɵɵattribute("points", node_r1[1]["points"])("fill", node_r1[1]["fill"])("fill-opacity", node_r1[1]["fillOpacity"])("opacity", node_r1[1]["opacity"]);
+  }
+}
+function Spinner_For_1_Case_5_Template(rf, ctx) {
+  if (rf & 1) {
+    ɵɵnamespaceSVG();
+    ɵɵdomElement(0, "polygon");
+  }
+  if (rf & 2) {
+    const node_r1 = ɵɵnextContext().$implicit;
+    ɵɵattribute("points", node_r1[1]["points"])("fill", node_r1[1]["fill"])("fill-opacity", node_r1[1]["fillOpacity"])("opacity", node_r1[1]["opacity"]);
+  }
+}
+function Spinner_For_1_Case_6_Template(rf, ctx) {
+  if (rf & 1) {
+    ɵɵnamespaceSVG();
+    ɵɵdomElement(0, "ellipse");
+  }
+  if (rf & 2) {
+    const node_r1 = ɵɵnextContext().$implicit;
+    ɵɵattribute("cx", node_r1[1]["cx"])("cy", node_r1[1]["cy"])("rx", node_r1[1]["rx"])("ry", node_r1[1]["ry"])("fill", node_r1[1]["fill"])("fill-opacity", node_r1[1]["fillOpacity"])("opacity", node_r1[1]["opacity"]);
+  }
+}
+function Spinner_For_1_Template(rf, ctx) {
+  if (rf & 1) {
+    ɵɵconditionalCreate(0, Spinner_For_1_Case_0_Template, 1, 9, ":svg:path")(1, Spinner_For_1_Case_1_Template, 1, 6, ":svg:circle")(2, Spinner_For_1_Case_2_Template, 1, 9, ":svg:rect")(3, Spinner_For_1_Case_3_Template, 1, 7, ":svg:line")(4, Spinner_For_1_Case_4_Template, 1, 4, ":svg:polyline")(5, Spinner_For_1_Case_5_Template, 1, 4, ":svg:polygon")(6, Spinner_For_1_Case_6_Template, 1, 7, ":svg:ellipse");
+  }
+  if (rf & 2) {
+    let tmp_10_0;
+    const node_r1 = ctx.$implicit;
+    ɵɵconditional((tmp_10_0 = node_r1[0]) === "path" ? 0 : tmp_10_0 === "circle" ? 1 : tmp_10_0 === "rect" ? 2 : tmp_10_0 === "line" ? 3 : tmp_10_0 === "polyline" ? 4 : tmp_10_0 === "polygon" ? 5 : tmp_10_0 === "ellipse" ? 6 : -1);
+  }
+}
+var Spinner = class _Spinner extends CoreIcon {
+  constructor() {
+    super();
+    this._icon = e;
+  }
+  static ɵfac = function Spinner_Factory(__ngFactoryType__) {
+    return new (__ngFactoryType__ || _Spinner)();
+  };
+  static ɵcmp = ɵɵdefineComponent({
+    type: _Spinner,
+    selectors: [["svg", "data-p-icon", "spinner"]],
+    features: [ɵɵInheritDefinitionFeature],
+    decls: 2,
+    vars: 0,
+    template: function Spinner_Template(rf, ctx) {
+      if (rf & 1) {
+        ɵɵrepeaterCreate(0, Spinner_For_1_Template, 7, 1, null, null, _forTrack0);
+      }
+      if (rf & 2) {
+        ɵɵrepeater(ctx.iconNodes());
+      }
+    },
+    encapsulation: 2,
+    changeDetection: 1
+  });
+};
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(Spinner, [{
+    type: Component,
+    args: [{
+      selector: 'svg[data-p-icon="spinner"]',
+      standalone: true,
+      template: ICON_TEMPLATE
+    }]
+  }], () => [], null);
+})();
+
+// node_modules/primeng/fesm2022/primeng-dom.mjs
+var DomHandler = class _DomHandler {
+  static zindex = 1e3;
+  static calculatedScrollbarWidth = null;
+  static calculatedScrollbarHeight = null;
+  static browser;
+  static addClass(element, className) {
+    if (element && className) {
+      if (element.classList)
+        element.classList.add(className);
+      else
+        element.className += " " + className;
+    }
+  }
+  static addMultipleClasses(element, className) {
+    if (element && className) {
+      if (element.classList) {
+        let styles = className.trim().split(" ");
+        for (let i = 0; i < styles.length; i++) {
+          element.classList.add(styles[i]);
+        }
+      } else {
+        let styles = className.split(" ");
+        for (let i = 0; i < styles.length; i++) {
+          element.className += " " + styles[i];
+        }
+      }
+    }
+  }
+  static removeClass(element, className) {
+    if (element && className) {
+      if (element.classList)
+        element.classList.remove(className);
+      else
+        element.className = element.className.replace(new RegExp("(^|\\b)" + className.split(" ").join("|") + "(\\b|$)", "gi"), " ");
+    }
+  }
+  static removeMultipleClasses(element, classNames) {
+    if (element && classNames) {
+      [classNames].flat().filter(Boolean).forEach((cNames) => cNames.split(" ").forEach((className) => this.removeClass(element, className)));
+    }
+  }
+  static hasClass(element, className) {
+    if (element && className) {
+      if (element.classList)
+        return element.classList.contains(className);
+      else
+        return new RegExp("(^| )" + className + "( |$)", "gi").test(element.className);
+    }
+    return false;
+  }
+  static siblings(element) {
+    return Array.prototype.filter.call(element.parentNode.children, function(child) {
+      return child !== element;
+    });
+  }
+  static find(element, selector) {
+    return Array.from(element.querySelectorAll(selector));
+  }
+  static findSingle(element, selector) {
+    return this.isElement(element) ? element.querySelector(selector) : null;
+  }
+  static index(element) {
+    let children = element.parentNode.childNodes;
+    let num = 0;
+    for (var i = 0; i < children.length; i++) {
+      if (children[i] == element)
+        return num;
+      if (children[i].nodeType == 1)
+        num++;
+    }
+    return -1;
+  }
+  static indexWithinGroup(element, attributeName) {
+    let children = element.parentNode ? element.parentNode.childNodes : [];
+    let num = 0;
+    for (var i = 0; i < children.length; i++) {
+      if (children[i] == element)
+        return num;
+      if (children[i].attributes && children[i].attributes[attributeName] && children[i].nodeType == 1)
+        num++;
+    }
+    return -1;
+  }
+  static appendOverlay(overlay, target, appendTo = "self") {
+    if (appendTo !== "self" && overlay && target) {
+      this.appendChild(overlay, target);
+    }
+  }
+  static alignOverlay(overlay, target, appendTo = "self", calculateMinWidth = true) {
+    if (overlay && target) {
+      if (calculateMinWidth) {
+        overlay.style.minWidth = `${_DomHandler.getOuterWidth(target)}px`;
+      }
+      if (appendTo === "self") {
+        this.relativePosition(overlay, target);
+      } else {
+        this.absolutePosition(overlay, target);
+      }
+    }
+  }
+  static relativePosition(element, target, gutter = true) {
+    const getClosestRelativeElement = (el) => {
+      if (!el)
+        return;
+      return getComputedStyle(el).getPropertyValue("position") === "relative" ? el : getClosestRelativeElement(el.parentElement);
+    };
+    const elementDimensions = element.offsetParent ? { width: element.offsetWidth, height: element.offsetHeight } : this.getHiddenElementDimensions(element);
+    const targetHeight = target.offsetHeight;
+    const targetOffset = target.getBoundingClientRect();
+    const windowScrollTop = this.getWindowScrollTop();
+    const windowScrollLeft = this.getWindowScrollLeft();
+    const viewport = this.getViewport();
+    const relativeElement = getClosestRelativeElement(element);
+    const relativeElementOffset = relativeElement?.getBoundingClientRect() || {
+      top: -1 * windowScrollTop,
+      left: -1 * windowScrollLeft
+    };
+    let top, left, origin2 = "top";
+    if (targetOffset.top + targetHeight + elementDimensions.height > viewport.height) {
+      top = targetOffset.top - relativeElementOffset.top - elementDimensions.height;
+      origin2 = "bottom";
+      if (targetOffset.top + top < 0) {
+        top = -1 * targetOffset.top;
+      }
+    } else {
+      top = targetHeight + targetOffset.top - relativeElementOffset.top;
+      origin2 = "top";
+    }
+    const horizontalOverflow = targetOffset.left + elementDimensions.width - viewport.width;
+    const targetLeftOffsetInSpaceOfRelativeElement = targetOffset.left - relativeElementOffset.left;
+    if (elementDimensions.width > viewport.width) {
+      left = (targetOffset.left - relativeElementOffset.left) * -1;
+    } else if (horizontalOverflow > 0) {
+      left = targetLeftOffsetInSpaceOfRelativeElement - horizontalOverflow;
+    } else {
+      left = targetOffset.left - relativeElementOffset.left;
+    }
+    element.style.top = top + "px";
+    element.style.left = left + "px";
+    element.style.transformOrigin = origin2;
+    if (gutter) {
+      const gutterValue = E(/-anchor-gutter$/)?.value;
+      element.style.marginTop = origin2 === "bottom" ? `calc(${gutterValue ?? "2px"} * -1)` : gutterValue ?? "";
+    }
+  }
+  static absolutePosition(element, target, gutter = true) {
+    const elementDimensions = element.offsetParent ? { width: element.offsetWidth, height: element.offsetHeight } : this.getHiddenElementDimensions(element);
+    const elementOuterHeight = elementDimensions.height;
+    const elementOuterWidth = elementDimensions.width;
+    const targetOuterHeight = target.offsetHeight;
+    const targetOuterWidth = target.offsetWidth;
+    const targetOffset = target.getBoundingClientRect();
+    const windowScrollTop = this.getWindowScrollTop();
+    const windowScrollLeft = this.getWindowScrollLeft();
+    const viewport = this.getViewport();
+    let top, left;
+    if (targetOffset.top + targetOuterHeight + elementOuterHeight > viewport.height) {
+      top = targetOffset.top + windowScrollTop - elementOuterHeight;
+      element.style.transformOrigin = "bottom";
+      if (top < 0) {
+        top = windowScrollTop;
+      }
+    } else {
+      top = targetOuterHeight + targetOffset.top + windowScrollTop;
+      element.style.transformOrigin = "top";
+    }
+    if (targetOffset.left + elementOuterWidth > viewport.width)
+      left = Math.max(0, targetOffset.left + windowScrollLeft + targetOuterWidth - elementOuterWidth);
+    else
+      left = targetOffset.left + windowScrollLeft;
+    element.style.top = top + "px";
+    element.style.left = left + "px";
+    gutter && (element.style.marginTop = origin === "bottom" ? "calc(var(--p-anchor-gutter) * -1)" : "calc(var(--p-anchor-gutter))");
+  }
+  static getParents(element, parents = []) {
+    return element["parentNode"] === null ? parents : this.getParents(element.parentNode, parents.concat([element.parentNode]));
+  }
+  static getScrollableParents(element) {
+    let scrollableParents = [];
+    if (element) {
+      let parents = this.getParents(element);
+      const overflowRegex = /(auto|scroll)/;
+      const overflowCheck = (node) => {
+        let styleDeclaration = window["getComputedStyle"](node, null);
+        return overflowRegex.test(styleDeclaration.getPropertyValue("overflow")) || overflowRegex.test(styleDeclaration.getPropertyValue("overflowX")) || overflowRegex.test(styleDeclaration.getPropertyValue("overflowY"));
+      };
+      for (let parent of parents) {
+        let scrollSelectors = parent.nodeType === 1 && parent.dataset["scrollselectors"];
+        if (scrollSelectors) {
+          let selectors = scrollSelectors.split(",");
+          for (let selector of selectors) {
+            let el = this.findSingle(parent, selector);
+            if (el && overflowCheck(el)) {
+              scrollableParents.push(el);
+            }
+          }
+        }
+        if (parent.nodeType !== 9 && overflowCheck(parent)) {
+          scrollableParents.push(parent);
+        }
+      }
+    }
+    return scrollableParents;
+  }
+  static getHiddenElementOuterHeight(element) {
+    element.style.visibility = "hidden";
+    element.style.display = "block";
+    let elementHeight = element.offsetHeight;
+    element.style.display = "none";
+    element.style.visibility = "visible";
+    return elementHeight;
+  }
+  static getHiddenElementOuterWidth(element) {
+    element.style.visibility = "hidden";
+    element.style.display = "block";
+    let elementWidth = element.offsetWidth;
+    element.style.display = "none";
+    element.style.visibility = "visible";
+    return elementWidth;
+  }
+  static getHiddenElementDimensions(element) {
+    let dimensions = {};
+    element.style.visibility = "hidden";
+    element.style.display = "block";
+    dimensions.width = element.offsetWidth;
+    dimensions.height = element.offsetHeight;
+    element.style.display = "none";
+    element.style.visibility = "visible";
+    return dimensions;
+  }
+  static scrollInView(container, item) {
+    let borderTopValue = getComputedStyle(container).getPropertyValue("borderTopWidth");
+    let borderTop = borderTopValue ? parseFloat(borderTopValue) : 0;
+    let paddingTopValue = getComputedStyle(container).getPropertyValue("paddingTop");
+    let paddingTop = paddingTopValue ? parseFloat(paddingTopValue) : 0;
+    let containerRect = container.getBoundingClientRect();
+    let itemRect = item.getBoundingClientRect();
+    let offset = itemRect.top + document.body.scrollTop - (containerRect.top + document.body.scrollTop) - borderTop - paddingTop;
+    let scroll = container.scrollTop;
+    let elementHeight = container.clientHeight;
+    let itemHeight = this.getOuterHeight(item);
+    if (offset < 0) {
+      container.scrollTop = scroll + offset;
+    } else if (offset + itemHeight > elementHeight) {
+      container.scrollTop = scroll + offset - elementHeight + itemHeight;
+    }
+  }
+  static fadeIn(element, duration) {
+    element.style.opacity = 0;
+    let last = +/* @__PURE__ */ new Date();
+    let opacity = 0;
+    let tick = function() {
+      opacity = +element.style.opacity.replace(",", ".") + ((/* @__PURE__ */ new Date()).getTime() - last) / duration;
+      element.style.opacity = opacity;
+      last = +/* @__PURE__ */ new Date();
+      if (+opacity < 1) {
+        if (window.requestAnimationFrame)
+          window.requestAnimationFrame(tick);
+        else
+          setTimeout(tick, 16);
+      }
+    };
+    tick();
+  }
+  static fadeOut(element, ms) {
+    var opacity = 1, interval = 50, duration = ms, gap = interval / duration;
+    let fading = setInterval(() => {
+      opacity = opacity - gap;
+      if (opacity <= 0) {
+        opacity = 0;
+        clearInterval(fading);
+      }
+      element.style.opacity = opacity;
+    }, interval);
+  }
+  static getWindowScrollTop() {
+    let doc = document.documentElement;
+    return (window.pageYOffset || doc.scrollTop) - (doc.clientTop || 0);
+  }
+  static getWindowScrollLeft() {
+    let doc = document.documentElement;
+    return (window.pageXOffset || doc.scrollLeft) - (doc.clientLeft || 0);
+  }
+  static matches(element, selector) {
+    var p2 = Element.prototype;
+    var f = p2["matches"] || p2.webkitMatchesSelector || p2["mozMatchesSelector"] || p2["msMatchesSelector"] || function(s) {
+      return [].indexOf.call(document.querySelectorAll(s), this) !== -1;
+    };
+    return f.call(element, selector);
+  }
+  static getOuterWidth(el, margin) {
+    let width = el.offsetWidth;
+    if (margin) {
+      let style6 = getComputedStyle(el);
+      width += parseFloat(style6.marginLeft) + parseFloat(style6.marginRight);
+    }
+    return width;
+  }
+  static getHorizontalPadding(el) {
+    let style6 = getComputedStyle(el);
+    return parseFloat(style6.paddingLeft) + parseFloat(style6.paddingRight);
+  }
+  static getHorizontalMargin(el) {
+    let style6 = getComputedStyle(el);
+    return parseFloat(style6.marginLeft) + parseFloat(style6.marginRight);
+  }
+  static innerWidth(el) {
+    let width = el.offsetWidth;
+    let style6 = getComputedStyle(el);
+    width += parseFloat(style6.paddingLeft) + parseFloat(style6.paddingRight);
+    return width;
+  }
+  static width(el) {
+    let width = el.offsetWidth;
+    let style6 = getComputedStyle(el);
+    width -= parseFloat(style6.paddingLeft) + parseFloat(style6.paddingRight);
+    return width;
+  }
+  static getInnerHeight(el) {
+    let height = el.offsetHeight;
+    let style6 = getComputedStyle(el);
+    height += parseFloat(style6.paddingTop) + parseFloat(style6.paddingBottom);
+    return height;
+  }
+  static getOuterHeight(el, margin) {
+    let height = el.offsetHeight;
+    if (margin) {
+      let style6 = getComputedStyle(el);
+      height += parseFloat(style6.marginTop) + parseFloat(style6.marginBottom);
+    }
+    return height;
+  }
+  static getHeight(el) {
+    let height = el.offsetHeight;
+    let style6 = getComputedStyle(el);
+    height -= parseFloat(style6.paddingTop) + parseFloat(style6.paddingBottom) + parseFloat(style6.borderTopWidth) + parseFloat(style6.borderBottomWidth);
+    return height;
+  }
+  static getWidth(el) {
+    let width = el.offsetWidth;
+    let style6 = getComputedStyle(el);
+    width -= parseFloat(style6.paddingLeft) + parseFloat(style6.paddingRight) + parseFloat(style6.borderLeftWidth) + parseFloat(style6.borderRightWidth);
+    return width;
+  }
+  static getViewport() {
+    let win = window, d = document, e2 = d.documentElement, g = d.getElementsByTagName("body")[0], w = win.innerWidth || e2.clientWidth || g.clientWidth, h = win.innerHeight || e2.clientHeight || g.clientHeight;
+    return { width: w, height: h };
+  }
+  static getOffset(el) {
+    var rect = el.getBoundingClientRect();
+    return {
+      top: rect.top + (window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0),
+      left: rect.left + (window.pageXOffset || document.documentElement.scrollLeft || document.body.scrollLeft || 0)
+    };
+  }
+  static replaceElementWith(element, replacementElement) {
+    let parentNode = element.parentNode;
+    if (!parentNode)
+      throw `Can't replace element`;
+    return parentNode.replaceChild(replacementElement, element);
+  }
+  static getUserAgent() {
+    if (navigator && this.isClient()) {
+      return navigator.userAgent;
+    }
+  }
+  static isIE() {
+    var ua = window.navigator.userAgent;
+    var msie = ua.indexOf("MSIE ");
+    if (msie > 0) {
+      return true;
+    }
+    var trident = ua.indexOf("Trident/");
+    if (trident > 0) {
+      var rv = ua.indexOf("rv:");
+      return true;
+    }
+    var edge = ua.indexOf("Edge/");
+    if (edge > 0) {
+      return true;
+    }
+    return false;
+  }
+  static isIOS() {
+    return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window["MSStream"];
+  }
+  static isAndroid() {
+    return /(android)/i.test(navigator.userAgent);
+  }
+  static isTouchDevice() {
+    return "ontouchstart" in window || navigator.maxTouchPoints > 0;
+  }
+  static appendChild(element, target) {
+    if (this.isElement(target))
+      target.appendChild(element);
+    else if (target && target.el && target.el.nativeElement)
+      target.el.nativeElement.appendChild(element);
+    else
+      throw "Cannot append " + target + " to " + element;
+  }
+  static removeChild(element, target) {
+    if (this.isElement(target))
+      target.removeChild(element);
+    else if (target.el && target.el.nativeElement)
+      target.el.nativeElement.removeChild(element);
+    else
+      throw "Cannot remove " + element + " from " + target;
+  }
+  static removeElement(element) {
+    if (!("remove" in Element.prototype))
+      element.parentNode?.removeChild(element);
+    else
+      element.remove();
+  }
+  static isElement(obj) {
+    return typeof HTMLElement === "object" ? obj instanceof HTMLElement : obj && typeof obj === "object" && obj !== null && obj.nodeType === 1 && typeof obj.nodeName === "string";
+  }
+  static calculateScrollbarWidth(el) {
+    if (el) {
+      let style6 = getComputedStyle(el);
+      return el.offsetWidth - el.clientWidth - parseFloat(style6.borderLeftWidth) - parseFloat(style6.borderRightWidth);
+    } else {
+      if (this.calculatedScrollbarWidth !== null)
+        return this.calculatedScrollbarWidth;
+      let scrollDiv = document.createElement("div");
+      scrollDiv.className = "p-scrollbar-measure";
+      document.body.appendChild(scrollDiv);
+      let scrollbarWidth = scrollDiv.offsetWidth - scrollDiv.clientWidth;
+      document.body.removeChild(scrollDiv);
+      this.calculatedScrollbarWidth = scrollbarWidth;
+      return scrollbarWidth;
+    }
+  }
+  static calculateScrollbarHeight() {
+    if (this.calculatedScrollbarHeight !== null)
+      return this.calculatedScrollbarHeight;
+    let scrollDiv = document.createElement("div");
+    scrollDiv.className = "p-scrollbar-measure";
+    document.body.appendChild(scrollDiv);
+    let scrollbarHeight = scrollDiv.offsetHeight - scrollDiv.clientHeight;
+    document.body.removeChild(scrollDiv);
+    this.calculatedScrollbarWidth = scrollbarHeight;
+    return scrollbarHeight;
+  }
+  static invokeElementMethod(element, methodName, args) {
+    element[methodName].apply(element, args);
+  }
+  static clearSelection() {
+    if (window.getSelection && window.getSelection()) {
+      if (window.getSelection()?.empty) {
+        window.getSelection()?.empty();
+      } else if (window.getSelection()?.removeAllRanges && (window.getSelection()?.rangeCount || 0) > 0 && (window.getSelection()?.getRangeAt(0)?.getClientRects()?.length || 0) > 0) {
+        window.getSelection()?.removeAllRanges();
+      }
+    } else if (document["selection"] && document["selection"].empty) {
+      try {
+        document["selection"].empty();
+      } catch (error) {
+      }
+    }
+  }
+  static getBrowser() {
+    if (!this.browser) {
+      let matched = this.resolveUserAgent();
+      this.browser = {};
+      if (matched.browser) {
+        this.browser[matched.browser] = true;
+        this.browser["version"] = matched.version;
+      }
+      if (this.browser["chrome"]) {
+        this.browser["webkit"] = true;
+      } else if (this.browser["webkit"]) {
+        this.browser["safari"] = true;
+      }
+    }
+    return this.browser;
+  }
+  static resolveUserAgent() {
+    let ua = navigator.userAgent.toLowerCase();
+    let match = /(chrome)[ \/]([\w.]+)/.exec(ua) || /(webkit)[ \/]([\w.]+)/.exec(ua) || /(opera)(?:.*version|)[ \/]([\w.]+)/.exec(ua) || /(msie) ([\w.]+)/.exec(ua) || ua.indexOf("compatible") < 0 && /(mozilla)(?:.*? rv:([\w.]+)|)/.exec(ua) || [];
+    return {
+      browser: match[1] || "",
+      version: match[2] || "0"
+    };
+  }
+  static isInteger(value) {
+    if (Number.isInteger) {
+      return Number.isInteger(value);
+    } else {
+      return typeof value === "number" && isFinite(value) && Math.floor(value) === value;
+    }
+  }
+  static isHidden(element) {
+    return !element || element.offsetParent === null;
+  }
+  static isVisible(element) {
+    return element && element.offsetParent != null;
+  }
+  static isExist(element) {
+    return element !== null && typeof element !== "undefined" && element.nodeName && element.parentNode;
+  }
+  static focus(element, options) {
+    element && document.activeElement !== element && element.focus(options);
+  }
+  static getFocusableSelectorString(selector = "") {
+    return `button:not([tabindex = "-1"]):not([disabled]):not([style*="display:none"]):not([hidden])${selector},
+        [href][clientHeight][clientWidth]:not([tabindex = "-1"]):not([disabled]):not([style*="display:none"]):not([hidden])${selector},
+        input:not([tabindex = "-1"]):not([disabled]):not([style*="display:none"]):not([hidden])${selector},
+        select:not([tabindex = "-1"]):not([disabled]):not([style*="display:none"]):not([hidden])${selector},
+        textarea:not([tabindex = "-1"]):not([disabled]):not([style*="display:none"]):not([hidden])${selector},
+        [tabIndex]:not([tabIndex = "-1"]):not([disabled]):not([style*="display:none"]):not([hidden])${selector},
+        [contenteditable]:not([tabIndex = "-1"]):not([disabled]):not([style*="display:none"]):not([hidden])${selector},
+        .p-inputtext:not([tabindex = "-1"]):not([disabled]):not([style*="display:none"]):not([hidden])${selector},
+        .p-button:not([tabindex = "-1"]):not([disabled]):not([style*="display:none"]):not([hidden])${selector}`;
+  }
+  static getFocusableElements(element, selector = "") {
+    let focusableElements = this.find(element, this.getFocusableSelectorString(selector));
+    let visibleFocusableElements = [];
+    for (let focusableElement of focusableElements) {
+      const computedStyle = getComputedStyle(focusableElement);
+      if (this.isVisible(focusableElement) && computedStyle.display != "none" && computedStyle.visibility != "hidden")
+        visibleFocusableElements.push(focusableElement);
+    }
+    return visibleFocusableElements;
+  }
+  static getFocusableElement(element, selector = "") {
+    let focusableElement = this.findSingle(element, this.getFocusableSelectorString(selector));
+    if (focusableElement) {
+      const computedStyle = getComputedStyle(focusableElement);
+      if (this.isVisible(focusableElement) && computedStyle.display != "none" && computedStyle.visibility != "hidden")
+        return focusableElement;
+    }
+    return null;
+  }
+  static getFirstFocusableElement(element, selector = "") {
+    const focusableElements = this.getFocusableElements(element, selector);
+    return focusableElements.length > 0 ? focusableElements[0] : null;
+  }
+  static getLastFocusableElement(element, selector) {
+    const focusableElements = this.getFocusableElements(element, selector);
+    return focusableElements.length > 0 ? focusableElements[focusableElements.length - 1] : null;
+  }
+  static getNextFocusableElement(element, reverse = false) {
+    const focusableElements = _DomHandler.getFocusableElements(element);
+    let index = 0;
+    if (focusableElements && focusableElements.length > 0) {
+      const focusedIndex = focusableElements.indexOf(focusableElements[0].ownerDocument.activeElement);
+      if (reverse) {
+        if (focusedIndex == -1 || focusedIndex === 0) {
+          index = focusableElements.length - 1;
+        } else {
+          index = focusedIndex - 1;
+        }
+      } else if (focusedIndex != -1 && focusedIndex !== focusableElements.length - 1) {
+        index = focusedIndex + 1;
+      }
+    }
+    return focusableElements[index];
+  }
+  static generateZIndex() {
+    this.zindex = this.zindex || 999;
+    return ++this.zindex;
+  }
+  static getSelection() {
+    if (window.getSelection)
+      return window.getSelection()?.toString();
+    else if (document.getSelection)
+      return document.getSelection()?.toString();
+    else if (document["selection"])
+      return document["selection"].createRange().text;
+    return null;
+  }
+  static getTargetElement(target, el) {
+    if (!target)
+      return null;
+    switch (target) {
+      case "document":
+        return document;
+      case "window":
+        return window;
+      case "@next":
+        return el?.nextElementSibling;
+      case "@prev":
+        return el?.previousElementSibling;
+      case "@parent":
+        return el?.parentElement;
+      case "@grandparent":
+        return el?.parentElement?.parentElement;
+      default:
+        const type = typeof target;
+        if (type === "string") {
+          return document.querySelector(target);
+        } else if (type === "object" && target.hasOwnProperty("nativeElement")) {
+          return this.isExist(target.nativeElement) ? target.nativeElement : void 0;
+        }
+        const isFunction = (obj) => !!(obj && obj.constructor && obj.call && obj.apply);
+        const element = isFunction(target) ? target() : target;
+        return element && element.nodeType === 9 || this.isExist(element) ? element : null;
+    }
+  }
+  static isClient() {
+    return !!(typeof window !== "undefined" && window.document && window.document.createElement);
+  }
+  static getAttribute(element, name) {
+    if (element) {
+      const value = element.getAttribute(name);
+      if (!isNaN(value)) {
+        return +value;
+      }
+      if (value === "true" || value === "false") {
+        return value === "true";
+      }
+      return value;
+    }
+    return void 0;
+  }
+  static calculateBodyScrollbarWidth() {
+    return window.innerWidth - document.documentElement.offsetWidth;
+  }
+  static blockBodyScroll(className = "p-overflow-hidden") {
+    document.body.style.setProperty("--px-scrollbar-width", this.calculateBodyScrollbarWidth() + "px");
+    this.addClass(document.body, className);
+  }
+  static unblockBodyScroll(className = "p-overflow-hidden") {
+    document.body.style.removeProperty("--px-scrollbar-width");
+    this.removeClass(document.body, className);
+  }
+  static createElement(type, attributes = {}, ...children) {
+    if (type) {
+      const element = document.createElement(type);
+      this.setAttributes(element, attributes);
+      element.append(...children);
+      return element;
+    }
+    return void 0;
+  }
+  static setAttribute(element, attribute = "", value) {
+    if (this.isElement(element) && value !== null && value !== void 0) {
+      element.setAttribute(attribute, value);
+    }
+  }
+  static setAttributes(element, attributes = {}) {
+    if (this.isElement(element)) {
+      const computedStyles = (rule, value) => {
+        const styles = element?.$attrs?.[rule] ? [element?.$attrs?.[rule]] : [];
+        return [value].flat().reduce((cv, v) => {
+          if (v !== null && v !== void 0) {
+            const type = typeof v;
+            if (type === "string" || type === "number") {
+              cv.push(v);
+            } else if (type === "object") {
+              const _cv = Array.isArray(v) ? computedStyles(rule, v) : Object.entries(v).map(([_k, _v]) => rule === "style" && (!!_v || _v === 0) ? `${_k.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase()}:${_v}` : !!_v ? _k : void 0);
+              cv = _cv.length ? cv.concat(_cv.filter((c2) => !!c2)) : cv;
+            }
+          }
+          return cv;
+        }, styles);
+      };
+      Object.entries(attributes).forEach(([key, value]) => {
+        if (value !== void 0 && value !== null) {
+          const matchedEvent = key.match(/^on(.+)/);
+          if (matchedEvent) {
+            element.addEventListener(matchedEvent[1].toLowerCase(), value);
+          } else if (key === "pBind") {
+            this.setAttributes(element, value);
+          } else {
+            value = key === "class" ? [...new Set(computedStyles("class", value))].join(" ").trim() : key === "style" ? computedStyles("style", value).join(";").trim() : value;
+            (element.$attrs = element.$attrs || {}) && (element.$attrs[key] = value);
+            element.setAttribute(key, value);
+          }
+        }
+      });
+    }
+  }
+  static isFocusableElement(element, selector = "") {
+    return this.isElement(element) ? element.matches(`button:not([tabindex = "-1"]):not([disabled]):not([style*="display:none"]):not([hidden])${selector},
+                [href][clientHeight][clientWidth]:not([tabindex = "-1"]):not([disabled]):not([style*="display:none"]):not([hidden])${selector},
+                input:not([tabindex = "-1"]):not([disabled]):not([style*="display:none"]):not([hidden])${selector},
+                select:not([tabindex = "-1"]):not([disabled]):not([style*="display:none"]):not([hidden])${selector},
+                textarea:not([tabindex = "-1"]):not([disabled]):not([style*="display:none"]):not([hidden])${selector},
+                [tabIndex]:not([tabIndex = "-1"]):not([disabled]):not([style*="display:none"]):not([hidden])${selector},
+                [contenteditable]:not([tabIndex = "-1"]):not([disabled]):not([style*="display:none"]):not([hidden])${selector}`) : false;
+  }
+};
+
+// node_modules/primeng/fesm2022/primeng-autofocus.mjs
+var AutoFocus = class _AutoFocus extends BaseComponent {
+  /**
+   * When present, it specifies that the component should automatically get focus on load.
+   * @group Props
+   */
+  autofocus = input(false, __spreadProps(__spreadValues({}, ngDevMode ? {
+    debugName: "autofocus"
+  } : (
+    /* istanbul ignore next */
+    {}
+  )), {
+    alias: "pAutoFocus",
+    transform: booleanAttribute
+  }));
+  focused = false;
+  host = inject(ElementRef);
+  onAfterContentChecked() {
+    if (this.autofocus() === false) {
+      this.host.nativeElement.removeAttribute("autofocus");
+    } else {
+      this.host.nativeElement.setAttribute("autofocus", true);
+    }
+    if (!this.focused) {
+      this.autoFocus();
+    }
+  }
+  onAfterViewChecked() {
+    if (!this.focused) {
+      this.autoFocus();
+    }
+  }
+  autoFocus() {
+    if (isPlatformBrowser(this.platformId) && this.autofocus()) {
+      setTimeout(() => {
+        const focusableElements = DomHandler.getFocusableElements(this.host?.nativeElement);
+        if (focusableElements.length === 0) {
+          this.host.nativeElement.focus();
+        }
+        if (focusableElements.length > 0) {
+          focusableElements[0].focus();
+        }
+        this.focused = true;
+      });
+    }
+  }
+  static ɵfac = /* @__PURE__ */ (() => {
+    let ɵAutoFocus_BaseFactory;
+    return function AutoFocus_Factory(__ngFactoryType__) {
+      return (ɵAutoFocus_BaseFactory || (ɵAutoFocus_BaseFactory = ɵɵgetInheritedFactory(_AutoFocus)))(__ngFactoryType__ || _AutoFocus);
+    };
+  })();
+  static ɵdir = ɵɵdefineDirective({
+    type: _AutoFocus,
+    selectors: [["", "pAutoFocus", ""]],
+    inputs: {
+      autofocus: [1, "pAutoFocus", "autofocus"]
+    },
+    features: [ɵɵInheritDefinitionFeature]
+  });
+};
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(AutoFocus, [{
+    type: Directive,
+    args: [{
+      selector: "[pAutoFocus]",
+      standalone: true
+    }]
+  }], null, {
+    autofocus: [{
+      type: Input,
+      args: [{
+        isSignal: true,
+        alias: "pAutoFocus",
+        required: false
+      }]
+    }]
+  });
+})();
+var AutoFocusModule = class _AutoFocusModule {
+  static ɵfac = function AutoFocusModule_Factory(__ngFactoryType__) {
+    return new (__ngFactoryType__ || _AutoFocusModule)();
+  };
+  static ɵmod = ɵɵdefineNgModule({
+    type: _AutoFocusModule,
+    imports: [AutoFocus],
+    exports: [AutoFocus]
+  });
+  static ɵinj = ɵɵdefineInjector({});
+};
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(AutoFocusModule, [{
+    type: NgModule,
+    args: [{
+      imports: [AutoFocus],
+      exports: [AutoFocus]
+    }]
+  }], null, null);
+})();
+
+// node_modules/@primeuix/styles/dist/badge/index.mjs
+var style4 = "\n    .p-badge {\n        display: inline-flex;\n        border-radius: dt('badge.border.radius');\n        align-items: center;\n        justify-content: center;\n        padding: dt('badge.padding');\n        background: dt('badge.primary.background');\n        color: dt('badge.primary.color');\n        font-size: dt('badge.font.size');\n        font-weight: dt('badge.font.weight');\n        min-width: dt('badge.min.width');\n        height: dt('badge.height');\n    }\n\n    .p-badge-dot {\n        width: dt('badge.dot.size');\n        min-width: dt('badge.dot.size');\n        height: dt('badge.dot.size');\n        border-radius: 50%;\n        padding: 0;\n    }\n\n    .p-badge-circle {\n        padding: 0;\n        border-radius: 50%;\n    }\n\n    .p-badge-secondary {\n        background: dt('badge.secondary.background');\n        color: dt('badge.secondary.color');\n    }\n\n    .p-badge-success {\n        background: dt('badge.success.background');\n        color: dt('badge.success.color');\n    }\n\n    .p-badge-info {\n        background: dt('badge.info.background');\n        color: dt('badge.info.color');\n    }\n\n    .p-badge-warn {\n        background: dt('badge.warn.background');\n        color: dt('badge.warn.color');\n    }\n\n    .p-badge-danger {\n        background: dt('badge.danger.background');\n        color: dt('badge.danger.color');\n    }\n\n    .p-badge-contrast {\n        background: dt('badge.contrast.background');\n        color: dt('badge.contrast.color');\n    }\n\n    .p-badge-sm {\n        font-size: dt('badge.sm.font.size');\n        min-width: dt('badge.sm.min.width');\n        height: dt('badge.sm.height');\n    }\n\n    .p-badge-lg {\n        font-size: dt('badge.lg.font.size');\n        min-width: dt('badge.lg.min.width');\n        height: dt('badge.lg.height');\n    }\n\n    .p-badge-xl {\n        font-size: dt('badge.xl.font.size');\n        min-width: dt('badge.xl.min.width');\n        height: dt('badge.xl.height');\n    }\n";
+
+// node_modules/primeng/fesm2022/primeng-badge.mjs
+var style5 = (
+  /*css*/
+  `
+    ${style4}
+`
+);
+var classes2 = {
+  root: ({
+    instance
+  }) => {
+    const value = instance.value();
+    const size = instance.size();
+    const badgeSize = instance.badgeSize();
+    const severity = instance.severity();
+    return ["p-badge p-component", {
+      "p-badge-circle": l(value) && String(value).length === 1,
+      "p-badge-dot": p(value),
+      "p-badge-sm": size === "small" || badgeSize === "small",
+      "p-badge-lg": size === "large" || badgeSize === "large",
+      "p-badge-xl": size === "xlarge" || badgeSize === "xlarge",
+      "p-badge-info": severity === "info",
+      "p-badge-success": severity === "success",
+      "p-badge-warn": severity === "warn",
+      "p-badge-danger": severity === "danger",
+      "p-badge-secondary": severity === "secondary",
+      "p-badge-contrast": severity === "contrast"
+    }];
+  }
+};
+var BadgeStyle = class _BadgeStyle extends BaseStyle {
+  name = "badge";
+  style = style5;
+  classes = classes2;
+  static ɵfac = /* @__PURE__ */ (() => {
+    let ɵBadgeStyle_BaseFactory;
+    return function BadgeStyle_Factory(__ngFactoryType__) {
+      return (ɵBadgeStyle_BaseFactory || (ɵBadgeStyle_BaseFactory = ɵɵgetInheritedFactory(_BadgeStyle)))(__ngFactoryType__ || _BadgeStyle);
+    };
+  })();
+  static ɵprov = ɵɵdefineInjectable({
+    token: _BadgeStyle,
+    factory: _BadgeStyle.ɵfac
+  });
+};
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(BadgeStyle, [{
+    type: Injectable
+  }], null, null);
+})();
+var BadgeClasses;
+(function(BadgeClasses2) {
+  BadgeClasses2["root"] = "p-badge";
+})(BadgeClasses || (BadgeClasses = {}));
+var BADGE_INSTANCE = new InjectionToken("BADGE_INSTANCE");
+var Badge = class _Badge extends BaseComponent {
+  componentName = "Badge";
+  $pcBadge = inject(BADGE_INSTANCE, {
+    optional: true,
+    skipSelf: true
+  }) ?? void 0;
+  bindDirectiveInstance = inject(Bind, {
+    self: true
+  });
+  onAfterViewChecked() {
+    this.bindDirectiveInstance.setAttrs(this.ptms(["host", "root"]));
+  }
+  /**
+   * Size of the badge, valid options are "large" and "xlarge".
+   * @group Props
+   */
+  badgeSize = input(
+    ...ngDevMode ? [void 0, {
+      debugName: "badgeSize"
+    }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  /**
+   * Size of the badge, valid options are "large" and "xlarge".
+   * @group Props
+   */
+  size = input(
+    ...ngDevMode ? [void 0, {
+      debugName: "size"
+    }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  /**
+   * Severity type of the badge.
+   * @group Props
+   */
+  severity = input(
+    ...ngDevMode ? [void 0, {
+      debugName: "severity"
+    }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  /**
+   * Value to display inside the badge.
+   * @group Props
+   */
+  value = input(
+    ...ngDevMode ? [void 0, {
+      debugName: "value"
+    }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  /**
+   * When specified, disables the component.
+   * @group Props
+   */
+  badgeDisabled = input(false, __spreadProps(__spreadValues({}, ngDevMode ? {
+    debugName: "badgeDisabled"
+  } : (
+    /* istanbul ignore next */
+    {}
+  )), {
+    transform: booleanAttribute
+  }));
+  _componentStyle = inject(BadgeStyle);
+  displayStyle = computed(
+    () => this.badgeDisabled() ? "none" : null,
+    ...ngDevMode ? [{
+      debugName: "displayStyle"
+    }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  dataP = computed(
+    () => {
+      const value = this.value();
+      const severity = this.severity();
+      const size = this.size();
+      return this.cn({
+        circle: value != null && String(value).length === 1,
+        empty: value == null,
+        disabled: this.badgeDisabled(),
+        [severity]: severity,
+        [size]: size
+      });
+    },
+    ...ngDevMode ? [{
+      debugName: "dataP"
+    }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  static ɵfac = /* @__PURE__ */ (() => {
+    let ɵBadge_BaseFactory;
+    return function Badge_Factory(__ngFactoryType__) {
+      return (ɵBadge_BaseFactory || (ɵBadge_BaseFactory = ɵɵgetInheritedFactory(_Badge)))(__ngFactoryType__ || _Badge);
+    };
+  })();
+  static ɵcmp = ɵɵdefineComponent({
+    type: _Badge,
+    selectors: [["p-badge"]],
+    hostVars: 5,
+    hostBindings: function Badge_HostBindings(rf, ctx) {
+      if (rf & 2) {
+        ɵɵattribute("data-p", ctx.dataP());
+        ɵɵclassMap(ctx.cx("root"));
+        ɵɵstyleProp("display", ctx.displayStyle());
+      }
+    },
+    inputs: {
+      badgeSize: [1, "badgeSize"],
+      size: [1, "size"],
+      severity: [1, "severity"],
+      value: [1, "value"],
+      badgeDisabled: [1, "badgeDisabled"]
+    },
+    features: [ɵɵProvidersFeature([BadgeStyle, {
+      provide: BADGE_INSTANCE,
+      useExisting: _Badge
+    }, {
+      provide: PARENT_INSTANCE,
+      useExisting: _Badge
+    }]), ɵɵHostDirectivesFeature([Bind]), ɵɵInheritDefinitionFeature],
+    decls: 1,
+    vars: 1,
+    template: function Badge_Template(rf, ctx) {
+      if (rf & 1) {
+        ɵɵtext(0);
+      }
+      if (rf & 2) {
+        ɵɵtextInterpolate(ctx.value());
+      }
+    },
+    dependencies: [SharedModule],
+    encapsulation: 2
+  });
+};
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(Badge, [{
+    type: Component,
+    args: [{
+      selector: "p-badge",
+      template: `{{ value() }}`,
+      standalone: true,
+      imports: [SharedModule],
+      changeDetection: ChangeDetectionStrategy.OnPush,
+      encapsulation: ViewEncapsulation.None,
+      providers: [BadgeStyle, {
+        provide: BADGE_INSTANCE,
+        useExisting: Badge
+      }, {
+        provide: PARENT_INSTANCE,
+        useExisting: Badge
+      }],
+      host: {
+        "[class]": "cx('root')",
+        "[style.display]": "displayStyle()",
+        "[attr.data-p]": "dataP()"
+      },
+      hostDirectives: [Bind]
+    }]
+  }], null, {
+    badgeSize: [{
+      type: Input,
+      args: [{
+        isSignal: true,
+        alias: "badgeSize",
+        required: false
+      }]
+    }],
+    size: [{
+      type: Input,
+      args: [{
+        isSignal: true,
+        alias: "size",
+        required: false
+      }]
+    }],
+    severity: [{
+      type: Input,
+      args: [{
+        isSignal: true,
+        alias: "severity",
+        required: false
+      }]
+    }],
+    value: [{
+      type: Input,
+      args: [{
+        isSignal: true,
+        alias: "value",
+        required: false
+      }]
+    }],
+    badgeDisabled: [{
+      type: Input,
+      args: [{
+        isSignal: true,
+        alias: "badgeDisabled",
+        required: false
+      }]
+    }]
+  });
+})();
+var BadgeModule = class _BadgeModule {
+  static ɵfac = function BadgeModule_Factory(__ngFactoryType__) {
+    return new (__ngFactoryType__ || _BadgeModule)();
+  };
+  static ɵmod = ɵɵdefineNgModule({
+    type: _BadgeModule,
+    imports: [Badge, SharedModule],
+    exports: [Badge, SharedModule]
+  });
+  static ɵinj = ɵɵdefineInjector({
+    imports: [Badge, SharedModule, SharedModule]
+  });
+};
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(BadgeModule, [{
+    type: NgModule,
+    args: [{
+      imports: [Badge, SharedModule],
+      exports: [Badge, SharedModule]
+    }]
+  }], null, null);
+})();
+
+// node_modules/primeng/fesm2022/primeng-button.mjs
+var _c0 = ["content"];
+var _c1 = ["loadingicon"];
+var _c2 = ["icon"];
+var _c3 = ["*"];
+function Button_ng_container_2_Template(rf, ctx) {
+  if (rf & 1) {
+    ɵɵelementContainer(0);
+  }
+}
+function Button_Conditional_3_Conditional_0_Conditional_0_Template(rf, ctx) {
+  if (rf & 1) {
+    ɵɵelement(0, "span", 5);
+  }
+  if (rf & 2) {
+    const ctx_r0 = ɵɵnextContext(3);
+    ɵɵclassMap(ctx_r0.cn(ctx_r0.cx("loadingIcon"), "pi-spin", ctx_r0.$loadingIcon()));
+    ɵɵproperty("pBind", ctx_r0.ptm("loadingIcon"));
+    ɵɵattribute("aria-hidden", true);
+  }
+}
+function Button_Conditional_3_Conditional_0_Conditional_1_Template(rf, ctx) {
+  if (rf & 1) {
+    ɵɵnamespaceSVG();
+    ɵɵelement(0, "svg", 6);
+  }
+  if (rf & 2) {
+    const ctx_r0 = ɵɵnextContext(3);
+    ɵɵclassMap(ctx_r0.cn(ctx_r0.cx("loadingIcon"), ctx_r0.cx("spinnerIcon")));
+    ɵɵproperty("spin", true)("pBind", ctx_r0.ptm("loadingIcon"));
+    ɵɵattribute("aria-hidden", true);
+  }
+}
+function Button_Conditional_3_Conditional_0_Template(rf, ctx) {
+  if (rf & 1) {
+    ɵɵconditionalCreate(0, Button_Conditional_3_Conditional_0_Conditional_0_Template, 1, 4, "span", 2)(1, Button_Conditional_3_Conditional_0_Conditional_1_Template, 1, 5, ":svg:svg", 4);
+  }
+  if (rf & 2) {
+    const ctx_r0 = ɵɵnextContext(2);
+    ɵɵconditional(ctx_r0.$loadingIcon() ? 0 : 1);
+  }
+}
+function Button_Conditional_3_Conditional_1_ng_container_0_Template(rf, ctx) {
+  if (rf & 1) {
+    ɵɵelementContainer(0);
+  }
+}
+function Button_Conditional_3_Conditional_1_Template(rf, ctx) {
+  if (rf & 1) {
+    ɵɵtemplate(0, Button_Conditional_3_Conditional_1_ng_container_0_Template, 1, 0, "ng-container", 7);
+  }
+  if (rf & 2) {
+    const ctx_r0 = ɵɵnextContext(2);
+    ɵɵproperty("ngTemplateOutlet", ctx_r0.loadingIconTemplate())("ngTemplateOutletContext", ctx_r0.getLoadingIconTemplateContext());
+  }
+}
+function Button_Conditional_3_Template(rf, ctx) {
+  if (rf & 1) {
+    ɵɵconditionalCreate(0, Button_Conditional_3_Conditional_0_Template, 2, 1)(1, Button_Conditional_3_Conditional_1_Template, 1, 2, "ng-container");
+  }
+  if (rf & 2) {
+    const ctx_r0 = ɵɵnextContext();
+    ɵɵconditional(!ctx_r0.loadingIconTemplate() ? 0 : 1);
+  }
+}
+function Button_Conditional_4_Conditional_0_Template(rf, ctx) {
+  if (rf & 1) {
+    ɵɵelement(0, "span", 5);
+  }
+  if (rf & 2) {
+    const ctx_r0 = ɵɵnextContext(2);
+    ɵɵclassMap(ctx_r0.cn(ctx_r0.cx("icon"), ctx_r0.$icon()));
+    ɵɵproperty("pBind", ctx_r0.ptm("icon"));
+    ɵɵattribute("data-p", ctx_r0.dataIconP());
+  }
+}
+function Button_Conditional_4_Conditional_1_ng_container_0_Template(rf, ctx) {
+  if (rf & 1) {
+    ɵɵelementContainer(0);
+  }
+}
+function Button_Conditional_4_Conditional_1_Template(rf, ctx) {
+  if (rf & 1) {
+    ɵɵtemplate(0, Button_Conditional_4_Conditional_1_ng_container_0_Template, 1, 0, "ng-container", 7);
+  }
+  if (rf & 2) {
+    const ctx_r0 = ɵɵnextContext(2);
+    ɵɵproperty("ngTemplateOutlet", ctx_r0.iconTemplate())("ngTemplateOutletContext", ctx_r0.getIconTemplateContext());
+  }
+}
+function Button_Conditional_4_Template(rf, ctx) {
+  if (rf & 1) {
+    ɵɵconditionalCreate(0, Button_Conditional_4_Conditional_0_Template, 1, 4, "span", 2);
+    ɵɵconditionalCreate(1, Button_Conditional_4_Conditional_1_Template, 1, 2, "ng-container");
+  }
+  if (rf & 2) {
+    const ctx_r0 = ɵɵnextContext();
+    ɵɵconditional(ctx_r0.$icon() && !ctx_r0.iconTemplate() ? 0 : -1);
+    ɵɵadvance();
+    ɵɵconditional(!ctx_r0.icon() && ctx_r0.iconTemplate() ? 1 : -1);
+  }
+}
+function Button_Conditional_5_Template(rf, ctx) {
+  if (rf & 1) {
+    ɵɵelementStart(0, "span", 5);
+    ɵɵtext(1);
+    ɵɵelementEnd();
+  }
+  if (rf & 2) {
+    const ctx_r0 = ɵɵnextContext();
+    ɵɵclassMap(ctx_r0.cx("label"));
+    ɵɵproperty("pBind", ctx_r0.ptm("label"));
+    ɵɵattribute("aria-hidden", ctx_r0.$icon() && !ctx_r0.$label())("data-p", ctx_r0.dataLabelP());
+    ɵɵadvance();
+    ɵɵtextInterpolate(ctx_r0.$label());
+  }
+}
+function Button_Conditional_6_Template(rf, ctx) {
+  if (rf & 1) {
+    ɵɵelement(0, "p-badge", 3);
+  }
+  if (rf & 2) {
+    const ctx_r0 = ɵɵnextContext();
+    ɵɵproperty("value", ctx_r0.$badge())("severity", ctx_r0.$badgeSeverity())("pt", ctx_r0.ptm("pcBadge"))("unstyled", ctx_r0.unstyled());
+  }
+}
+var classes3 = {
+  root: ({
+    instance
+  }) => {
+    const hasIcon = instance.hasIcon();
+    const label = instance.label();
+    const buttonProps = instance.buttonProps();
+    const loading = instance.loading();
+    const link = instance.link();
+    const severity = instance.severity();
+    const raised = instance.raised();
+    const rounded = instance.rounded();
+    const text = instance.text();
+    const variant = instance.variant();
+    const outlined = instance.outlined();
+    const size = instance.size();
+    const plain = instance.plain();
+    const badge = instance.badge();
+    const hasFluid = instance.hasFluid();
+    const iconPos = instance.iconPos();
+    return ["p-button p-component", {
+      "p-button-icon-only": hasIcon && !label && !buttonProps?.label && !badge,
+      "p-button-vertical": (iconPos === "top" || iconPos === "bottom") && label,
+      "p-button-loading": loading || buttonProps?.loading,
+      "p-button-link": link || buttonProps?.link,
+      [`p-button-${severity || buttonProps?.severity}`]: severity || buttonProps?.severity,
+      "p-button-raised": raised || buttonProps?.raised,
+      "p-button-rounded": rounded || buttonProps?.rounded,
+      "p-button-text": text || variant === "text" || buttonProps?.text || buttonProps?.variant === "text",
+      "p-button-outlined": outlined || variant === "outlined" || buttonProps?.outlined || buttonProps?.variant === "outlined",
+      "p-button-sm": size === "small" || buttonProps?.size === "small",
+      "p-button-lg": size === "large" || buttonProps?.size === "large",
+      "p-button-plain": plain || buttonProps?.plain,
+      "p-button-fluid": hasFluid
+    }];
+  },
+  loadingIcon: "p-button-loading-icon",
+  icon: ({
+    instance
+  }) => {
+    const iconPos = instance.iconPos();
+    const buttonProps = instance.buttonProps();
+    const label = instance.label();
+    const icon = instance.icon();
+    return ["p-button-icon", {
+      [`p-button-icon-${iconPos || buttonProps?.iconPos}`]: label || buttonProps?.label,
+      "p-button-icon-left": (iconPos === "left" || buttonProps?.iconPos === "left") && label || buttonProps?.label,
+      "p-button-icon-right": (iconPos === "right" || buttonProps?.iconPos === "right") && label || buttonProps?.label,
+      "p-button-icon-top": (iconPos === "top" || buttonProps?.iconPos === "top") && label || buttonProps?.label,
+      "p-button-icon-bottom": (iconPos === "bottom" || buttonProps?.iconPos === "bottom") && label || buttonProps?.label
+    }, icon, buttonProps?.icon];
+  },
+  spinnerIcon: ({
+    instance
+  }) => {
+    return Object.entries(instance.cx("icon")).filter(([, value]) => !!value).reduce((acc, [key]) => acc + ` ${key}`, "p-button-loading-icon");
+  },
+  label: "p-button-label"
+};
+var ButtonStyle = class _ButtonStyle extends BaseStyle {
+  name = "button";
+  style = style3;
+  classes = classes3;
+  static ɵfac = /* @__PURE__ */ (() => {
+    let ɵButtonStyle_BaseFactory;
+    return function ButtonStyle_Factory(__ngFactoryType__) {
+      return (ɵButtonStyle_BaseFactory || (ɵButtonStyle_BaseFactory = ɵɵgetInheritedFactory(_ButtonStyle)))(__ngFactoryType__ || _ButtonStyle);
+    };
+  })();
+  static ɵprov = ɵɵdefineInjectable({
+    token: _ButtonStyle,
+    factory: _ButtonStyle.ɵfac
+  });
+};
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(ButtonStyle, [{
+    type: Injectable
+  }], null, null);
+})();
+var ButtonClasses;
+(function(ButtonClasses2) {
+  ButtonClasses2["root"] = "p-button";
+  ButtonClasses2["loadingIcon"] = "p-button-loading-icon";
+  ButtonClasses2["icon"] = "p-button-icon";
+  ButtonClasses2["label"] = "p-button-label";
+})(ButtonClasses || (ButtonClasses = {}));
+var BUTTON_INSTANCE = new InjectionToken("BUTTON_INSTANCE");
+var Button = class _Button extends BaseComponent {
+  componentName = "Button";
+  hostName = input(
+    "",
+    ...ngDevMode ? [{
+      debugName: "hostName"
+    }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  $pcButton = inject(BUTTON_INSTANCE, {
+    optional: true,
+    skipSelf: true
+  }) ?? void 0;
+  bindDirectiveInstance = inject(Bind, {
+    self: true
+  });
+  _componentStyle = inject(ButtonStyle);
+  onAfterViewChecked() {
+    this.bindDirectiveInstance.setAttrs(this.ptm("host"));
+  }
+  /**
+   * Type of the button.
+   * @group Props
+   */
+  type = input(
+    "button",
+    ...ngDevMode ? [{
+      debugName: "type"
+    }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  /**
+   * Value of the badge.
+   * @group Props
+   */
+  badge = input(
+    ...ngDevMode ? [void 0, {
+      debugName: "badge"
+    }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  /**
+   * When present, it specifies that the component should be disabled.
+   * @group Props
+   */
+  disabled = input(false, __spreadProps(__spreadValues({}, ngDevMode ? {
+    debugName: "disabled"
+  } : (
+    /* istanbul ignore next */
+    {}
+  )), {
+    transform: booleanAttribute
+  }));
+  /**
+   * Add a shadow to indicate elevation.
+   * @group Props
+   */
+  raised = input(false, __spreadProps(__spreadValues({}, ngDevMode ? {
+    debugName: "raised"
+  } : (
+    /* istanbul ignore next */
+    {}
+  )), {
+    transform: booleanAttribute
+  }));
+  /**
+   * Add a circular border radius to the button.
+   * @group Props
+   */
+  rounded = input(false, __spreadProps(__spreadValues({}, ngDevMode ? {
+    debugName: "rounded"
+  } : (
+    /* istanbul ignore next */
+    {}
+  )), {
+    transform: booleanAttribute
+  }));
+  /**
+   * Add a textual class to the button without a background initially.
+   * @group Props
+   */
+  text = input(false, __spreadProps(__spreadValues({}, ngDevMode ? {
+    debugName: "text"
+  } : (
+    /* istanbul ignore next */
+    {}
+  )), {
+    transform: booleanAttribute
+  }));
+  /**
+   * Add a plain textual class to the button without a background initially.
+   * @group Props
+   */
+  plain = input(false, __spreadProps(__spreadValues({}, ngDevMode ? {
+    debugName: "plain"
+  } : (
+    /* istanbul ignore next */
+    {}
+  )), {
+    transform: booleanAttribute
+  }));
+  /**
+   * Add a border class without a background initially.
+   * @group Props
+   */
+  outlined = input(false, __spreadProps(__spreadValues({}, ngDevMode ? {
+    debugName: "outlined"
+  } : (
+    /* istanbul ignore next */
+    {}
+  )), {
+    transform: booleanAttribute
+  }));
+  /**
+   * Add a link style to the button.
+   * @group Props
+   */
+  link = input(false, __spreadProps(__spreadValues({}, ngDevMode ? {
+    debugName: "link"
+  } : (
+    /* istanbul ignore next */
+    {}
+  )), {
+    transform: booleanAttribute
+  }));
+  /**
+   * Add a tabindex to the button.
+   * @group Props
+   */
+  tabindex = input(0, __spreadProps(__spreadValues({}, ngDevMode ? {
+    debugName: "tabindex"
+  } : (
+    /* istanbul ignore next */
+    {}
+  )), {
+    transform: numberAttribute
+  }));
+  /**
+   * Defines the size of the button.
+   * @group Props
+   */
+  size = input(
+    ...ngDevMode ? [void 0, {
+      debugName: "size"
+    }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  /**
+   * Specifies the variant of the component.
+   * @group Props
+   */
+  variant = input(
+    ...ngDevMode ? [void 0, {
+      debugName: "variant"
+    }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  /**
+   * Inline style of the element.
+   * @group Props
+   */
+  style = input(
+    ...ngDevMode ? [void 0, {
+      debugName: "style"
+    }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  /**
+   * Class of the element.
+   * @group Props
+   */
+  styleClass = input(
+    ...ngDevMode ? [void 0, {
+      debugName: "styleClass"
+    }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  /**
+   * Severity type of the badge.
+   * @group Props
+   * @defaultValue secondary
+   */
+  badgeSeverity = input(
+    "secondary",
+    ...ngDevMode ? [{
+      debugName: "badgeSeverity"
+    }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  /**
+   * Used to define a string that autocomplete attribute the current element.
+   * @group Props
+   */
+  ariaLabel = input(
+    ...ngDevMode ? [void 0, {
+      debugName: "ariaLabel"
+    }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  /**
+   * When present, it specifies that the component should automatically get focus on load.
+   * @group Props
+   */
+  autofocus = input(false, __spreadProps(__spreadValues({}, ngDevMode ? {
+    debugName: "autofocus"
+  } : (
+    /* istanbul ignore next */
+    {}
+  )), {
+    transform: booleanAttribute
+  }));
+  /**
+   * Position of the icon.
+   * @group Props
+   */
+  iconPos = input(
+    "left",
+    ...ngDevMode ? [{
+      debugName: "iconPos"
+    }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  /**
+   * Name of the icon.
+   * @group Props
+   */
+  icon = input(
+    ...ngDevMode ? [void 0, {
+      debugName: "icon"
+    }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  /**
+   * Text of the button.
+   * @group Props
+   */
+  label = input(
+    ...ngDevMode ? [void 0, {
+      debugName: "label"
+    }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  /**
+   * Whether the button is in loading state.
+   * @group Props
+   */
+  loading = input(false, __spreadProps(__spreadValues({}, ngDevMode ? {
+    debugName: "loading"
+  } : (
+    /* istanbul ignore next */
+    {}
+  )), {
+    transform: booleanAttribute
+  }));
+  /**
+   * Icon to display in loading state.
+   * @group Props
+   */
+  loadingIcon = input(
+    ...ngDevMode ? [void 0, {
+      debugName: "loadingIcon"
+    }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  /**
+   * Defines the style of the button.
+   * @group Props
+   */
+  severity = input(
+    ...ngDevMode ? [void 0, {
+      debugName: "severity"
+    }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  /**
+   * Used to pass all properties of the ButtonProps to the Button component.
+   * @group Props
+   */
+  buttonProps = input(
+    ...ngDevMode ? [void 0, {
+      debugName: "buttonProps"
+    }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  /**
+   * Spans 100% width of the container when enabled.
+   * @defaultValue undefined
+   * @group Props
+   */
+  fluid = input(void 0, __spreadProps(__spreadValues({}, ngDevMode ? {
+    debugName: "fluid"
+  } : (
+    /* istanbul ignore next */
+    {}
+  )), {
+    transform: booleanAttribute
+  }));
+  /**
+   * Forces icon-only styling regardless of content. When unset, icon-only is inferred from the absence of a label/badge.
+   * @group Props
+   */
+  iconOnly = input(false, __spreadProps(__spreadValues({}, ngDevMode ? {
+    debugName: "iconOnly"
+  } : (
+    /* istanbul ignore next */
+    {}
+  )), {
+    transform: booleanAttribute
+  }));
+  /**
+   * Callback to execute when button is clicked.
+   * This event is intended to be used with the <p-button> component. Using a regular <button> element, use (click).
+   * @param {MouseEvent} event - Mouse event.
+   * @group Emits
+   */
+  onClick = output();
+  /**
+   * Callback to execute when button is focused.
+   * This event is intended to be used with the <p-button> component. Using a regular <button> element, use (focus).
+   * @param {FocusEvent} event - Focus event.
+   * @group Emits
+   */
+  onFocus = output();
+  /**
+   * Callback to execute when button loses focus.
+   * This event is intended to be used with the <p-button> component. Using a regular <button> element, use (blur).
+   * @param {FocusEvent} event - Focus event.
+   * @group Emits
+   */
+  onBlur = output();
+  /**
+   * Custom content template.
+   * @group Templates
+   **/
+  contentTemplate = contentChild("content", __spreadProps(__spreadValues({}, ngDevMode ? {
+    debugName: "contentTemplate"
+  } : (
+    /* istanbul ignore next */
+    {}
+  )), {
+    descendants: false
+  }));
+  /**
+   * Custom loading icon template.
+   * @group Templates
+   **/
+  loadingIconTemplate = contentChild("loadingicon", __spreadProps(__spreadValues({}, ngDevMode ? {
+    debugName: "loadingIconTemplate"
+  } : (
+    /* istanbul ignore next */
+    {}
+  )), {
+    descendants: false
+  }));
+  /**
+   * Custom icon template.
+   * @group Templates
+   **/
+  iconTemplate = contentChild("icon", __spreadProps(__spreadValues({}, ngDevMode ? {
+    debugName: "iconTemplate"
+  } : (
+    /* istanbul ignore next */
+    {}
+  )), {
+    descendants: false
+  }));
+  pcFluid = inject(Fluid, {
+    optional: true,
+    host: true,
+    skipSelf: true
+  });
+  hasFluid = computed(
+    () => this.fluid() ?? !!this.pcFluid,
+    ...ngDevMode ? [{
+      debugName: "hasFluid"
+    }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  $type = computed(
+    () => this.type() || this.buttonProps()?.type,
+    ...ngDevMode ? [{
+      debugName: "$type"
+    }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  $ariaLabel = computed(
+    () => this.ariaLabel() || this.buttonProps()?.ariaLabel,
+    ...ngDevMode ? [{
+      debugName: "$ariaLabel"
+    }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  mergedStyle = computed(
+    () => this.style() || this.buttonProps()?.style,
+    ...ngDevMode ? [{
+      debugName: "mergedStyle"
+    }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  $disabled = computed(
+    () => this.disabled() || this.loading() || this.buttonProps()?.disabled,
+    ...ngDevMode ? [{
+      debugName: "$disabled"
+    }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  $severity = computed(
+    () => this.severity() || this.buttonProps()?.severity,
+    ...ngDevMode ? [{
+      debugName: "$severity"
+    }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  $tabindex = computed(
+    () => this.tabindex() || this.buttonProps()?.tabindex,
+    ...ngDevMode ? [{
+      debugName: "$tabindex"
+    }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  $autofocus = computed(
+    () => this.autofocus() || this.buttonProps()?.autofocus,
+    ...ngDevMode ? [{
+      debugName: "$autofocus"
+    }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  $loading = computed(
+    () => this.loading() || this.buttonProps()?.loading,
+    ...ngDevMode ? [{
+      debugName: "$loading"
+    }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  $icon = computed(
+    () => this.icon() || this.buttonProps()?.icon,
+    ...ngDevMode ? [{
+      debugName: "$icon"
+    }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  $label = computed(
+    () => this.label() || this.buttonProps()?.label,
+    ...ngDevMode ? [{
+      debugName: "$label"
+    }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  $badge = computed(
+    () => this.badge() || this.buttonProps()?.badge,
+    ...ngDevMode ? [{
+      debugName: "$badge"
+    }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  $loadingIcon = computed(
+    () => this.loadingIcon() || this.buttonProps()?.loadingIcon,
+    ...ngDevMode ? [{
+      debugName: "$loadingIcon"
+    }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  $badgeSeverity = computed(
+    () => this.badgeSeverity() || this.buttonProps()?.badgeSeverity,
+    ...ngDevMode ? [{
+      debugName: "$badgeSeverity"
+    }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  showLabel = computed(
+    () => !this.contentTemplate() && this.$label(),
+    ...ngDevMode ? [{
+      debugName: "showLabel"
+    }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  showBadge = computed(
+    () => !this.contentTemplate() && this.$badge(),
+    ...ngDevMode ? [{
+      debugName: "showBadge"
+    }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  getLoadingIconTemplateContext() {
+    return {
+      class: this.cx("loadingIcon"),
+      pt: this.ptm("loadingIcon")
+    };
+  }
+  getIconTemplateContext() {
+    return {
+      class: this.cx("icon"),
+      pt: this.ptm("icon")
+    };
+  }
+  hasIcon = computed(
+    () => this.$icon() || this.iconTemplate() || this.loadingIcon() || this.loadingIconTemplate(),
+    ...ngDevMode ? [{
+      debugName: "hasIcon"
+    }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  $outlined = computed(
+    () => this.outlined() || this.variant() === "outlined" || this.buttonProps()?.outlined || this.buttonProps()?.variant === "outlined",
+    ...ngDevMode ? [{
+      debugName: "$outlined"
+    }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  $text = computed(
+    () => this.text() || this.variant() === "text" || this.buttonProps()?.text || this.buttonProps()?.variant === "text",
+    ...ngDevMode ? [{
+      debugName: "$text"
+    }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  $iconOnly = computed(
+    () => this.iconOnly() || this.hasIcon() && !this.$label() && !this.$badge(),
+    ...ngDevMode ? [{
+      debugName: "$iconOnly"
+    }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  dataP = computed(
+    () => this.cn({
+      [this.size()]: this.size(),
+      "icon-only": this.$iconOnly(),
+      loading: this.$loading(),
+      fluid: this.hasFluid(),
+      rounded: this.rounded(),
+      raised: this.raised(),
+      outlined: this.$outlined(),
+      text: this.$text(),
+      link: this.link(),
+      vertical: (this.iconPos() === "top" || this.iconPos() === "bottom") && this.$label()
+    }),
+    ...ngDevMode ? [{
+      debugName: "dataP"
+    }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  dataIconP = computed(
+    () => this.cn({
+      [this.iconPos()]: this.iconPos(),
+      [this.size()]: this.size()
+    }),
+    ...ngDevMode ? [{
+      debugName: "dataIconP"
+    }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  dataLabelP = computed(
+    () => this.cn({
+      [this.size()]: this.size(),
+      "icon-only": this.$iconOnly()
+    }),
+    ...ngDevMode ? [{
+      debugName: "dataLabelP"
+    }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  static ɵfac = /* @__PURE__ */ (() => {
+    let ɵButton_BaseFactory;
+    return function Button_Factory(__ngFactoryType__) {
+      return (ɵButton_BaseFactory || (ɵButton_BaseFactory = ɵɵgetInheritedFactory(_Button)))(__ngFactoryType__ || _Button);
+    };
+  })();
+  static ɵcmp = ɵɵdefineComponent({
+    type: _Button,
+    selectors: [["p-button"]],
+    contentQueries: function Button_ContentQueries(rf, ctx, dirIndex) {
+      if (rf & 1) {
+        ɵɵcontentQuerySignal(dirIndex, ctx.contentTemplate, _c0, 4)(dirIndex, ctx.loadingIconTemplate, _c1, 4)(dirIndex, ctx.iconTemplate, _c2, 4);
+      }
+      if (rf & 2) {
+        ɵɵqueryAdvance(3);
+      }
+    },
+    inputs: {
+      hostName: [1, "hostName"],
+      type: [1, "type"],
+      badge: [1, "badge"],
+      disabled: [1, "disabled"],
+      raised: [1, "raised"],
+      rounded: [1, "rounded"],
+      text: [1, "text"],
+      plain: [1, "plain"],
+      outlined: [1, "outlined"],
+      link: [1, "link"],
+      tabindex: [1, "tabindex"],
+      size: [1, "size"],
+      variant: [1, "variant"],
+      style: [1, "style"],
+      styleClass: [1, "styleClass"],
+      badgeSeverity: [1, "badgeSeverity"],
+      ariaLabel: [1, "ariaLabel"],
+      autofocus: [1, "autofocus"],
+      iconPos: [1, "iconPos"],
+      icon: [1, "icon"],
+      label: [1, "label"],
+      loading: [1, "loading"],
+      loadingIcon: [1, "loadingIcon"],
+      severity: [1, "severity"],
+      buttonProps: [1, "buttonProps"],
+      fluid: [1, "fluid"],
+      iconOnly: [1, "iconOnly"]
+    },
+    outputs: {
+      onClick: "onClick",
+      onFocus: "onFocus",
+      onBlur: "onBlur"
+    },
+    features: [ɵɵProvidersFeature([ButtonStyle, {
+      provide: BUTTON_INSTANCE,
+      useExisting: _Button
+    }, {
+      provide: PARENT_INSTANCE,
+      useExisting: _Button
+    }]), ɵɵHostDirectivesFeature([Bind]), ɵɵInheritDefinitionFeature],
+    ngContentSelectors: _c3,
+    decls: 7,
+    vars: 18,
+    consts: [["pRipple", "", 3, "click", "focus", "blur", "disabled", "pAutoFocus", "pBind"], [4, "ngTemplateOutlet"], [3, "class", "pBind"], [3, "value", "severity", "pt", "unstyled"], ["data-p-icon", "spinner", 3, "class", "spin", "pBind"], [3, "pBind"], ["data-p-icon", "spinner", 3, "spin", "pBind"], [4, "ngTemplateOutlet", "ngTemplateOutletContext"]],
+    template: function Button_Template(rf, ctx) {
+      if (rf & 1) {
+        ɵɵprojectionDef();
+        ɵɵelementStart(0, "button", 0);
+        ɵɵlistener("click", function Button_Template_button_click_0_listener($event) {
+          return ctx.onClick.emit($event);
+        })("focus", function Button_Template_button_focus_0_listener($event) {
+          return ctx.onFocus.emit($event);
+        })("blur", function Button_Template_button_blur_0_listener($event) {
+          return ctx.onBlur.emit($event);
+        });
+        ɵɵprojection(1);
+        ɵɵtemplate(2, Button_ng_container_2_Template, 1, 0, "ng-container", 1);
+        ɵɵconditionalCreate(3, Button_Conditional_3_Template, 2, 1);
+        ɵɵconditionalCreate(4, Button_Conditional_4_Template, 2, 2);
+        ɵɵconditionalCreate(5, Button_Conditional_5_Template, 2, 6, "span", 2);
+        ɵɵconditionalCreate(6, Button_Conditional_6_Template, 1, 4, "p-badge", 3);
+        ɵɵelementEnd();
+      }
+      if (rf & 2) {
+        ɵɵstyleMap(ctx.mergedStyle());
+        ɵɵclassMap(ctx.cn(ctx.cx("root"), ctx.styleClass(), ctx.buttonProps()?.styleClass));
+        ɵɵproperty("disabled", ctx.$disabled())("pAutoFocus", ctx.$autofocus())("pBind", ctx.ptm("root"));
+        ɵɵattribute("type", ctx.$type())("aria-label", ctx.$ariaLabel())("tabindex", ctx.$tabindex())("data-p", ctx.dataP())("data-p-disabled", ctx.$disabled())("data-p-severity", ctx.$severity());
+        ɵɵadvance(2);
+        ɵɵproperty("ngTemplateOutlet", ctx.contentTemplate());
+        ɵɵadvance();
+        ɵɵconditional(ctx.$loading() ? 3 : -1);
+        ɵɵadvance();
+        ɵɵconditional(!ctx.$loading() ? 4 : -1);
+        ɵɵadvance();
+        ɵɵconditional(ctx.showLabel() ? 5 : -1);
+        ɵɵadvance();
+        ɵɵconditional(ctx.showBadge() ? 6 : -1);
+      }
+    },
+    dependencies: [NgTemplateOutlet, Ripple, AutoFocus, Spinner, BadgeModule, Badge, Bind],
+    encapsulation: 2
+  });
+};
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(Button, [{
+    type: Component,
+    args: [{
+      selector: "p-button",
+      standalone: true,
+      imports: [NgTemplateOutlet, Ripple, AutoFocus, Spinner, BadgeModule, Bind],
+      template: `
+        <button
+            [attr.type]="$type()"
+            [attr.aria-label]="$ariaLabel()"
+            [style]="mergedStyle()"
+            [disabled]="$disabled()"
+            [class]="cn(cx('root'), styleClass(), buttonProps()?.styleClass)"
+            (click)="onClick.emit($event)"
+            (focus)="onFocus.emit($event)"
+            (blur)="onBlur.emit($event)"
+            pRipple
+            [attr.tabindex]="$tabindex()"
+            [pAutoFocus]="$autofocus()"
+            [pBind]="ptm('root')"
+            [attr.data-p]="dataP()"
+            [attr.data-p-disabled]="$disabled()"
+            [attr.data-p-severity]="$severity()"
+        >
+            <ng-content />
+            <ng-container *ngTemplateOutlet="contentTemplate()" />
+            @if ($loading()) {
+                @if (!loadingIconTemplate()) {
+                    @if ($loadingIcon()) {
+                        <span [class]="cn(cx('loadingIcon'), 'pi-spin', $loadingIcon())" [pBind]="ptm('loadingIcon')" [attr.aria-hidden]="true"></span>
+                    } @else {
+                        <svg data-p-icon="spinner" [class]="cn(cx('loadingIcon'), cx('spinnerIcon'))" [spin]="true" [pBind]="ptm('loadingIcon')" [attr.aria-hidden]="true" />
+                    }
+                } @else {
+                    <ng-container *ngTemplateOutlet="loadingIconTemplate(); context: getLoadingIconTemplateContext()" />
+                }
+            }
+            @if (!$loading()) {
+                @if ($icon() && !iconTemplate()) {
+                    <span [class]="cn(cx('icon'), $icon())" [pBind]="ptm('icon')" [attr.data-p]="dataIconP()"></span>
+                }
+                @if (!icon() && iconTemplate()) {
+                    <ng-container *ngTemplateOutlet="iconTemplate(); context: getIconTemplateContext()" />
+                }
+            }
+            @if (showLabel()) {
+                <span [class]="cx('label')" [attr.aria-hidden]="$icon() && !$label()" [pBind]="ptm('label')" [attr.data-p]="dataLabelP()">{{ $label() }}</span>
+            }
+            @if (showBadge()) {
+                <p-badge [value]="$badge()" [severity]="$badgeSeverity()" [pt]="ptm('pcBadge')" [unstyled]="unstyled()" />
+            }
+        </button>
+    `,
+      changeDetection: ChangeDetectionStrategy.OnPush,
+      encapsulation: ViewEncapsulation.None,
+      providers: [ButtonStyle, {
+        provide: BUTTON_INSTANCE,
+        useExisting: Button
+      }, {
+        provide: PARENT_INSTANCE,
+        useExisting: Button
+      }],
+      hostDirectives: [Bind]
+    }]
+  }], null, {
+    hostName: [{
+      type: Input,
+      args: [{
+        isSignal: true,
+        alias: "hostName",
+        required: false
+      }]
+    }],
+    type: [{
+      type: Input,
+      args: [{
+        isSignal: true,
+        alias: "type",
+        required: false
+      }]
+    }],
+    badge: [{
+      type: Input,
+      args: [{
+        isSignal: true,
+        alias: "badge",
+        required: false
+      }]
+    }],
+    disabled: [{
+      type: Input,
+      args: [{
+        isSignal: true,
+        alias: "disabled",
+        required: false
+      }]
+    }],
+    raised: [{
+      type: Input,
+      args: [{
+        isSignal: true,
+        alias: "raised",
+        required: false
+      }]
+    }],
+    rounded: [{
+      type: Input,
+      args: [{
+        isSignal: true,
+        alias: "rounded",
+        required: false
+      }]
+    }],
+    text: [{
+      type: Input,
+      args: [{
+        isSignal: true,
+        alias: "text",
+        required: false
+      }]
+    }],
+    plain: [{
+      type: Input,
+      args: [{
+        isSignal: true,
+        alias: "plain",
+        required: false
+      }]
+    }],
+    outlined: [{
+      type: Input,
+      args: [{
+        isSignal: true,
+        alias: "outlined",
+        required: false
+      }]
+    }],
+    link: [{
+      type: Input,
+      args: [{
+        isSignal: true,
+        alias: "link",
+        required: false
+      }]
+    }],
+    tabindex: [{
+      type: Input,
+      args: [{
+        isSignal: true,
+        alias: "tabindex",
+        required: false
+      }]
+    }],
+    size: [{
+      type: Input,
+      args: [{
+        isSignal: true,
+        alias: "size",
+        required: false
+      }]
+    }],
+    variant: [{
+      type: Input,
+      args: [{
+        isSignal: true,
+        alias: "variant",
+        required: false
+      }]
+    }],
+    style: [{
+      type: Input,
+      args: [{
+        isSignal: true,
+        alias: "style",
+        required: false
+      }]
+    }],
+    styleClass: [{
+      type: Input,
+      args: [{
+        isSignal: true,
+        alias: "styleClass",
+        required: false
+      }]
+    }],
+    badgeSeverity: [{
+      type: Input,
+      args: [{
+        isSignal: true,
+        alias: "badgeSeverity",
+        required: false
+      }]
+    }],
+    ariaLabel: [{
+      type: Input,
+      args: [{
+        isSignal: true,
+        alias: "ariaLabel",
+        required: false
+      }]
+    }],
+    autofocus: [{
+      type: Input,
+      args: [{
+        isSignal: true,
+        alias: "autofocus",
+        required: false
+      }]
+    }],
+    iconPos: [{
+      type: Input,
+      args: [{
+        isSignal: true,
+        alias: "iconPos",
+        required: false
+      }]
+    }],
+    icon: [{
+      type: Input,
+      args: [{
+        isSignal: true,
+        alias: "icon",
+        required: false
+      }]
+    }],
+    label: [{
+      type: Input,
+      args: [{
+        isSignal: true,
+        alias: "label",
+        required: false
+      }]
+    }],
+    loading: [{
+      type: Input,
+      args: [{
+        isSignal: true,
+        alias: "loading",
+        required: false
+      }]
+    }],
+    loadingIcon: [{
+      type: Input,
+      args: [{
+        isSignal: true,
+        alias: "loadingIcon",
+        required: false
+      }]
+    }],
+    severity: [{
+      type: Input,
+      args: [{
+        isSignal: true,
+        alias: "severity",
+        required: false
+      }]
+    }],
+    buttonProps: [{
+      type: Input,
+      args: [{
+        isSignal: true,
+        alias: "buttonProps",
+        required: false
+      }]
+    }],
+    fluid: [{
+      type: Input,
+      args: [{
+        isSignal: true,
+        alias: "fluid",
+        required: false
+      }]
+    }],
+    iconOnly: [{
+      type: Input,
+      args: [{
+        isSignal: true,
+        alias: "iconOnly",
+        required: false
+      }]
+    }],
+    onClick: [{
+      type: Output,
+      args: ["onClick"]
+    }],
+    onFocus: [{
+      type: Output,
+      args: ["onFocus"]
+    }],
+    onBlur: [{
+      type: Output,
+      args: ["onBlur"]
+    }],
+    contentTemplate: [{
+      type: ContentChild,
+      args: ["content", __spreadProps(__spreadValues({}, {
+        descendants: false
+      }), {
+        isSignal: true
+      })]
+    }],
+    loadingIconTemplate: [{
+      type: ContentChild,
+      args: ["loadingicon", __spreadProps(__spreadValues({}, {
+        descendants: false
+      }), {
+        isSignal: true
+      })]
+    }],
+    iconTemplate: [{
+      type: ContentChild,
+      args: ["icon", __spreadProps(__spreadValues({}, {
+        descendants: false
+      }), {
+        isSignal: true
+      })]
+    }]
+  });
+})();
+var BUTTON_ICON_INSTANCE = new InjectionToken("BUTTON_ICON_INSTANCE");
+var ButtonIcon = class _ButtonIcon extends BaseComponent {
+  componentName = "ButtonIcon";
+  /**
+   * Used to pass attributes to DOM elements inside the pButtonIcon.
+   * @defaultValue undefined
+   * @group Props
+   */
+  pButtonIconPT = input(
+    ...ngDevMode ? [void 0, {
+      debugName: "pButtonIconPT"
+    }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  /**
+   * Indicates whether the component should be rendered without styles.
+   * @defaultValue undefined
+   * @group Props
+   */
+  pButtonUnstyled = input(
+    ...ngDevMode ? [void 0, {
+      debugName: "pButtonUnstyled"
+    }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  $pcButtonIcon = inject(BUTTON_ICON_INSTANCE, {
+    optional: true,
+    skipSelf: true
+  }) ?? void 0;
+  bindDirectiveInstance = inject(Bind, {
+    self: true
+  });
+  constructor() {
+    super();
+    effect(() => {
+      const pt = this.pButtonIconPT();
+      pt && this.directivePT.set(pt);
+    });
+    effect(() => {
+      this.pButtonUnstyled() && this.directiveUnstyled.set(this.pButtonUnstyled());
+    });
+  }
+  onAfterViewChecked() {
+    this.bindDirectiveInstance.setAttrs(this.ptms(["host", "root"]));
+  }
+  static ɵfac = function ButtonIcon_Factory(__ngFactoryType__) {
+    return new (__ngFactoryType__ || _ButtonIcon)();
+  };
+  static ɵdir = ɵɵdefineDirective({
+    type: _ButtonIcon,
+    selectors: [["", "pButtonIcon", ""]],
+    hostVars: 2,
+    hostBindings: function ButtonIcon_HostBindings(rf, ctx) {
+      if (rf & 2) {
+        ɵɵclassProp("p-button-icon", !ctx.$unstyled() && true);
+      }
+    },
+    inputs: {
+      pButtonIconPT: [1, "pButtonIconPT"],
+      pButtonUnstyled: [1, "pButtonUnstyled"]
+    },
+    features: [ɵɵProvidersFeature([ButtonStyle, {
+      provide: BUTTON_ICON_INSTANCE,
+      useExisting: _ButtonIcon
+    }, {
+      provide: PARENT_INSTANCE,
+      useExisting: _ButtonIcon
+    }]), ɵɵHostDirectivesFeature([Bind]), ɵɵInheritDefinitionFeature]
+  });
+};
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(ButtonIcon, [{
+    type: Directive,
+    args: [{
+      selector: "[pButtonIcon]",
+      providers: [ButtonStyle, {
+        provide: BUTTON_ICON_INSTANCE,
+        useExisting: ButtonIcon
+      }, {
+        provide: PARENT_INSTANCE,
+        useExisting: ButtonIcon
+      }],
+      standalone: true,
+      host: {
+        "[class.p-button-icon]": "!$unstyled() && true"
+      },
+      hostDirectives: [Bind]
+    }]
+  }], () => [], {
+    pButtonIconPT: [{
+      type: Input,
+      args: [{
+        isSignal: true,
+        alias: "pButtonIconPT",
+        required: false
+      }]
+    }],
+    pButtonUnstyled: [{
+      type: Input,
+      args: [{
+        isSignal: true,
+        alias: "pButtonUnstyled",
+        required: false
+      }]
+    }]
+  });
+})();
+var BUTTON_LABEL_INSTANCE = new InjectionToken("BUTTON_LABEL_INSTANCE");
+var ButtonLabel = class _ButtonLabel extends BaseComponent {
+  componentName = "ButtonLabel";
+  /**
+   * Used to pass attributes to DOM elements inside the pButtonLabel.
+   * @defaultValue undefined
+   * @group Props
+   */
+  pButtonLabelPT = input(
+    ...ngDevMode ? [void 0, {
+      debugName: "pButtonLabelPT"
+    }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  /**
+   * Indicates whether the component should be rendered without styles.
+   * @defaultValue undefined
+   * @group Props
+   */
+  pButtonLabelUnstyled = input(
+    ...ngDevMode ? [void 0, {
+      debugName: "pButtonLabelUnstyled"
+    }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  $pcButtonLabel = inject(BUTTON_LABEL_INSTANCE, {
+    optional: true,
+    skipSelf: true
+  }) ?? void 0;
+  bindDirectiveInstance = inject(Bind, {
+    self: true
+  });
+  constructor() {
+    super();
+    effect(() => {
+      const pt = this.pButtonLabelPT();
+      pt && this.directivePT.set(pt);
+    });
+    effect(() => {
+      this.pButtonLabelUnstyled() && this.directiveUnstyled.set(this.pButtonLabelUnstyled());
+    });
+  }
+  onAfterViewChecked() {
+    this.bindDirectiveInstance.setAttrs(this.ptms(["host", "root"]));
+  }
+  static ɵfac = function ButtonLabel_Factory(__ngFactoryType__) {
+    return new (__ngFactoryType__ || _ButtonLabel)();
+  };
+  static ɵdir = ɵɵdefineDirective({
+    type: _ButtonLabel,
+    selectors: [["", "pButtonLabel", ""]],
+    hostVars: 2,
+    hostBindings: function ButtonLabel_HostBindings(rf, ctx) {
+      if (rf & 2) {
+        ɵɵclassProp("p-button-label", !ctx.$unstyled() && true);
+      }
+    },
+    inputs: {
+      pButtonLabelPT: [1, "pButtonLabelPT"],
+      pButtonLabelUnstyled: [1, "pButtonLabelUnstyled"]
+    },
+    features: [ɵɵProvidersFeature([ButtonStyle, {
+      provide: BUTTON_LABEL_INSTANCE,
+      useExisting: _ButtonLabel
+    }, {
+      provide: PARENT_INSTANCE,
+      useExisting: _ButtonLabel
+    }]), ɵɵHostDirectivesFeature([Bind]), ɵɵInheritDefinitionFeature]
+  });
+};
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(ButtonLabel, [{
+    type: Directive,
+    args: [{
+      selector: "[pButtonLabel]",
+      providers: [ButtonStyle, {
+        provide: BUTTON_LABEL_INSTANCE,
+        useExisting: ButtonLabel
+      }, {
+        provide: PARENT_INSTANCE,
+        useExisting: ButtonLabel
+      }],
+      standalone: true,
+      host: {
+        "[class.p-button-label]": "!$unstyled() && true"
+      },
+      hostDirectives: [Bind]
+    }]
+  }], () => [], {
+    pButtonLabelPT: [{
+      type: Input,
+      args: [{
+        isSignal: true,
+        alias: "pButtonLabelPT",
+        required: false
+      }]
+    }],
+    pButtonLabelUnstyled: [{
+      type: Input,
+      args: [{
+        isSignal: true,
+        alias: "pButtonLabelUnstyled",
+        required: false
+      }]
+    }]
+  });
+})();
+var BUTTON_DIRECTIVE_INSTANCE = new InjectionToken("BUTTON_DIRECTIVE_INSTANCE");
+var ButtonDirective = class _ButtonDirective extends BaseComponent {
+  componentName = "Button";
+  /**
+   * Bound configuration object. Fields win over the individual styling inputs
+   * (`text`, `raised`, `severity`, …); unset fields fall back to those inputs.
+   * @group Props
+   */
+  pButton = input(void 0, __spreadProps(__spreadValues({}, ngDevMode ? {
+    debugName: "pButton"
+  } : (
+    /* istanbul ignore next */
+    {}
+  )), {
+    alias: "pButton"
+  }));
+  /**
+   * Used to pass attributes to DOM elements inside the Button component.
+   * @group Props
+   */
+  pButtonPT = input(
+    ...ngDevMode ? [void 0, {
+      debugName: "pButtonPT"
+    }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  /**
+   * Indicates whether the component should be rendered without styles.
+   * @group Props
+   */
+  pButtonUnstyled = input(
+    ...ngDevMode ? [void 0, {
+      debugName: "pButtonUnstyled"
+    }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  /**
+   * @group Props
+   */
+  hostName = input(
+    "",
+    ...ngDevMode ? [{
+      debugName: "hostName"
+    }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  /**
+   * Add a textual class to the button without a background initially.
+   * @group Props
+   */
+  text = input(false, __spreadProps(__spreadValues({}, ngDevMode ? {
+    debugName: "text"
+  } : (
+    /* istanbul ignore next */
+    {}
+  )), {
+    transform: booleanAttribute
+  }));
+  /**
+   * Add a plain textual class to the button without a background initially.
+   * @group Props
+   */
+  plain = input(false, __spreadProps(__spreadValues({}, ngDevMode ? {
+    debugName: "plain"
+  } : (
+    /* istanbul ignore next */
+    {}
+  )), {
+    transform: booleanAttribute
+  }));
+  /**
+   * Add a shadow to indicate elevation.
+   * @group Props
+   */
+  raised = input(false, __spreadProps(__spreadValues({}, ngDevMode ? {
+    debugName: "raised"
+  } : (
+    /* istanbul ignore next */
+    {}
+  )), {
+    transform: booleanAttribute
+  }));
+  /**
+   * Defines the size of the button.
+   * @group Props
+   */
+  size = input(
+    ...ngDevMode ? [void 0, {
+      debugName: "size"
+    }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  /**
+   * Add a border class without a background initially.
+   * @group Props
+   */
+  outlined = input(false, __spreadProps(__spreadValues({}, ngDevMode ? {
+    debugName: "outlined"
+  } : (
+    /* istanbul ignore next */
+    {}
+  )), {
+    transform: booleanAttribute
+  }));
+  /**
+   * Renders the button as a textual link without background or border.
+   * @group Props
+   */
+  link = input(false, __spreadProps(__spreadValues({}, ngDevMode ? {
+    debugName: "link"
+  } : (
+    /* istanbul ignore next */
+    {}
+  )), {
+    transform: booleanAttribute
+  }));
+  /**
+   * Add a circular border radius to the button.
+   * @group Props
+   */
+  rounded = input(false, __spreadProps(__spreadValues({}, ngDevMode ? {
+    debugName: "rounded"
+  } : (
+    /* istanbul ignore next */
+    {}
+  )), {
+    transform: booleanAttribute
+  }));
+  /**
+   * Spans 100% width of the container when enabled.
+   * @group Props
+   */
+  fluid = input(void 0, __spreadProps(__spreadValues({}, ngDevMode ? {
+    debugName: "fluid"
+  } : (
+    /* istanbul ignore next */
+    {}
+  )), {
+    transform: booleanAttribute
+  }));
+  /**
+   * Visual variant of the button. Equivalent to setting `text` or `outlined` individually.
+   * @group Props
+   */
+  variant = input(
+    ...ngDevMode ? [void 0, {
+      debugName: "variant"
+    }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  /**
+   * Forces icon-only styling regardless of content. Works with any direct icon child
+   * (`<svg>`, `<i>`, custom).
+   * @group Props
+   */
+  iconOnly = input(false, __spreadProps(__spreadValues({}, ngDevMode ? {
+    debugName: "iconOnly"
+  } : (
+    /* istanbul ignore next */
+    {}
+  )), {
+    transform: booleanAttribute
+  }));
+  /**
+   * Whether the button is in loading state.
+   * @deprecated Manage loading state with native `disabled` and a child spinner; this input will be removed in a future release.
+   * @group Props
+   */
+  loading = input(false, __spreadProps(__spreadValues({}, ngDevMode ? {
+    debugName: "loading"
+  } : (
+    /* istanbul ignore next */
+    {}
+  )), {
+    transform: booleanAttribute
+  }));
+  /**
+   * Defines the style of the button.
+   * @group Props
+   */
+  severity = input(
+    ...ngDevMode ? [void 0, {
+      debugName: "severity"
+    }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  $pcButtonDirective = inject(BUTTON_DIRECTIVE_INSTANCE, {
+    optional: true,
+    skipSelf: true
+  }) ?? void 0;
+  bindDirectiveInstance = inject(Bind, {
+    self: true
+  });
+  pcFluid = inject(Fluid, {
+    optional: true,
+    host: true,
+    skipSelf: true
+  });
+  _componentStyle = inject(ButtonStyle);
+  iconSignal = contentChild(ButtonIcon, __spreadProps(__spreadValues({}, ngDevMode ? {
+    debugName: "iconSignal"
+  } : (
+    /* istanbul ignore next */
+    {}
+  )), {
+    descendants: false
+  }));
+  labelSignal = contentChild(ButtonLabel, __spreadProps(__spreadValues({}, ngDevMode ? {
+    debugName: "labelSignal"
+  } : (
+    /* istanbul ignore next */
+    {}
+  )), {
+    descendants: false
+  }));
+  /** @deprecated Use the `iconOnly` input instead. */
+  isIconOnly = computed(
+    () => !!(!this.labelSignal() && this.iconSignal()),
+    ...ngDevMode ? [{
+      debugName: "isIconOnly"
+    }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  styleClass = computed(
+    () => {
+      if (this.$unstyled()) return "";
+      const v = this.pButton();
+      const o = typeof v === "object" && v !== null ? v : {};
+      const stringSeverity = typeof v === "string" && v !== "" ? v : void 0;
+      const severity = o.severity ?? stringSeverity ?? this.severity();
+      const size = o.size ?? this.size();
+      const variant = o.variant ?? this.variant();
+      const base = this.cn("p-button", "p-component", {
+        "p-button-icon-only": this.iconOnly() || o.iconOnly || this.isIconOnly(),
+        "p-button-loading": this.loading(),
+        "p-disabled": this.loading(),
+        "p-button-text": this.text() || variant === "text" || o.text,
+        "p-button-outlined": this.outlined() || variant === "outlined" || o.outlined,
+        "p-button-link": this.link() || variant === "link" || o.link,
+        "p-button-plain": this.plain() || o.plain,
+        "p-button-raised": this.raised() || o.raised,
+        "p-button-rounded": this.rounded() || o.rounded,
+        "p-button-sm": size === "small",
+        "p-button-lg": size === "large",
+        "p-button-fluid": this.fluid() ?? o.fluid ?? !!this.pcFluid,
+        [`p-button-${severity}`]: !!severity
+      });
+      return o.styleClass ? `${base} ${o.styleClass}` : base;
+    },
+    ...ngDevMode ? [{
+      debugName: "styleClass"
+    }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  hostStyle = computed(
+    () => {
+      const v = this.pButton();
+      const o = typeof v === "object" && v !== null ? v : {};
+      return o.style ?? null;
+    },
+    ...ngDevMode ? [{
+      debugName: "hostStyle"
+    }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  constructor() {
+    super();
+    effect(() => {
+      const pt = this.pButtonPT();
+      if (pt) this.directivePT.set(pt);
+    });
+    effect(() => {
+      const unstyled = this.pButtonUnstyled();
+      if (unstyled !== void 0) this.directiveUnstyled.set(unstyled);
+    });
+  }
+  onAfterViewChecked() {
+    this.bindDirectiveInstance.setAttrs(this.ptm("root"));
+  }
+  static ɵfac = function ButtonDirective_Factory(__ngFactoryType__) {
+    return new (__ngFactoryType__ || _ButtonDirective)();
+  };
+  static ɵdir = ɵɵdefineDirective({
+    type: _ButtonDirective,
+    selectors: [["", "pButton", ""]],
+    contentQueries: function ButtonDirective_ContentQueries(rf, ctx, dirIndex) {
+      if (rf & 1) {
+        ɵɵcontentQuerySignal(dirIndex, ctx.iconSignal, ButtonIcon, 4)(dirIndex, ctx.labelSignal, ButtonLabel, 4);
+      }
+      if (rf & 2) {
+        ɵɵqueryAdvance(2);
+      }
+    },
+    hostVars: 4,
+    hostBindings: function ButtonDirective_HostBindings(rf, ctx) {
+      if (rf & 2) {
+        ɵɵstyleMap(ctx.hostStyle());
+        ɵɵclassMap(ctx.styleClass());
+      }
+    },
+    inputs: {
+      pButton: [1, "pButton"],
+      pButtonPT: [1, "pButtonPT"],
+      pButtonUnstyled: [1, "pButtonUnstyled"],
+      hostName: [1, "hostName"],
+      text: [1, "text"],
+      plain: [1, "plain"],
+      raised: [1, "raised"],
+      size: [1, "size"],
+      outlined: [1, "outlined"],
+      link: [1, "link"],
+      rounded: [1, "rounded"],
+      fluid: [1, "fluid"],
+      variant: [1, "variant"],
+      iconOnly: [1, "iconOnly"],
+      loading: [1, "loading"],
+      severity: [1, "severity"]
+    },
+    features: [ɵɵProvidersFeature([ButtonStyle, {
+      provide: BUTTON_DIRECTIVE_INSTANCE,
+      useExisting: _ButtonDirective
+    }, {
+      provide: PARENT_INSTANCE,
+      useExisting: _ButtonDirective
+    }]), ɵɵHostDirectivesFeature([Bind, Ripple]), ɵɵInheritDefinitionFeature]
+  });
+};
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(ButtonDirective, [{
+    type: Directive,
+    args: [{
+      selector: "[pButton]",
+      standalone: true,
+      providers: [ButtonStyle, {
+        provide: BUTTON_DIRECTIVE_INSTANCE,
+        useExisting: ButtonDirective
+      }, {
+        provide: PARENT_INSTANCE,
+        useExisting: ButtonDirective
+      }],
+      host: {
+        "[class]": "styleClass()",
+        "[style]": "hostStyle()"
+      },
+      hostDirectives: [Bind, Ripple]
+    }]
+  }], () => [], {
+    pButton: [{
+      type: Input,
+      args: [{
+        isSignal: true,
+        alias: "pButton",
+        required: false
+      }]
+    }],
+    pButtonPT: [{
+      type: Input,
+      args: [{
+        isSignal: true,
+        alias: "pButtonPT",
+        required: false
+      }]
+    }],
+    pButtonUnstyled: [{
+      type: Input,
+      args: [{
+        isSignal: true,
+        alias: "pButtonUnstyled",
+        required: false
+      }]
+    }],
+    hostName: [{
+      type: Input,
+      args: [{
+        isSignal: true,
+        alias: "hostName",
+        required: false
+      }]
+    }],
+    text: [{
+      type: Input,
+      args: [{
+        isSignal: true,
+        alias: "text",
+        required: false
+      }]
+    }],
+    plain: [{
+      type: Input,
+      args: [{
+        isSignal: true,
+        alias: "plain",
+        required: false
+      }]
+    }],
+    raised: [{
+      type: Input,
+      args: [{
+        isSignal: true,
+        alias: "raised",
+        required: false
+      }]
+    }],
+    size: [{
+      type: Input,
+      args: [{
+        isSignal: true,
+        alias: "size",
+        required: false
+      }]
+    }],
+    outlined: [{
+      type: Input,
+      args: [{
+        isSignal: true,
+        alias: "outlined",
+        required: false
+      }]
+    }],
+    link: [{
+      type: Input,
+      args: [{
+        isSignal: true,
+        alias: "link",
+        required: false
+      }]
+    }],
+    rounded: [{
+      type: Input,
+      args: [{
+        isSignal: true,
+        alias: "rounded",
+        required: false
+      }]
+    }],
+    fluid: [{
+      type: Input,
+      args: [{
+        isSignal: true,
+        alias: "fluid",
+        required: false
+      }]
+    }],
+    variant: [{
+      type: Input,
+      args: [{
+        isSignal: true,
+        alias: "variant",
+        required: false
+      }]
+    }],
+    iconOnly: [{
+      type: Input,
+      args: [{
+        isSignal: true,
+        alias: "iconOnly",
+        required: false
+      }]
+    }],
+    loading: [{
+      type: Input,
+      args: [{
+        isSignal: true,
+        alias: "loading",
+        required: false
+      }]
+    }],
+    severity: [{
+      type: Input,
+      args: [{
+        isSignal: true,
+        alias: "severity",
+        required: false
+      }]
+    }],
+    iconSignal: [{
+      type: ContentChild,
+      args: [forwardRef(() => ButtonIcon), __spreadProps(__spreadValues({}, {
+        descendants: false
+      }), {
+        isSignal: true
+      })]
+    }],
+    labelSignal: [{
+      type: ContentChild,
+      args: [forwardRef(() => ButtonLabel), __spreadProps(__spreadValues({}, {
+        descendants: false
+      }), {
+        isSignal: true
+      })]
+    }]
+  });
+})();
+var ButtonModule = class _ButtonModule {
+  static ɵfac = function ButtonModule_Factory(__ngFactoryType__) {
+    return new (__ngFactoryType__ || _ButtonModule)();
+  };
+  static ɵmod = ɵɵdefineNgModule({
+    type: _ButtonModule,
+    imports: [ButtonDirective, Button, ButtonLabel, ButtonIcon],
+    exports: [ButtonDirective, Button, ButtonLabel, ButtonIcon]
+  });
+  static ɵinj = ɵɵdefineInjector({
+    imports: [Button]
+  });
+};
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(ButtonModule, [{
+    type: NgModule,
+    args: [{
+      imports: [ButtonDirective, Button, ButtonLabel, ButtonIcon],
+      exports: [ButtonDirective, Button, ButtonLabel, ButtonIcon]
+    }]
+  }], null, null);
+})();
+export {
+  BUTTON_ICON_INSTANCE,
+  BUTTON_INSTANCE,
+  BUTTON_LABEL_INSTANCE,
+  Button,
+  ButtonClasses,
+  ButtonDirective,
+  ButtonIcon,
+  ButtonLabel,
+  ButtonModule,
+  ButtonStyle
+};
+//# sourceMappingURL=primeng_button.js.map

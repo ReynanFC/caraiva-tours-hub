@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../node_modules/@primeuix/themes/dist/index.mjs"],
+  "sourcesContent": ["import*as e from\"@primeuix/styled\";export*from\"@primeuix/styled\";var t=(t,...a)=>e.definePreset(t,...a),a=(...t)=>e.updatePreset(...t),r=t=>e.updatePrimaryPalette(t),s=t=>e.updateSurfacePalette(t),u=(t,...a)=>e.usePreset(t,...a),P=theme=>e.useTheme(theme);export{t as definePreset,a as updatePreset,r as updatePrimaryPalette,s as updateSurfacePalette,u as usePreset,P as useTheme};"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAiE,IAAI,IAAE,CAACA,OAAKC,OAAM,GAAaD,IAAE,GAAGC,EAAC;AAArC,IAAuC,IAAE,IAAID,OAAM,GAAa,GAAGA,EAAC;AAApE,IAAsE,IAAE,CAAAA,OAAK,GAAqBA,EAAC;AAAnG,IAAqG,IAAE,CAAAA,OAAK,GAAqBA,EAAC;AAAlI,IAAoI,IAAE,CAACA,OAAKC,OAAM,GAAUD,IAAE,GAAGC,EAAC;AAAlK,IAAoKC,KAAE,WAAS,GAAS,KAAK;",
+  "names": ["t", "a", "P"]
+}

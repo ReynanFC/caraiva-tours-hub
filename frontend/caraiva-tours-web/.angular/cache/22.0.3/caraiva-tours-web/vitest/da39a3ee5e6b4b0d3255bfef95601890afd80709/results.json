@@ -1,0 +1,1 @@
+{"version":"4.1.9","results":[["caraiva-tours-web:src/app/app.spec.ts",{"duration":32.61161199999992,"failed":false}],["caraiva-tours-web:src/app/features/auth/pages/login/login.spec.ts",{"duration":238.91585099999998,"failed":false}],["caraiva-tours-web:src/app/shared/components/card/card.spec.ts",{"duration":78.54838199999995,"failed":false}]]}
