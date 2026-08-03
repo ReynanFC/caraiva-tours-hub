@@ -1,24 +1,30 @@
 import {
-  N as N2,
-  R,
-  S,
-  gs
-} from "./chunk-6JVMDVTH.js";
-import {
-  FilterMatchMode
-} from "./chunk-LZ5MMXQW.js";
-import {
   B,
-  N2 as N,
+  N,
+  N2,
+  R2 as R,
+  S,
+  b,
+  d,
   de,
+  ee,
+  gs,
   x
-} from "./chunk-P76MA2VQ.js";
+} from "./chunk-6Q7RQFXE.js";
 import {
+  CommonModule
+} from "./chunk-OOBH3RC4.js";
+import {
+  Component,
   DOCUMENT,
+  Directive,
   Injectable,
   InjectionToken,
+  Input,
+  NgModule,
   PLATFORM_ID,
   Subject,
+  TemplateRef,
   effect,
   inject,
   makeEnvironmentProviders,
@@ -26,12 +32,556 @@ import {
   setClassMetadata,
   signal,
   untracked,
+  ɵɵdefineComponent,
+  ɵɵdefineDirective,
   ɵɵdefineInjectable,
-  ɵɵgetInheritedFactory
+  ɵɵdefineInjector,
+  ɵɵdefineNgModule,
+  ɵɵdirectiveInject,
+  ɵɵgetInheritedFactory,
+  ɵɵprojection,
+  ɵɵprojectionDef
 } from "./chunk-IFQMPNEI.js";
 import {
   __spreadValues
 } from "./chunk-GOMI4DH3.js";
+
+// node_modules/primeng/fesm2022/primeng-api.mjs
+var _c0 = ["*"];
+var ConfirmEventType;
+(function(ConfirmEventType2) {
+  ConfirmEventType2[ConfirmEventType2["ACCEPT"] = 0] = "ACCEPT";
+  ConfirmEventType2[ConfirmEventType2["REJECT"] = 1] = "REJECT";
+  ConfirmEventType2[ConfirmEventType2["CANCEL"] = 2] = "CANCEL";
+})(ConfirmEventType || (ConfirmEventType = {}));
+var ConfirmationService = class _ConfirmationService {
+  requireConfirmationSource = new Subject();
+  acceptConfirmationSource = new Subject();
+  requireConfirmation$ = this.requireConfirmationSource.asObservable();
+  accept = this.acceptConfirmationSource.asObservable();
+  /**
+   * Callback to invoke on confirm.
+   * @param {Confirmation} confirmation - Represents a confirmation dialog configuration.
+   * @group Method
+   */
+  confirm(confirmation) {
+    this.requireConfirmationSource.next(confirmation);
+    return this;
+  }
+  /**
+   * Closes the dialog.
+   * @group Method
+   */
+  close() {
+    this.requireConfirmationSource.next(null);
+    return this;
+  }
+  /**
+   * Accepts the dialog.
+   * @group Method
+   */
+  onAccept() {
+    this.acceptConfirmationSource.next(null);
+  }
+  static ɵfac = function ConfirmationService_Factory(__ngFactoryType__) {
+    return new (__ngFactoryType__ || _ConfirmationService)();
+  };
+  static ɵprov = ɵɵdefineInjectable({
+    token: _ConfirmationService,
+    factory: _ConfirmationService.ɵfac
+  });
+};
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(ConfirmationService, [{
+    type: Injectable
+  }], null, null);
+})();
+var ContextMenuService = class _ContextMenuService {
+  activeItemKeyChange = new Subject();
+  activeItemKeyChange$ = this.activeItemKeyChange.asObservable();
+  activeItemKey;
+  changeKey(key) {
+    this.activeItemKey = key;
+    this.activeItemKeyChange.next(this.activeItemKey);
+  }
+  reset() {
+    this.activeItemKey = null;
+    this.activeItemKeyChange.next(this.activeItemKey);
+  }
+  static ɵfac = function ContextMenuService_Factory(__ngFactoryType__) {
+    return new (__ngFactoryType__ || _ContextMenuService)();
+  };
+  static ɵprov = ɵɵdefineInjectable({
+    token: _ContextMenuService,
+    factory: _ContextMenuService.ɵfac
+  });
+};
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(ContextMenuService, [{
+    type: Injectable
+  }], null, null);
+})();
+var FilterMatchMode = class {
+  static STARTS_WITH = "startsWith";
+  static CONTAINS = "contains";
+  static NOT_CONTAINS = "notContains";
+  static ENDS_WITH = "endsWith";
+  static EQUALS = "equals";
+  static NOT_EQUALS = "notEquals";
+  static IN = "in";
+  static LESS_THAN = "lt";
+  static LESS_THAN_OR_EQUAL_TO = "lte";
+  static GREATER_THAN = "gt";
+  static GREATER_THAN_OR_EQUAL_TO = "gte";
+  static BETWEEN = "between";
+  static IS = "is";
+  static IS_NOT = "isNot";
+  static BEFORE = "before";
+  static AFTER = "after";
+  static DATE_IS = "dateIs";
+  static DATE_IS_NOT = "dateIsNot";
+  static DATE_BEFORE = "dateBefore";
+  static DATE_AFTER = "dateAfter";
+};
+var FilterService = class _FilterService {
+  filter(value, fields, filterValue, filterMatchMode, filterLocale) {
+    let filteredItems = [];
+    if (value) {
+      for (let item of value) {
+        for (let field of fields) {
+          let fieldValue = d(item, field);
+          if (this.filters[filterMatchMode](fieldValue, filterValue, filterLocale)) {
+            filteredItems.push(item);
+            break;
+          }
+        }
+      }
+    }
+    return filteredItems;
+  }
+  filters = {
+    startsWith: (value, filter, filterLocale) => {
+      if (filter === void 0 || filter === null || typeof filter === "string" && filter.trim() === "") {
+        return true;
+      }
+      if (value === void 0 || value === null) {
+        return false;
+      }
+      let filterValue = ee(filter.toString()).toLocaleLowerCase(filterLocale);
+      let stringValue = ee(value.toString()).toLocaleLowerCase(filterLocale);
+      return stringValue.slice(0, filterValue.length) === filterValue;
+    },
+    contains: (value, filter, filterLocale) => {
+      if (filter === void 0 || filter === null || typeof filter === "string" && filter.trim() === "") {
+        return true;
+      }
+      if (value === void 0 || value === null) {
+        return false;
+      }
+      let filterValue = ee(filter.toString()).toLocaleLowerCase(filterLocale);
+      let stringValue = ee(value.toString()).toLocaleLowerCase(filterLocale);
+      return stringValue.indexOf(filterValue) !== -1;
+    },
+    notContains: (value, filter, filterLocale) => {
+      if (filter === void 0 || filter === null || typeof filter === "string" && filter.trim() === "") {
+        return true;
+      }
+      if (value === void 0 || value === null) {
+        return false;
+      }
+      let filterValue = ee(filter.toString()).toLocaleLowerCase(filterLocale);
+      let stringValue = ee(value.toString()).toLocaleLowerCase(filterLocale);
+      return stringValue.indexOf(filterValue) === -1;
+    },
+    endsWith: (value, filter, filterLocale) => {
+      if (filter === void 0 || filter === null || typeof filter === "string" && filter.trim() === "") {
+        return true;
+      }
+      if (value === void 0 || value === null) {
+        return false;
+      }
+      let filterValue = ee(filter.toString()).toLocaleLowerCase(filterLocale);
+      let stringValue = ee(value.toString()).toLocaleLowerCase(filterLocale);
+      return stringValue.indexOf(filterValue, stringValue.length - filterValue.length) !== -1;
+    },
+    equals: (value, filter, filterLocale) => {
+      if (filter === void 0 || filter === null || typeof filter === "string" && filter.trim() === "") {
+        return true;
+      }
+      if (value === void 0 || value === null) {
+        return false;
+      }
+      if (value.getTime && filter.getTime) return value.getTime() === filter.getTime();
+      else if (value == filter) return true;
+      else return ee(value.toString()).toLocaleLowerCase(filterLocale) == ee(filter.toString()).toLocaleLowerCase(filterLocale);
+    },
+    notEquals: (value, filter, filterLocale) => {
+      if (filter === void 0 || filter === null || typeof filter === "string" && filter.trim() === "") {
+        return false;
+      }
+      if (value === void 0 || value === null) {
+        return true;
+      }
+      if (value.getTime && filter.getTime) return value.getTime() !== filter.getTime();
+      else if (value == filter) return false;
+      else return ee(value.toString()).toLocaleLowerCase(filterLocale) != ee(filter.toString()).toLocaleLowerCase(filterLocale);
+    },
+    in: (value, filter) => {
+      if (filter === void 0 || filter === null || filter.length === 0) {
+        return true;
+      }
+      for (let i2 = 0; i2 < filter.length; i2++) {
+        if (b(value, filter[i2])) {
+          return true;
+        }
+      }
+      return false;
+    },
+    between: (value, filter) => {
+      if (filter == null || filter[0] == null || filter[1] == null) {
+        return true;
+      }
+      if (value === void 0 || value === null) {
+        return false;
+      }
+      if (value.getTime) return filter[0].getTime() <= value.getTime() && value.getTime() <= filter[1].getTime();
+      else return filter[0] <= value && value <= filter[1];
+    },
+    lt: (value, filter, filterLocale) => {
+      if (filter === void 0 || filter === null) {
+        return true;
+      }
+      if (value === void 0 || value === null) {
+        return false;
+      }
+      if (value.getTime && filter.getTime) return value.getTime() < filter.getTime();
+      else return value < filter;
+    },
+    lte: (value, filter, filterLocale) => {
+      if (filter === void 0 || filter === null) {
+        return true;
+      }
+      if (value === void 0 || value === null) {
+        return false;
+      }
+      if (value.getTime && filter.getTime) return value.getTime() <= filter.getTime();
+      else return value <= filter;
+    },
+    gt: (value, filter, filterLocale) => {
+      if (filter === void 0 || filter === null) {
+        return true;
+      }
+      if (value === void 0 || value === null) {
+        return false;
+      }
+      if (value.getTime && filter.getTime) return value.getTime() > filter.getTime();
+      else return value > filter;
+    },
+    gte: (value, filter, filterLocale) => {
+      if (filter === void 0 || filter === null) {
+        return true;
+      }
+      if (value === void 0 || value === null) {
+        return false;
+      }
+      if (value.getTime && filter.getTime) return value.getTime() >= filter.getTime();
+      else return value >= filter;
+    },
+    is: (value, filter, filterLocale) => {
+      return this.filters.equals(value, filter, filterLocale);
+    },
+    isNot: (value, filter, filterLocale) => {
+      return this.filters.notEquals(value, filter, filterLocale);
+    },
+    before: (value, filter, filterLocale) => {
+      return this.filters.lt(value, filter, filterLocale);
+    },
+    after: (value, filter, filterLocale) => {
+      return this.filters.gt(value, filter, filterLocale);
+    },
+    dateIs: (value, filter) => {
+      if (filter === void 0 || filter === null) {
+        return true;
+      }
+      if (value === void 0 || value === null) {
+        return false;
+      }
+      return value.toDateString() === filter.toDateString();
+    },
+    dateIsNot: (value, filter) => {
+      if (filter === void 0 || filter === null) {
+        return true;
+      }
+      if (value === void 0 || value === null) {
+        return false;
+      }
+      return value.toDateString() !== filter.toDateString();
+    },
+    dateBefore: (value, filter) => {
+      if (filter === void 0 || filter === null) {
+        return true;
+      }
+      if (value === void 0 || value === null) {
+        return false;
+      }
+      return value.getTime() < filter.getTime();
+    },
+    dateAfter: (value, filter) => {
+      if (filter === void 0 || filter === null) {
+        return true;
+      }
+      if (value === void 0 || value === null) {
+        return false;
+      }
+      value.setHours(0, 0, 0, 0);
+      return value.getTime() > filter.getTime();
+    }
+  };
+  register(rule, fn) {
+    this.filters[rule] = fn;
+  }
+  static ɵfac = function FilterService_Factory(__ngFactoryType__) {
+    return new (__ngFactoryType__ || _FilterService)();
+  };
+  static ɵprov = ɵɵdefineInjectable({
+    token: _FilterService,
+    factory: _FilterService.ɵfac,
+    providedIn: "root"
+  });
+};
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(FilterService, [{
+    type: Injectable,
+    args: [{
+      providedIn: "root"
+    }]
+  }], null, null);
+})();
+var MessageService = class _MessageService {
+  messageSource = new Subject();
+  clearSource = new Subject();
+  messageObserver = this.messageSource.asObservable();
+  clearObserver = this.clearSource.asObservable();
+  /**
+   * Inserts single message.
+   * @param {ToastMessageOptions} message - Message to be added.
+   * @group Method
+   */
+  add(message) {
+    if (message) {
+      this.messageSource.next(message);
+    }
+  }
+  /**
+   * Inserts new messages.
+   * @param {Message[]} messages - Messages to be added.
+   * @group Method
+   */
+  addAll(messages) {
+    if (messages && messages.length) {
+      this.messageSource.next(messages);
+    }
+  }
+  /**
+   * Clears the message with the given key.
+   * @param {string} key - Key of the message to be cleared.
+   * @group Method
+   */
+  clear(key) {
+    this.clearSource.next(key || null);
+  }
+  static ɵfac = function MessageService_Factory(__ngFactoryType__) {
+    return new (__ngFactoryType__ || _MessageService)();
+  };
+  static ɵprov = ɵɵdefineInjectable({
+    token: _MessageService,
+    factory: _MessageService.ɵfac
+  });
+};
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(MessageService, [{
+    type: Injectable
+  }], null, null);
+})();
+var OverlayService = class _OverlayService {
+  clickSource = new Subject();
+  parentDragSource = new Subject();
+  clickObservable = this.clickSource.asObservable();
+  parentDragObservable = this.parentDragSource.asObservable();
+  add(event) {
+    if (event) {
+      this.clickSource.next(event);
+    }
+  }
+  emitParentDrag(container) {
+    this.parentDragSource.next(container);
+  }
+  static ɵfac = function OverlayService_Factory(__ngFactoryType__) {
+    return new (__ngFactoryType__ || _OverlayService)();
+  };
+  static ɵprov = ɵɵdefineInjectable({
+    token: _OverlayService,
+    factory: _OverlayService.ɵfac,
+    providedIn: "root"
+  });
+};
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(OverlayService, [{
+    type: Injectable,
+    args: [{
+      providedIn: "root"
+    }]
+  }], null, null);
+})();
+var Header = class _Header {
+  static ɵfac = function Header_Factory(__ngFactoryType__) {
+    return new (__ngFactoryType__ || _Header)();
+  };
+  static ɵcmp = ɵɵdefineComponent({
+    type: _Header,
+    selectors: [["p-header"]],
+    standalone: false,
+    ngContentSelectors: _c0,
+    decls: 1,
+    vars: 0,
+    template: function Header_Template(rf, ctx) {
+      if (rf & 1) {
+        ɵɵprojectionDef();
+        ɵɵprojection(0);
+      }
+    },
+    encapsulation: 2
+  });
+};
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(Header, [{
+    type: Component,
+    args: [{
+      selector: "p-header",
+      template: "<ng-content></ng-content>",
+      standalone: false
+    }]
+  }], null, null);
+})();
+var Footer = class _Footer {
+  static ɵfac = function Footer_Factory(__ngFactoryType__) {
+    return new (__ngFactoryType__ || _Footer)();
+  };
+  static ɵcmp = ɵɵdefineComponent({
+    type: _Footer,
+    selectors: [["p-footer"]],
+    standalone: false,
+    ngContentSelectors: _c0,
+    decls: 1,
+    vars: 0,
+    template: function Footer_Template(rf, ctx) {
+      if (rf & 1) {
+        ɵɵprojectionDef();
+        ɵɵprojection(0);
+      }
+    },
+    encapsulation: 2
+  });
+};
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(Footer, [{
+    type: Component,
+    args: [{
+      selector: "p-footer",
+      template: "<ng-content></ng-content>",
+      standalone: false
+    }]
+  }], null, null);
+})();
+var PrimeTemplate = class _PrimeTemplate {
+  template;
+  type;
+  name;
+  constructor(template) {
+    this.template = template;
+  }
+  getType() {
+    return this.name;
+  }
+  static ɵfac = function PrimeTemplate_Factory(__ngFactoryType__) {
+    return new (__ngFactoryType__ || _PrimeTemplate)(ɵɵdirectiveInject(TemplateRef));
+  };
+  static ɵdir = ɵɵdefineDirective({
+    type: _PrimeTemplate,
+    selectors: [["", "pTemplate", ""]],
+    inputs: {
+      type: "type",
+      name: [0, "pTemplate", "name"]
+    }
+  });
+};
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(PrimeTemplate, [{
+    type: Directive,
+    args: [{
+      selector: "[pTemplate]",
+      standalone: true
+    }]
+  }], () => [{
+    type: TemplateRef
+  }], {
+    type: [{
+      type: Input
+    }],
+    name: [{
+      type: Input,
+      args: ["pTemplate"]
+    }]
+  });
+})();
+var SharedModule = class _SharedModule {
+  static ɵfac = function SharedModule_Factory(__ngFactoryType__) {
+    return new (__ngFactoryType__ || _SharedModule)();
+  };
+  static ɵmod = ɵɵdefineNgModule({
+    type: _SharedModule,
+    declarations: [Header, Footer],
+    imports: [CommonModule, PrimeTemplate],
+    exports: [Header, Footer, PrimeTemplate]
+  });
+  static ɵinj = ɵɵdefineInjector({
+    imports: [CommonModule]
+  });
+};
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(SharedModule, [{
+    type: NgModule,
+    args: [{
+      imports: [CommonModule, PrimeTemplate],
+      exports: [Header, Footer, PrimeTemplate],
+      declarations: [Header, Footer]
+    }]
+  }], null, null);
+})();
+var TreeDragDropService = class _TreeDragDropService {
+  dragStartSource = new Subject();
+  dragStopSource = new Subject();
+  dragStart$ = this.dragStartSource.asObservable();
+  dragStop$ = this.dragStopSource.asObservable();
+  startDrag(event) {
+    this.dragStartSource.next(event);
+  }
+  stopDrag(event) {
+    this.dragStopSource.next(event);
+  }
+  static ɵfac = function TreeDragDropService_Factory(__ngFactoryType__) {
+    return new (__ngFactoryType__ || _TreeDragDropService)();
+  };
+  static ɵprov = ɵɵdefineInjectable({
+    token: _TreeDragDropService,
+    factory: _TreeDragDropService.ɵfac
+  });
+};
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(TreeDragDropService, [{
+    type: Injectable
+  }], null, null);
+})();
 
 // node_modules/@primeuix/styles/dist/base/index.mjs
 var style = "\n    *,\n    ::before,\n    ::after {\n        box-sizing: border-box;\n    }\n\n    .p-component {\n        font-family: dt('typography.font.family');\n        font-feature-settings: inherit;\n        line-height: dt('typography.line.height');\n    }\n\n    .p-collapsible-enter-active {\n        animation: p-animate-collapsible-expand 0.2s ease-out;\n        overflow: hidden;\n    }\n\n    .p-collapsible-leave-active {\n        animation: p-animate-collapsible-collapse 0.2s ease-out;\n        overflow: hidden;\n    }\n\n    @keyframes p-animate-collapsible-expand {\n        from {\n            grid-template-rows: 0fr;\n        }\n        to {\n            grid-template-rows: 1fr;\n        }\n    }\n\n    @keyframes p-animate-collapsible-collapse {\n        from {\n            grid-template-rows: 1fr;\n        }\n        to {\n            grid-template-rows: 0fr;\n        }\n    }\n\n    .p-disabled,\n    .p-disabled * {\n        cursor: default;\n        pointer-events: none;\n        user-select: none;\n    }\n\n    .p-disabled,\n    .p-component:disabled {\n        opacity: dt('disabled.opacity');\n    }\n\n    .pi {\n        font-size: dt('icon.size');\n    }\n\n    .p-icon {\n        width: var(--px-icon-size, dt('icon.size'));\n        height: var(--px-icon-size, dt('icon.size'));\n        flex-shrink: 0;\n    }\n\n    .p-icon-spin {\n        -webkit-animation: p-icon-spin 2s infinite linear;\n        animation: p-icon-spin 2s infinite linear;\n    }\n\n    @-webkit-keyframes p-icon-spin {\n        0% {\n            -webkit-transform: rotate(0deg);\n            transform: rotate(0deg);\n        }\n        100% {\n            -webkit-transform: rotate(359deg);\n            transform: rotate(359deg);\n        }\n    }\n\n    @keyframes p-icon-spin {\n        0% {\n            -webkit-transform: rotate(0deg);\n            transform: rotate(0deg);\n        }\n        100% {\n            -webkit-transform: rotate(359deg);\n            transform: rotate(359deg);\n        }\n    }\n\n    .p-overlay-mask {\n        background: var(--px-mask-background, dt('mask.background'));\n        color: dt('mask.color');\n        position: fixed;\n        top: 0;\n        left: 0;\n        width: 100%;\n        height: 100%;\n    }\n\n    .p-overlay-mask-enter-active {\n        animation: p-animate-overlay-mask-enter dt('mask.transition.duration') forwards;\n    }\n\n    .p-overlay-mask-leave-active {\n        animation: p-animate-overlay-mask-leave dt('mask.transition.duration') forwards;\n    }\n\n    @keyframes p-animate-overlay-mask-enter {\n        from {\n            background: transparent;\n        }\n        to {\n            background: var(--px-mask-background, dt('mask.background'));\n        }\n    }\n    @keyframes p-animate-overlay-mask-leave {\n        from {\n            background: var(--px-mask-background, dt('mask.background'));\n        }\n        to {\n            background: transparent;\n        }\n    }\n\n    .p-anchored-overlay-enter-active {\n        animation: p-animate-anchored-overlay-enter 300ms cubic-bezier(.19,1,.22,1);\n    }\n\n    .p-anchored-overlay-leave-active {\n        animation: p-animate-anchored-overlay-leave 300ms cubic-bezier(.19,1,.22,1);\n    }\n\n    @keyframes p-animate-anchored-overlay-enter {\n        from {\n            opacity: 0;\n            transform: scale(0.93);\n        }\n    }\n\n    @keyframes p-animate-anchored-overlay-leave {\n        to {\n            opacity: 0;\n            transform: scale(0.93);\n        }\n    }\n";
@@ -250,7 +800,7 @@ var abytes = (a2, l2) => !isBytes(a2) || typeof l2 === "number" && l2 > 0 && a2.
 var u8n = (len) => new Uint8Array(len);
 var u8fr = (buf) => Uint8Array.from(buf);
 var padh = (n2, pad) => n2.toString(16).padStart(pad, "0");
-var bytesToHex = (b2) => Array.from(abytes(b2)).map((e) => padh(e, 2)).join("");
+var bytesToHex = (b3) => Array.from(abytes(b3)).map((e) => padh(e, 2)).join("");
 var C = { _0: 48, _9: 57, A: 65, F: 70, a: 97, f: 102 };
 var _ch = (ch) => {
   if (ch >= C._0 && ch <= C._9)
@@ -297,21 +847,21 @@ var randomBytes = (len = L) => {
 };
 var big = BigInt;
 var arange = (n2, min, max, msg = "bad number: out of range") => isBig(n2) && min <= n2 && n2 < max ? n2 : err(msg);
-var M = (a2, b2 = P) => {
-  const r = a2 % b2;
-  return r >= 0n ? r : b2 + r;
+var M = (a2, b3 = P) => {
+  const r = a2 % b3;
+  return r >= 0n ? r : b3 + r;
 };
 var modN = (a2) => M(a2, N3);
 var invert = (num, md) => {
   if (num === 0n || md <= 0n)
     err("no inverse n=" + num + " mod=" + md);
-  let a2 = M(num, md), b2 = md, x3 = 0n, y2 = 1n, u2 = 1n, v2 = 0n;
+  let a2 = M(num, md), b3 = md, x3 = 0n, y2 = 1n, u2 = 1n, v2 = 0n;
   while (a2 !== 0n) {
-    const q = b2 / a2, r = b2 % a2;
+    const q = b3 / a2, r = b3 % a2;
     const m2 = x3 - u2 * q, n2 = y2 - v2 * q;
-    b2 = a2, a2 = r, x3 = u2, y2 = v2, u2 = m2, v2 = n2;
+    b3 = a2, a2 = r, x3 = u2, y2 = v2, u2 = m2, v2 = n2;
   }
-  return b2 === 1n ? M(x3, md) : err("no inverse");
+  return b3 === 1n ? M(x3, md) : err("no inverse");
 };
 var callHash = (name) => {
   const fn = etc[name];
@@ -341,7 +891,7 @@ var Point = class _Point {
   }
   /** RFC8032 5.1.3: Uint8Array to Point. */
   static fromBytes(hex, zip215 = false) {
-    const d2 = _d;
+    const d3 = _d;
     const normed = u8fr(abytes(hex, L));
     const lastByte = hex[31];
     normed[31] = lastByte & ~128;
@@ -350,7 +900,7 @@ var Point = class _Point {
     arange(y2, 0n, max);
     const y22 = M(y2 * y2);
     const u2 = M(y22 - 1n);
-    const v2 = M(d2 * y22 + 1n);
+    const v2 = M(d3 * y22 + 1n);
     let { isValid, value: x3 } = uvRatio(u2, v2);
     if (!isValid)
       err("bad point: y not sqrt");
@@ -365,7 +915,7 @@ var Point = class _Point {
   /** Checks if the point is valid and on-curve. */
   assertValidity() {
     const a2 = _a;
-    const d2 = _d;
+    const d3 = _d;
     const p2 = this;
     if (p2.is0())
       throw new Error("bad point: ZERO");
@@ -376,7 +926,7 @@ var Point = class _Point {
     const Z4 = M(Z2 * Z2);
     const aX2 = M(X2 * a2);
     const left = M(Z2 * M(aX2 + Y2));
-    const right = M(Z4 + M(d2 * M(X2 * Y2)));
+    const right = M(Z4 + M(d3 * M(X2 * Y2)));
     if (left !== right)
       throw new Error("bad point: equation left != right (1)");
     const XY = M(X * Y);
@@ -426,10 +976,10 @@ var Point = class _Point {
     const { ex: X1, ey: Y1, ez: Z1, et: T1 } = this;
     const { ex: X2, ey: Y2, ez: Z2, et: T2 } = apoint(other);
     const a2 = _a;
-    const d2 = _d;
+    const d3 = _d;
     const A = M(X1 * X2);
     const B2 = M(Y1 * Y2);
-    const C2 = M(T1 * d2 * T2);
+    const C2 = M(T1 * d3 * T2);
     const D = M(Z1 * Z2);
     const E = M((X1 + Y1) * (X2 + Y2) - A - B2);
     const F = M(D - C2);
@@ -458,11 +1008,11 @@ var Point = class _Point {
       return wNAF(n2).p;
     let p2 = I;
     let f2 = G;
-    for (let d2 = this; n2 > 0n; d2 = d2.double(), n2 >>= 1n) {
+    for (let d3 = this; n2 > 0n; d3 = d3.double(), n2 >>= 1n) {
       if (n2 & 1n)
-        p2 = p2.add(d2);
+        p2 = p2.add(d3);
       else if (safe)
-        f2 = f2.add(d2);
+        f2 = f2.add(d3);
     }
     return p2;
   }
@@ -478,9 +1028,9 @@ var Point = class _Point {
   }
   toBytes() {
     const { x: x3, y: y2 } = this.assertValidity().toAffine();
-    const b2 = numTo32bLE(y2);
-    b2[31] |= x3 & 1n ? 128 : 0;
-    return b2;
+    const b3 = numTo32bLE(y2);
+    b3[31] |= x3 & 1n ? 128 : 0;
+    return b3;
   }
   toHex() {
     return bytesToHex(this.toBytes());
@@ -516,7 +1066,7 @@ var I = new Point(0n, 1n, 1n, 0n);
 Point.BASE = G;
 Point.ZERO = I;
 var numTo32bLE = (num) => hexToBytes(padh(arange(num, 0n, B256), L2)).reverse();
-var bytesToNumLE = (b2) => big("0x" + bytesToHex(u8fr(abytes(b2)).reverse()));
+var bytesToNumLE = (b3) => big("0x" + bytesToHex(u8fr(abytes(b3)).reverse()));
 var pow2 = (x3, power) => {
   let r = x3;
   while (power-- > 0n) {
@@ -527,8 +1077,8 @@ var pow2 = (x3, power) => {
 };
 var pow_2_252_3 = (x3) => {
   const x22 = x3 * x3 % P;
-  const b2 = x22 * x3 % P;
-  const b4 = pow2(b2, 2n) * b2 % P;
+  const b22 = x22 * x3 % P;
+  const b4 = pow2(b22, 2n) * b22 % P;
   const b5 = pow2(b4, 1n) * x3 % P;
   const b10 = pow2(b5, 5n) * b5 % P;
   const b20 = pow2(b10, 10n) * b10 % P;
@@ -538,7 +1088,7 @@ var pow_2_252_3 = (x3) => {
   const b240 = pow2(b160, 80n) * b80 % P;
   const b250 = pow2(b240, 10n) * b10 % P;
   const pow_p_5_8 = pow2(b250, 2n) * x3 % P;
-  return { pow_p_5_8, b2 };
+  return { pow_p_5_8, b2: b22 };
 };
 var RM1 = 0x2b8324804fc1df0b2b4d00993dfbd7a72f431806ad2fe478c4ee1b274a0ea0b0n;
 var uvRatio = (u2, v2) => {
@@ -615,15 +1165,15 @@ var pwindowSize = 2 ** (W - 1);
 var precompute = () => {
   const points = [];
   let p2 = G;
-  let b2 = p2;
+  let b3 = p2;
   for (let w2 = 0; w2 < pwindows; w2++) {
-    b2 = p2;
-    points.push(b2);
+    b3 = p2;
+    points.push(b3);
     for (let i2 = 1; i2 < pwindowSize; i2++) {
-      b2 = b2.add(p2);
-      points.push(b2);
+      b3 = b3.add(p2);
+      points.push(b3);
     }
-    p2 = b2.double();
+    p2 = b3.double();
   }
   return points;
 };
@@ -727,11 +1277,11 @@ var oidNist = (suffix) => ({
 });
 
 // node_modules/@noble/hashes/_md.js
-function Chi(a2, b2, c2) {
-  return a2 & b2 ^ ~a2 & c2;
+function Chi(a2, b3, c2) {
+  return a2 & b3 ^ ~a2 & c2;
 }
-function Maj(a2, b2, c2) {
-  return a2 & b2 ^ a2 & c2 ^ b2 & c2;
+function Maj(a2, b3, c2) {
+  return a2 & b3 ^ a2 & c2 ^ b3 & c2;
 }
 var HashMD = class {
   blockLen;
@@ -1442,7 +1992,7 @@ function c(e) {
   return n2;
 }
 var l = "primeui";
-var d = "primeui-pro:";
+var d2 = "primeui-pro:";
 var p = { primeui: "primeui", scheduler: "primeui-pro:scheduler", texteditor: "primeui-pro:text-editor", charts: "primeui-pro:charts", diagram: "primeui-pro:diagram", pdfviewer: "primeui-pro:pdf-viewer", taskboard: "primeui-pro:task-board", datagrid: "primeui-pro:datagrid", ganttchart: "primeui-pro:gantt-chart", filemanager: "primeui-pro:file-manager" };
 var f = { primeui: "PrimeUI", scheduler: "Scheduler", texteditor: "TextEditor", charts: "Charts", diagram: "Diagram", pdfviewer: "PDF Viewer", taskboard: "Task Board", datagrid: "DataGrid", ganttchart: "Gantt", filemanager: "File Manager" };
 function m(e, r = "PrimeUI") {
@@ -1499,9 +2049,9 @@ function v(t2, i2) {
       return g("invalid", o2);
     }
     const h3 = null != (n2 = i2.publicKeyOverride) ? n2 : "dae75e66b9f59bebf87d4bb29ca6494f37deccfcc2b132b98ee159ee7505373b";
-    let b2;
+    let b3;
     try {
-      b2 = (function(e) {
+      b3 = (function(e) {
         if (e.length % 2 != 0) throw new Error("Invalid hex length");
         const r = new Uint8Array(e.length / 2);
         for (let t3 = 0; t3 < r.length; t3++) r[t3] = parseInt(e.substr(2 * t3, 2), 16);
@@ -1512,13 +2062,13 @@ function v(t2, i2) {
     }
     let w2 = false;
     try {
-      etc.sha512Sync || (etc.sha512Sync = (...t3) => sha512(etc.concatBytes(...t3))), w2 = verify(m2, v2, b2);
+      etc.sha512Sync || (etc.sha512Sync = (...t3) => sha512(etc.concatBytes(...t3))), w2 = verify(m2, v2, b3);
     } catch (e) {
       return g("tampered", o2, { payload: f2 });
     }
     if (!w2) return g("tampered", o2, { payload: f2 });
     if (!(function(e, r) {
-      return e.product === r || !(!r.startsWith(d) || e.product !== l || "commercial" !== e.tier);
+      return e.product === r || !(!r.startsWith(d2) || e.product !== l || "commercial" !== e.tier);
     })(f2, i2.product)) return g("wrong-product", o2, { payload: f2 });
     const x3 = 1e3 * f2.exp, D = Date.now(), O2 = Math.floor((x3 - D) / y), P2 = (function(e) {
       if (void 0 === e) return null;
@@ -1539,7 +2089,7 @@ function v(t2, i2) {
 function h2(e, r) {
   return { valid: false, status: e, message: m(e, r) };
 }
-function b(e, r) {
+function b2(e, r) {
   const t2 = null == r ? void 0 : r.graceDays, i2 = null == r ? void 0 : r.publicKeyOverride;
   return { verify(r2, n2) {
     return u(this, null, function* () {
@@ -1552,17 +2102,17 @@ function b(e, r) {
         if (e2.valid) return e2;
         if ("wrong-product" !== e2.status) return e2;
       }
-      return l2 && "primeui" !== r2 && o2.startsWith(d) ? v(l2, { product: o2, productLabel: u2, releaseDate: c2, graceDays: t2, publicKeyOverride: i2 }) : h2(s ? "wrong-product" : "missing", u2);
+      return l2 && "primeui" !== r2 && o2.startsWith(d2) ? v(l2, { product: o2, productLabel: u2, releaseDate: c2, graceDays: t2, publicKeyOverride: i2 }) : h2(s ? "wrong-product" : "missing", u2);
     });
   }, has(r2) {
     const t3 = p[r2];
-    return !!t3 && (!!e[r2] || "primeui" !== r2 && t3.startsWith(d) && !!e.primeui);
+    return !!t3 && (!!e[r2] || "primeui" !== r2 && t3.startsWith(d2) && !!e.primeui);
   } };
 }
 var w = null;
 function x2(e, r) {
   if (!e) throw new Error("[@primeui/license-manager] registerLicense: keys argument is required.");
-  return w = b(e, r);
+  return w = b2(e, r);
 }
 function O(e, r) {
   var t2;
@@ -2008,6 +2558,7 @@ function providePrimeNG(...features) {
 }
 
 export {
+  SharedModule,
   base,
   BaseStyle,
   showInvalidLicenseBanner,
@@ -2016,4 +2567,4 @@ export {
   PRIME_NG_CONFIG,
   providePrimeNG
 };
-//# sourceMappingURL=chunk-NETSQRFO.js.map
+//# sourceMappingURL=chunk-7TMKGJG6.js.map

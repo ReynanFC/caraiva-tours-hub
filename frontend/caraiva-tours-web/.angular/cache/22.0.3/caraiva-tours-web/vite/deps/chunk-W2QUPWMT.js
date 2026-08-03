@@ -3,28 +3,30 @@ import {
   PrimeNG,
   base,
   showInvalidLicenseBanner
-} from "./chunk-NETSQRFO.js";
-import {
-  R,
-  S
-} from "./chunk-6JVMDVTH.js";
+} from "./chunk-7TMKGJG6.js";
 import {
   A,
   C,
-  F2 as F,
+  F,
   K,
+  R2 as R,
+  S,
+  b,
   c,
   c2,
   l,
   m,
-  s2 as s,
+  s,
   x
-} from "./chunk-P76MA2VQ.js";
+} from "./chunk-6Q7RQFXE.js";
 import {
+  CommonModule,
   isPlatformServer
 } from "./chunk-OOBH3RC4.js";
 import {
+  ChangeDetectionStrategy,
   ChangeDetectorRef,
+  Component,
   DOCUMENT,
   Directive,
   ElementRef,
@@ -32,8 +34,10 @@ import {
   InjectionToken,
   Injector,
   Input,
+  NgModule,
   PLATFORM_ID,
   Renderer2,
+  ViewEncapsulation,
   computed,
   effect,
   inject,
@@ -41,13 +45,23 @@ import {
   isSignal,
   setClassMetadata,
   signal,
+  ɵɵHostDirectivesFeature,
+  ɵɵInheritDefinitionFeature,
   ɵɵNgOnChangesFeature,
   ɵɵProvidersFeature,
+  ɵɵclassMap,
+  ɵɵdefineComponent,
   ɵɵdefineDirective,
   ɵɵdefineInjectable,
-  ɵɵgetInheritedFactory
+  ɵɵdefineInjector,
+  ɵɵdefineNgModule,
+  ɵɵgetInheritedFactory,
+  ɵɵprojection,
+  ɵɵprojectionDef,
+  ɵɵstyleMap
 } from "./chunk-IFQMPNEI.js";
 import {
+  __objRest,
   __spreadProps,
   __spreadValues
 } from "./chunk-GOMI4DH3.js";
@@ -652,8 +666,293 @@ var BaseComponent = class _BaseComponent {
   });
 })();
 
+// node_modules/primeng/fesm2022/primeng-bind.mjs
+var Bind = class _Bind {
+  /**
+   * Dynamic attributes, properties, and event listeners to be applied to the host element.
+   * @group Props
+   */
+  pBind = input(
+    void 0,
+    ...ngDevMode ? [{
+      debugName: "pBind"
+    }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  _attrs = signal(
+    void 0,
+    ...ngDevMode ? [{
+      debugName: "_attrs"
+    }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  attrs = computed(
+    () => this._attrs() || this.pBind(),
+    ...ngDevMode ? [{
+      debugName: "attrs"
+    }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  styles = computed(
+    () => this.attrs()?.style,
+    ...ngDevMode ? [{
+      debugName: "styles"
+    }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  classes = computed(
+    () => c2(this.attrs()?.class),
+    ...ngDevMode ? [{
+      debugName: "classes"
+    }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  listeners = [];
+  el = inject(ElementRef);
+  renderer = inject(Renderer2);
+  constructor() {
+    effect(() => {
+      const _a = this.attrs() || {}, {
+        style,
+        class: className
+      } = _a, rest = __objRest(_a, [
+        "style",
+        "class"
+      ]);
+      for (const [key, value] of Object.entries(rest)) {
+        if (key.startsWith("on") && typeof value === "function") {
+          const eventName = key.slice(2).toLowerCase();
+          if (!this.listeners.some((l2) => l2.eventName === eventName)) {
+            const unlisten = this.renderer.listen(this.el.nativeElement, eventName, value);
+            this.listeners.push({
+              eventName,
+              unlisten
+            });
+          }
+        } else if (value === null || value === void 0) {
+          this.renderer.removeAttribute(this.el.nativeElement, key);
+        } else {
+          this.renderer.setAttribute(this.el.nativeElement, key, value.toString());
+          if (key in this.el.nativeElement) {
+            this.el.nativeElement[key] = value;
+          }
+        }
+      }
+    });
+  }
+  ngOnDestroy() {
+    this.clearListeners();
+  }
+  setAttrs(attrs) {
+    if (!b(this._attrs(), attrs)) {
+      this._attrs.set(attrs);
+    }
+  }
+  clearListeners() {
+    this.listeners.forEach(({
+      unlisten
+    }) => unlisten());
+    this.listeners = [];
+  }
+  static ɵfac = function Bind_Factory(__ngFactoryType__) {
+    return new (__ngFactoryType__ || _Bind)();
+  };
+  static ɵdir = ɵɵdefineDirective({
+    type: _Bind,
+    selectors: [["", "pBind", ""]],
+    hostVars: 4,
+    hostBindings: function Bind_HostBindings(rf, ctx) {
+      if (rf & 2) {
+        ɵɵstyleMap(ctx.styles());
+        ɵɵclassMap(ctx.classes());
+      }
+    },
+    inputs: {
+      pBind: [1, "pBind"]
+    }
+  });
+};
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(Bind, [{
+    type: Directive,
+    args: [{
+      selector: "[pBind]",
+      standalone: true,
+      host: {
+        "[style]": "styles()",
+        "[class]": "classes()"
+      }
+    }]
+  }], () => [], {
+    pBind: [{
+      type: Input,
+      args: [{
+        isSignal: true,
+        alias: "pBind",
+        required: false
+      }]
+    }]
+  });
+})();
+var BindModule = class _BindModule {
+  static ɵfac = function BindModule_Factory(__ngFactoryType__) {
+    return new (__ngFactoryType__ || _BindModule)();
+  };
+  static ɵmod = ɵɵdefineNgModule({
+    type: _BindModule,
+    imports: [Bind],
+    exports: [Bind]
+  });
+  static ɵinj = ɵɵdefineInjector({});
+};
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(BindModule, [{
+    type: NgModule,
+    args: [{
+      imports: [Bind],
+      exports: [Bind]
+    }]
+  }], null, null);
+})();
+
+// node_modules/primeng/fesm2022/primeng-fluid.mjs
+var _c0 = ["*"];
+var classes = {
+  root: "p-fluid"
+};
+var FluidStyle = class _FluidStyle extends BaseStyle {
+  name = "fluid";
+  classes = classes;
+  static ɵfac = /* @__PURE__ */ (() => {
+    let ɵFluidStyle_BaseFactory;
+    return function FluidStyle_Factory(__ngFactoryType__) {
+      return (ɵFluidStyle_BaseFactory || (ɵFluidStyle_BaseFactory = ɵɵgetInheritedFactory(_FluidStyle)))(__ngFactoryType__ || _FluidStyle);
+    };
+  })();
+  static ɵprov = ɵɵdefineInjectable({
+    token: _FluidStyle,
+    factory: _FluidStyle.ɵfac
+  });
+};
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(FluidStyle, [{
+    type: Injectable
+  }], null, null);
+})();
+var FluidClasses;
+(function(FluidClasses2) {
+  FluidClasses2["root"] = "p-fluid";
+})(FluidClasses || (FluidClasses = {}));
+var FLUID_INSTANCE = new InjectionToken("FLUID_INSTANCE");
+var Fluid = class _Fluid extends BaseComponent {
+  componentName = "Fluid";
+  $pcFluid = inject(FLUID_INSTANCE, {
+    optional: true,
+    skipSelf: true
+  }) ?? void 0;
+  bindDirectiveInstance = inject(Bind, {
+    self: true
+  });
+  onAfterViewChecked() {
+    this.bindDirectiveInstance.setAttrs(this.ptms(["host", "root"]));
+  }
+  _componentStyle = inject(FluidStyle);
+  static ɵfac = /* @__PURE__ */ (() => {
+    let ɵFluid_BaseFactory;
+    return function Fluid_Factory(__ngFactoryType__) {
+      return (ɵFluid_BaseFactory || (ɵFluid_BaseFactory = ɵɵgetInheritedFactory(_Fluid)))(__ngFactoryType__ || _Fluid);
+    };
+  })();
+  static ɵcmp = ɵɵdefineComponent({
+    type: _Fluid,
+    selectors: [["p-fluid"]],
+    hostVars: 2,
+    hostBindings: function Fluid_HostBindings(rf, ctx) {
+      if (rf & 2) {
+        ɵɵclassMap(ctx.cx("root"));
+      }
+    },
+    features: [ɵɵProvidersFeature([FluidStyle, {
+      provide: FLUID_INSTANCE,
+      useExisting: _Fluid
+    }, {
+      provide: PARENT_INSTANCE,
+      useExisting: _Fluid
+    }]), ɵɵHostDirectivesFeature([Bind]), ɵɵInheritDefinitionFeature],
+    ngContentSelectors: _c0,
+    decls: 1,
+    vars: 0,
+    template: function Fluid_Template(rf, ctx) {
+      if (rf & 1) {
+        ɵɵprojectionDef();
+        ɵɵprojection(0);
+      }
+    },
+    dependencies: [CommonModule],
+    encapsulation: 2
+  });
+};
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(Fluid, [{
+    type: Component,
+    args: [{
+      selector: "p-fluid",
+      template: ` <ng-content></ng-content> `,
+      standalone: true,
+      imports: [CommonModule],
+      changeDetection: ChangeDetectionStrategy.OnPush,
+      encapsulation: ViewEncapsulation.None,
+      providers: [FluidStyle, {
+        provide: FLUID_INSTANCE,
+        useExisting: Fluid
+      }, {
+        provide: PARENT_INSTANCE,
+        useExisting: Fluid
+      }],
+      host: {
+        "[class]": "cx('root')"
+      },
+      hostDirectives: [Bind]
+    }]
+  }], null, null);
+})();
+var FluidModule = class _FluidModule {
+  static ɵfac = function FluidModule_Factory(__ngFactoryType__) {
+    return new (__ngFactoryType__ || _FluidModule)();
+  };
+  static ɵmod = ɵɵdefineNgModule({
+    type: _FluidModule,
+    imports: [Fluid],
+    exports: [Fluid]
+  });
+  static ɵinj = ɵɵdefineInjector({
+    imports: [Fluid]
+  });
+};
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(FluidModule, [{
+    type: NgModule,
+    args: [{
+      imports: [Fluid],
+      exports: [Fluid]
+    }]
+  }], null, null);
+})();
+
 export {
   PARENT_INSTANCE,
-  BaseComponent
+  BaseComponent,
+  Bind,
+  Fluid
 };
-//# sourceMappingURL=chunk-PG6XWJJ4.js.map
+//# sourceMappingURL=chunk-W2QUPWMT.js.map
