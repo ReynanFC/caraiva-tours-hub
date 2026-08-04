@@ -1,4 +1,4 @@
-import { TokenStore } from './../auth/token-store';
+import { TokenStore } from '../auth/token/token-store';
 import { HttpClient, HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { BehaviorSubject, catchError, filter, switchMap, take, throwError } from 'rxjs';
@@ -6,7 +6,8 @@ import { BehaviorSubject, catchError, filter, switchMap, take, throwError } from
 let isRefreshing = false;
 const refreshedToken$ = new BehaviorSubject<string | null>(null);
 
-const REFRESH_URL = 'api/auth/refresh';
+const REFRESH_URL = '/auth/refresh';
+const AUTH_URL_PREFIX = '/auth/';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const tokenStore = inject(TokenStore);
@@ -14,28 +15,26 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   const token = tokenStore.getAccessToken();
 
-  const authReq = token && !req.url.includes(REFRESH_URL)
-    ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } })
-    : req;
+  const isAuthCall = req.url.includes(AUTH_URL_PREFIX);
+
+  const authReq =
+    token && !isAuthCall ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } }) : req;
 
   return next(authReq).pipe(
     catchError((error: unknown) => {
-
       const is401 = error instanceof HttpErrorResponse && error.status === 401;
-      const isRefreshCall = req.url.includes(REFRESH_URL);
 
-      if (!is401 || isRefreshCall) {
+      if (!is401 || isAuthCall) {
         return throwError(() => error);
       }
 
       if (isRefreshing) {
-
         return refreshedToken$.pipe(
           filter((t): t is string => t !== null),
           take(1),
           switchMap((newToken) =>
-            next(req.clone({ setHeaders: { Authorization: `Bearer ${newToken}` } }))
-          )
+            next(req.clone({ setHeaders: { Authorization: `Bearer ${newToken}` } })),
+          ),
         );
       }
 
@@ -55,8 +54,8 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
           tokenStore.clearToken();
 
           return throwError(() => refreshError);
-        })
+        }),
       );
-    })
+    }),
   );
 };
