@@ -2,13 +2,13 @@ import { Component, computed, input, output } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { PIcon } from '@primeicons/angular/p-icon';
 import { SidebarModule } from 'primeng/sidebar';
-import { NavigationItem } from '../../../navigation-item';
+import { NavigationItem } from '../../../models/navigation-item';
 import {
   UserProfile,
   getUserDisplayName,
   getUserInitials,
   getUserRoleLabel,
-} from '../../../user-profile';
+} from '../../../models/user-profile';
 
 @Component({
   selector: 'app-layout-sidebar',

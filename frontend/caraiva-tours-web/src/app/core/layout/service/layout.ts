@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Service, inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { UserProfile } from '../user-profile';
+import { UserProfile } from '../models/user-profile';
 
 @Service()
 export class Layout {

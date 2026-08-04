@@ -3,8 +3,6 @@ import { authGuard } from './core/auth/guard/auth-guard';
 
 const protectedSections = [
   'dashboard',
-  'novo-agendamento',
-  'reservas',
   'passeios',
   'pagamentos',
   'usuarios',
@@ -20,7 +18,37 @@ export const routes: Routes = [
 
   {
     path: 'login',
-    loadComponent: () => import('./features/auth/pages/login/login').then((m) => m.Login),
+    loadComponent: () => import('./features/login/page/login').then((m) => m.Login),
+  },
+  {
+    path: 'novo-agendamento',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./core/layout/main-layout/main-layout').then((m) => m.MainLayout),
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./features/booking/pages/booking-create/booking-create').then(
+            (m) => m.BookingCreate,
+          ),
+      },
+    ],
+  },
+  {
+    path: 'reservas',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./core/layout/main-layout/main-layout').then((m) => m.MainLayout),
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./features/booking/pages/booking-list/booking-list').then(
+            (m) => m.BookingList,
+          ),
+      },
+    ],
   },
   ...protectedSections.map((path) => ({
     path,

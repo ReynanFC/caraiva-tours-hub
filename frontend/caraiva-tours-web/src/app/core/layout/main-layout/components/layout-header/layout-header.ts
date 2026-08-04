@@ -6,7 +6,7 @@ import {
   getUserDisplayName,
   getUserInitials,
   getUserRoleLabel,
-} from '../../../user-profile';
+} from '../../../models/user-profile';
 
 @Component({
   selector: 'app-layout-header',

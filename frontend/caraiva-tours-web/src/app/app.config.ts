@@ -1,5 +1,8 @@
+import { registerLocaleData } from '@angular/common';
+import localePt from '@angular/common/locales/pt';
 import {
   ApplicationConfig,
+  LOCALE_ID,
   provideAppInitializer,
   provideBrowserGlobalErrorListeners,
   provideZonelessChangeDetection,
@@ -13,6 +16,8 @@ import { definePreset } from '@primeuix/themes';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { authInterceptor } from './core/interceptor/auth-interceptor';
 import { initSession } from './core/auth/guard/session-init';
+
+registerLocaleData(localePt);
 
 const CaraivaPreset = definePreset(Aura, {
   semantic: {
@@ -34,6 +39,7 @@ const CaraivaPreset = definePreset(Aura, {
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    { provide: LOCALE_ID, useValue: 'pt-BR' },
     provideHttpClient(withInterceptors([authInterceptor])),
     provideAppInitializer(initSession),
     provideBrowserGlobalErrorListeners(),

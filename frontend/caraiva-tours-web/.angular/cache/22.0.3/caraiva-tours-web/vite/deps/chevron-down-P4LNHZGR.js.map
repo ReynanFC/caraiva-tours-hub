@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../node_modules/@primeicons/core/dist/esm/icons/chevron-down.mjs"],
-  "sourcesContent": ["var o={name:\"chevron-down\",meta:{tags:[\"chevron-down\",\"down\",\"fall\",\"decrease\",\"lower\"]},svg:{xmlns:\"http://www.w3.org/2000/svg\",width:20,height:20,viewBox:\"0 0 20 20\",fill:\"none\"},nodes:[[\"path\",{d:\"M14.4697 6.96973C14.7626 6.67684 15.2374 6.67684 15.5303 6.96973C15.8232 7.26262 15.8232 7.73738 15.5303 8.03028L10.5303 13.0303C10.2374 13.3232 9.76262 13.3232 9.46972 13.0303L4.46972 8.03028C4.17683 7.73738 4.17683 7.26262 4.46972 6.96973C4.76262 6.67684 5.23738 6.67684 5.53027 6.96973L10 11.4395L14.4697 6.96973Z\",fill:\"currentColor\",key:\"a1s1p6\"}]]};\nexport{o as chevronDown};"],
-  "mappings": ";;;AAAA,IAAI,IAAE,EAAC,MAAK,gBAAe,MAAK,EAAC,MAAK,CAAC,gBAAe,QAAO,QAAO,YAAW,OAAO,EAAC,GAAE,KAAI,EAAC,OAAM,8BAA6B,OAAM,IAAG,QAAO,IAAG,SAAQ,aAAY,MAAK,OAAM,GAAE,OAAM,CAAC,CAAC,QAAO,EAAC,GAAE,gUAA+T,MAAK,gBAAe,KAAI,SAAQ,CAAC,CAAC,EAAC;",
-  "names": []
-}

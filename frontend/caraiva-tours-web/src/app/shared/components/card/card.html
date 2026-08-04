@@ -1,3 +1,12 @@
-<p-card [header]="header()">
+<p-card>
+  <ng-template #header>
+    <div class="card-heading">
+      @if (icon()) {
+        <svg class="card-heading-icon" pIcon [pIcon]="icon() ?? ''" aria-hidden="true"></svg>
+      }
+      <span>{{ heading() }}</span>
+    </div>
+  </ng-template>
+
   <ng-content />
 </p-card>

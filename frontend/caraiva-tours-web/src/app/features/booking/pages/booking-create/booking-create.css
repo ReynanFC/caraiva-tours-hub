@@ -1,0 +1,175 @@
+@reference '../../../../../styles.css';
+
+.booking-layout {
+  @apply mx-auto grid w-full max-w-7xl grid-cols-1 items-start gap-4 xl:grid-cols-[minmax(0,1fr)_20rem];
+}
+
+.booking-form {
+  @apply grid min-w-0 grid-cols-1 gap-4 md:grid-cols-2;
+}
+
+.responsible-card {
+  @apply md:col-span-2 h-auto;
+}
+
+.responsible-grid {
+  @apply grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3;
+}
+
+.responsible-grid .form-field:first-child {
+  @apply sm:col-span-2 lg:col-span-1;
+}
+
+.tour-grid {
+  @apply grid min-w-0 grid-cols-1 items-start gap-4 lg:grid-cols-[minmax(0,1fr)_18rem];
+}
+
+.form-field {
+  @apply flex min-w-0 flex-col gap-1.5;
+}
+
+.form-field label {
+  @apply text-sm font-medium text-foreground;
+}
+
+.form-field p-inputmask {
+  @apply block w-full;
+}
+
+.form-field p-autocomplete,
+.form-field p-datepicker {
+  @apply block w-full;
+}
+
+.form-field input,
+:host ::ng-deep .form-control {
+  @apply h-11 w-full rounded-control border border-border bg-surface px-3.5 font-ui text-sm text-foreground outline-none transition-[border-color,box-shadow] duration-200 placeholder:text-muted;
+}
+
+.form-field input:focus,
+:host ::ng-deep .form-control:focus {
+  @apply border-primary;
+  box-shadow: 0 0 0 4px var(--color-focus-ring);
+}
+
+:host ::ng-deep .p-autocomplete,
+:host ::ng-deep .p-datepicker {
+  @apply flex w-full min-w-0;
+}
+
+:host ::ng-deep .p-autocomplete,
+:host ::ng-deep .p-datepicker {
+  display: flex !important;
+  width: 100%;
+}
+
+:host ::ng-deep .p-autocomplete-input,
+:host ::ng-deep .p-datepicker-input {
+  flex: 1 1 0% !important;
+  min-width: 0;
+  width: auto;
+}
+
+:host ::ng-deep .p-autocomplete-dropdown,
+:host ::ng-deep .p-datepicker-dropdown {
+  @apply h-11 w-11 shrink-0;
+}
+
+:host ::ng-deep .schedule-field .form-control,
+:host ::ng-deep .schedule-field .p-datepicker-dropdown {
+  @apply h-10;
+}
+
+:host ::ng-deep .p-autocomplete:has(.p-autocomplete-dropdown) .form-control,
+:host ::ng-deep .p-datepicker:has(.p-datepicker-dropdown) .form-control {
+  @apply rounded-r-none;
+}
+
+.tour-option {
+  @apply grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-center gap-3 py-1;
+}
+
+.tour-option div {
+  @apply flex min-w-0 flex-col gap-0.5;
+}
+
+.tour-option strong {
+  @apply truncate text-sm font-semibold text-foreground;
+}
+
+.tour-option small {
+  @apply truncate text-xs text-muted;
+}
+
+.tour-option span {
+  @apply shrink-0 text-sm font-semibold text-primary;
+}
+
+.field-hint {
+  @apply text-xs text-muted;
+}
+
+.field-error {
+  @apply text-xs font-medium text-danger;
+}
+
+.booking-summary {
+  @apply min-w-0 xl:sticky xl:top-6;
+}
+
+.summary-items {
+  @apply m-0 grid gap-3;
+}
+
+.summary-row {
+  @apply flex items-start justify-between gap-3 text-sm;
+}
+
+.summary-row dt {
+  @apply min-w-0 text-muted;
+}
+
+.summary-row dd {
+  @apply m-0 shrink-0 font-medium text-foreground;
+}
+
+.summary-total {
+  @apply mt-5 flex items-end justify-between gap-3 border-t border-border pt-4;
+}
+
+.summary-total span {
+  @apply text-sm font-semibold text-foreground;
+}
+
+.summary-total strong {
+  @apply text-xl font-bold text-primary;
+}
+
+.confirm-button {
+  @apply mt-5 flex h-11 w-full items-center justify-center rounded-control border-0 bg-primary px-4 font-ui text-sm font-semibold text-on-primary;
+  box-shadow: var(--shadow-button);
+}
+
+.confirm-button:hover {
+  @apply bg-primary-hover;
+}
+
+@media (max-width: 639px) {
+  .booking-layout,
+  .booking-form,
+  .responsible-grid {
+    @apply gap-3;
+  }
+
+  .summary-total strong {
+    @apply text-lg;
+  }
+
+  .tour-option {
+    @apply gap-2;
+  }
+
+  .tour-option span {
+    @apply text-xs;
+  }
+}

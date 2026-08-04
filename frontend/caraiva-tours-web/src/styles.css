@@ -28,3 +28,7 @@
 :root {
   color-scheme: light;
 }
+
+.booking-field-overlay {
+  max-width: calc(100vw - 2rem);
+}

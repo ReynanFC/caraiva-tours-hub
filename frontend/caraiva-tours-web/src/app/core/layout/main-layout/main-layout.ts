@@ -4,9 +4,9 @@ import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { SidebarModule } from 'primeng/sidebar';
 import { catchError, filter, of, startWith } from 'rxjs';
 import { TokenStore } from '../../auth/token/token-store';
-import { NavigationItem } from '../navigation-item';
+import { NavigationItem } from '../models/navigation-item';
 import { Layout } from '../service/layout';
-import { UserProfile } from '../user-profile';
+import { UserProfile } from '../models/user-profile';
 import { LayoutHeader } from './components/layout-header/layout-header';
 import { LayoutSidebar } from './components/layout-sidebar/layout-sidebar';
 

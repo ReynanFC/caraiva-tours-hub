@@ -1,0 +1,161 @@
+<form [formGroup]="bookingForm" class="booking-layout" (ngSubmit)="onSubmit()">
+  <div class="booking-form">
+    <app-card class="responsible-card" header="Dados do Responsável" icon="user">
+      <div formGroupName="client" class="responsible-grid">
+        <div class="form-field">
+          <label for="name">Nome</label>
+          <input
+            pInputText
+            id="name"
+            type="text"
+            formControlName="name"
+            placeholder="Digite o nome completo"
+            autocomplete="name"
+            maxlength="100"
+          />
+        </div>
+
+        <div class="form-field">
+          <label for="phone">Telefone</label>
+          <input
+            pInputMask
+            id="phone"
+            formControlName="phone"
+            mask="(99) 99999-9999"
+            placeholder="(00) 00000-0000"
+            autocomplete="tel-national"
+            class="form-control"
+            unmask="true"
+          />
+        </div>
+
+        <div class="form-field">
+          <label for="email">E-mail</label>
+          <input
+            pInputText
+            id="email"
+            type="email"
+            formControlName="email"
+            placeholder="seuemail@exemplo.com"
+            autocomplete="email"
+            maxlength="100"
+          />
+        </div>
+      </div>
+    </app-card>
+
+    <app-card header="Integrantes">
+
+    </app-card>
+
+    <app-card header="Passeio / Combo" icon="map" class="responsible-card">
+      <div class="tour-grid">
+        <div class="form-field">
+          <label for="tour">Passeio</label>
+          <p-autocomplete
+            inputId="tour"
+            formControlName="tourId"
+            optionLabel="name"
+            optionValue="id"
+            dataKey="id"
+            placeholder="Busque pelo nome do passeio"
+            emptyMessage="Nenhum passeio disponível encontrado"
+            inputStyleClass="form-control"
+            [suggestions]="tourSuggestions()"
+            [dropdown]="true"
+            [forceSelection]="true"
+            [showClear]="true"
+            [delay]="500"
+            appendTo="body"
+            panelStyleClass="booking-field-overlay"
+            optionDisabled="disabled"
+            (completeMethod)="searchTours($event)"
+          >
+            <ng-template #item let-tour>
+              <div class="tour-option">
+                <div>
+                  <strong>{{ tour.name }}</strong>
+                  <small>
+                    {{ tour.category.name }}
+                    @if (!tour.available) {
+                      · Indisponível
+                    }
+                  </small>
+                </div>
+                <span>{{ tour.effectivePrice | currency: 'BRL' : 'symbol' : '1.2-2' }}</span>
+              </div>
+            </ng-template>
+          </p-autocomplete>
+          @if (bookingForm.controls.tourId.invalid && bookingForm.controls.tourId.touched) {
+            <small class="field-error">Selecione um passeio disponível.</small>
+          }
+        </div>
+
+        <div class="form-field schedule-field">
+          <label for="scheduleDate">Data e horário</label>
+          <p-datepicker
+            inputId="scheduleDate"
+            formControlName="scheduleDate"
+            dateFormat="dd/mm/yy"
+            hourFormat="24"
+            placeholder="Selecione a data e o horário"
+            inputStyleClass="form-control"
+            [showTime]="true"
+            [showIcon]="true"
+            [showButtonBar]="true"
+            [minDate]="minimumScheduleDate"
+            [stepMinute]="15"
+            appendTo="body"
+            panelStyleClass="booking-field-overlay"
+          />
+          <small class="field-hint">A data deve estar no futuro.</small>
+          @if (
+            bookingForm.controls.scheduleDate.invalid && bookingForm.controls.scheduleDate.touched
+          ) {
+            <small class="field-error">Selecione a data e o horário do passeio.</small>
+          }
+        </div>
+      </div>
+    </app-card>
+
+    <app-card header="Logística de Busca / Hospedagem">
+
+    </app-card>
+
+    <app-card header="Pagamento 20% - Pix">
+
+    </app-card>
+  </div>
+
+  <aside class="booking-summary" aria-label="Resumo da reserva">
+    <app-card header="Resumo da Reserva" icon="calculator">
+      <dl class="summary-items">
+        <div class="summary-row">
+          <dt>Adulto (0)</dt>
+          <dd>R$ 0,00</dd>
+        </div>
+        <div class="summary-row">
+          <dt>Criança de colo (0)</dt>
+          <dd>R$ 0,00</dd>
+        </div>
+        <div class="summary-row">
+          <dt>Taxa de busca</dt>
+          <dd>R$ 0,00</dd>
+        </div>
+        <div class="summary-row">
+          <dt>Desconto manual</dt>
+          <dd>− R$ 0,00</dd>
+        </div>
+      </dl>
+
+      <div class="summary-total">
+        <span>Total</span>
+        <strong>R$ 0,00</strong>
+      </div>
+
+      <button pButton type="submit" class="confirm-button">
+        Confirmar reserva
+      </button>
+    </app-card>
+  </aside>
+</form>

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../node_modules/@primeicons/core/dist/esm/icons/chevron-left.mjs"],
+  "sourcesContent": ["var e={name:\"chevron-left\",meta:{tags:[\"chevron-left\",\"backward\",\"previous\",\"return\",\"left\"]},svg:{xmlns:\"http://www.w3.org/2000/svg\",width:20,height:20,viewBox:\"0 0 20 20\",fill:\"none\"},nodes:[[\"path\",{d:\"M11.9697 4.46973C12.2626 4.17684 12.7374 4.17684 13.0303 4.46973C13.3232 4.76262 13.3232 5.23738 13.0303 5.53028L8.56055 10L13.0303 14.4697C13.3232 14.7626 13.3232 15.2374 13.0303 15.5303C12.7374 15.8232 12.2626 15.8232 11.9697 15.5303L6.96973 10.5303C6.67684 10.2374 6.67684 9.76262 6.96973 9.46973L11.9697 4.46973Z\",fill:\"currentColor\",key:\"es7c15\"}]]};\nexport{e as chevronLeft};"],
+  "mappings": ";AAAA,IAAI,IAAE,EAAC,MAAK,gBAAe,MAAK,EAAC,MAAK,CAAC,gBAAe,YAAW,YAAW,UAAS,MAAM,EAAC,GAAE,KAAI,EAAC,OAAM,8BAA6B,OAAM,IAAG,QAAO,IAAG,SAAQ,aAAY,MAAK,OAAM,GAAE,OAAM,CAAC,CAAC,QAAO,EAAC,GAAE,gUAA+T,MAAK,gBAAe,KAAI,SAAQ,CAAC,CAAC,EAAC;",
+  "names": []
+}
