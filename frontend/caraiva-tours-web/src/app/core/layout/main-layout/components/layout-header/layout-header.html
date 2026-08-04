@@ -1,0 +1,33 @@
+<header class="page-header">
+  <div class="header-leading">
+    <button
+      pSidebarTrigger
+      target="main-navigation"
+      class="header-icon-button"
+      type="button"
+      aria-label="Abrir ou recolher menu lateral"
+    >
+      <svg pIcon="bars" aria-hidden="true"></svg>
+    </button>
+
+    <div class="page-heading">
+      <p>Painel administrativo</p>
+      <h1>{{ title() }}</h1>
+      <span>{{ description() }}</span>
+    </div>
+  </div>
+
+  <div class="header-actions">
+    <button class="header-icon-button" type="button" aria-label="Notificações">
+      <svg pIcon="bell" aria-hidden="true"></svg>
+      <span class="notification-dot" aria-hidden="true"></span>
+    </button>
+    <div class="header-profile" aria-label="Usuário atual">
+      <span class="header-avatar" aria-hidden="true">{{ initials() }}</span>
+      <span>
+        <strong>{{ displayName() }}</strong>
+        <small>{{ roleLabel() }}</small>
+      </span>
+    </div>
+  </div>
+</header>

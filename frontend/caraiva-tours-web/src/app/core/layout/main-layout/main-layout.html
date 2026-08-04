@@ -1,0 +1,22 @@
+<p-sidebar-layout class="app-layout">
+  <app-layout-sidebar
+    [profile]="userProfile()"
+    [navigationItems]="navigationItems"
+    [isMobile]="isMobile()"
+    [open]="sidebarOpen()"
+    (openChange)="sidebarOpen.set($event)"
+    (signOut)="signOut()"
+  />
+
+  <p-sidebar-main>
+    <app-layout-header
+      [profile]="userProfile()"
+      [title]="pageTitle()"
+      [description]="pageDescription()"
+    />
+
+    <main class="page-content">
+      <router-outlet />
+    </main>
+  </p-sidebar-main>
+</p-sidebar-layout>

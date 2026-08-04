@@ -1,0 +1,8 @@
+import "./chunk-GOMI4DH3.js";
+
+// node_modules/@primeicons/core/dist/esm/icons/angle-double-right.mjs
+var e = { name: "angle-double-right", meta: { tags: ["angle-double-right", "fast-proceed", "right", "next", "forward"] }, svg: { xmlns: "http://www.w3.org/2000/svg", width: 20, height: 20, viewBox: "0 0 20 20", fill: "none" }, nodes: [["path", { d: "M4.96972 5.96973C5.26262 5.67683 5.73738 5.67683 6.03027 5.96973L9.53028 9.46974C9.82312 9.76264 9.82316 10.2374 9.53028 10.5303L6.03027 14.0303C5.7374 14.3232 5.26262 14.3231 4.96972 14.0303C4.67683 13.7374 4.67683 13.2626 4.96972 12.9698L7.93946 10L4.96972 7.03028C4.67683 6.73738 4.67683 6.26262 4.96972 5.96973ZM10.4697 5.96973C10.7626 5.67683 11.2374 5.67683 11.5303 5.96973L15.0303 9.46974C15.3231 9.76264 15.3232 10.2374 15.0303 10.5303L11.5303 14.0303C11.2374 14.3232 10.7626 14.3231 10.4697 14.0303C10.1768 13.7374 10.1768 13.2626 10.4697 12.9698L13.4395 10L10.4697 7.03028C10.1768 6.73738 10.1768 6.26262 10.4697 5.96973Z", fill: "currentColor", key: "r8emu" }]] };
+export {
+  e as angleDoubleRight
+};
+//# sourceMappingURL=angle-double-right-ALDRKELD.js.map

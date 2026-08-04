@@ -1,0 +1,7 @@
+// node_modules/@primeicons/core/dist/esm/icons/spinner.mjs
+var e = { name: "spinner", meta: { tags: ["spinner", "loading", "process", "wait", "buffering"] }, svg: { xmlns: "http://www.w3.org/2000/svg", width: 20, height: 20, viewBox: "0 0 20 20", fill: "none" }, nodes: [["path", { d: "M1 10C1 5.02579 5.02579 1 10 1C12.3905 1 14.562 1.9393 16.1738 3.45312C16.4756 3.73669 16.4905 4.21178 16.207 4.51367C15.9235 4.81558 15.4484 4.83039 15.1465 4.54688C13.7983 3.2807 11.9895 2.5 10 2.5C5.85421 2.5 2.5 5.85421 2.5 10C2.5 14.1458 5.85421 17.5 10 17.5C14.1458 17.5 17.5 14.1458 17.5 10C17.5 9.58579 17.8358 9.25 18.25 9.25C18.6642 9.25 19 9.58579 19 10C19 14.9742 14.9742 19 10 19C5.02579 19 1 14.9742 1 10Z", fill: "currentColor", key: "p4wko0" }]] };
+
+export {
+  e
+};
+//# sourceMappingURL=chunk-QZPWBGZN.js.map

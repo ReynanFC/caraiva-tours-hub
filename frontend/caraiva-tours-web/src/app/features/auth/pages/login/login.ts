@@ -67,7 +67,7 @@ export class Login {
       .subscribe({
         next: ({ accessToken }) => {
           this.tokenStore.setAccessToken(accessToken);
-          // void this.router.navigate(['/dashboard']);
+          void this.router.navigate(['/dashboard']);
         },
         error: (error: unknown) => this.handleAuthenticationError(error),
       });

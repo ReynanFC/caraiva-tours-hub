@@ -1,0 +1,20 @@
+@reference '../../../../styles.css';
+
+:host {
+  @apply block min-h-dvh bg-background font-ui text-foreground;
+}
+
+.app-layout {
+  @apply min-h-dvh bg-background!;
+  --p-sidebar-main-background: var(--color-background);
+}
+
+.page-content {
+  @apply min-h-[calc(100dvh-6rem)] p-6;
+}
+
+@media (max-width: 1023px) {
+  .page-content {
+    @apply min-h-[calc(100dvh-5rem)] p-4;
+  }
+}

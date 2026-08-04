@@ -1,0 +1,8 @@
+import "./chunk-GOMI4DH3.js";
+
+// node_modules/@primeicons/core/dist/esm/icons/filter.mjs
+var e = { name: "filter", meta: { tags: ["filter", "refine", "criteria", "sort", "selection"] }, svg: { xmlns: "http://www.w3.org/2000/svg", width: 20, height: 20, viewBox: "0 0 20 20", fill: "none" }, nodes: [["path", { d: "M17.5 1.75C17.7826 1.75 18.0412 1.90903 18.1689 2.16113C18.2966 2.41322 18.2716 2.71547 18.1045 2.94336L12.75 10.2441V18C12.75 18.4142 12.4142 18.75 12 18.75H8C7.58579 18.75 7.25 18.4142 7.25 18V10.2441L1.89551 2.94336C1.72839 2.71547 1.70335 2.41322 1.83105 2.16113C1.95881 1.90903 2.21737 1.75 2.5 1.75H17.5ZM8.60449 9.55664C8.69883 9.68528 8.75 9.84048 8.75 10V17.25H11.25V10C11.25 9.84048 11.3012 9.68528 11.3955 9.55664L16.0205 3.25H3.97949L8.60449 9.55664Z", fill: "currentColor", key: "6kqlg6" }]] };
+export {
+  e as filter
+};
+//# sourceMappingURL=filter-O7HGDD7K.js.map

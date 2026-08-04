@@ -1,0 +1,128 @@
+@reference '../../../../../../styles.css';
+
+:host {
+  display: contents;
+}
+
+:host ::ng-deep .p-sidebar {
+  --p-sidebar-border-color: var(--color-border);
+  --p-sidebar-panel-background: var(--color-surface);
+  --p-sidebar-panel-color: var(--color-foreground);
+  --p-sidebar-menu-button-active-background: var(--color-primary-light);
+  --p-sidebar-menu-button-active-color: var(--color-primary);
+  --p-sidebar-menu-button-focus-background: var(--color-primary-light);
+  --p-sidebar-menu-button-focus-color: var(--color-primary);
+  --p-sidebar-menu-button-border-radius: 0.75rem;
+  --p-sidebar-menu-button-height: 2.75rem;
+  --p-sidebar-menu-button-icon-color: var(--color-muted);
+  --p-sidebar-group-label-color: var(--color-muted);
+}
+
+:host ::ng-deep .p-sidebar-panel {
+  border-right: 1px solid var(--color-border);
+}
+
+:host ::ng-deep .p-sidebar-header {
+  @apply px-4 pt-5 pb-3;
+}
+
+:host ::ng-deep .p-sidebar-content {
+  @apply px-3 py-3;
+}
+
+:host ::ng-deep .p-sidebar-group-label {
+  @apply px-3 text-[0.625rem] font-bold tracking-[0.15em];
+}
+
+:host ::ng-deep .p-sidebar-menu-button {
+  @apply no-underline transition-colors duration-200;
+}
+
+:host ::ng-deep .p-sidebar-menu-button:hover,
+:host ::ng-deep .p-sidebar-menu-button.active-navigation-item {
+  @apply bg-primary-light text-primary;
+}
+
+:host ::ng-deep .p-sidebar-menu-button.active-navigation-item svg,
+:host ::ng-deep .p-sidebar-menu-button:hover svg {
+  color: var(--color-primary);
+}
+
+:host ::ng-deep .p-sidebar-footer {
+  @apply px-3 pt-3 pb-4;
+  border-top: 1px solid var(--color-border);
+}
+
+.brand {
+  @apply flex min-w-0 items-center gap-3 overflow-hidden text-foreground no-underline;
+}
+
+.brand-mark {
+  @apply grid size-10 shrink-0 place-items-center overflow-hidden rounded-xl bg-primary-light;
+}
+
+.brand-mark img {
+  @apply size-7 object-contain;
+}
+
+.brand-name,
+.user-copy {
+  @apply flex min-w-0 flex-col whitespace-nowrap;
+}
+
+.brand-name strong {
+  @apply font-display text-sm leading-tight font-extrabold tracking-[-0.02em];
+}
+
+.brand-name small {
+  @apply mt-1 text-[0.5rem] font-bold tracking-[0.36em] text-muted;
+}
+
+.user-card {
+  @apply flex min-w-0 items-center gap-2 overflow-hidden rounded-xl bg-background p-2;
+}
+
+.user-avatar {
+  @apply grid size-8 shrink-0 place-items-center rounded-full bg-primary text-[0.625rem] font-bold text-on-primary;
+}
+
+.user-copy {
+  @apply flex-1;
+}
+
+.user-copy strong {
+  @apply overflow-hidden text-xs font-semibold text-ellipsis;
+}
+
+.user-copy small {
+  @apply mt-0.5 overflow-hidden text-[0.625rem] text-ellipsis text-muted;
+}
+
+.logout-button {
+  @apply grid size-8 shrink-0 cursor-pointer place-items-center rounded-lg border-0 bg-transparent text-muted transition-colors duration-200;
+}
+
+.logout-button:hover {
+  @apply bg-primary-light text-primary;
+}
+
+.logout-button:focus-visible {
+  @apply outline-2 outline-offset-2 outline-primary;
+}
+
+.logout-button svg {
+  @apply size-4.5;
+}
+
+@media (max-width: 1023px) {
+  :host ::ng-deep .p-sidebar-backdrop {
+    @apply fixed inset-0 z-30 bg-foreground/35;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host ::ng-deep .p-sidebar-menu-button,
+  .logout-button {
+    transition: none;
+  }
+}

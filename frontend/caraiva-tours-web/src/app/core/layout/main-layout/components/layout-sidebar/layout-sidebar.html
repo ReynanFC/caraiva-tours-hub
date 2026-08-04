@@ -1,0 +1,72 @@
+@if (isMobile() && open()) {
+  <p-sidebar-backdrop />
+}
+
+<p-sidebar
+  id="main-navigation"
+  [collapsible]="isMobile() ? 'offcanvas' : 'icon'"
+  [overlay]="isMobile()"
+  [open]="open()"
+  (openChange)="openChange.emit($event)"
+  width="17rem"
+  iconWidth="4.75rem"
+>
+  <p-sidebar-spacer />
+  <p-sidebar-aside>
+    <p-sidebar-panel>
+      <p-sidebar-header>
+        <a class="brand" routerLink="/dashboard" aria-label="Ir para o dashboard">
+          <span class="brand-mark">
+            <img src="/logo.png" alt="" />
+          </span>
+          <span class="brand-name">
+            <strong>PORTO CARAÍVA</strong>
+            <small>TURISMO</small>
+          </span>
+        </a>
+      </p-sidebar-header>
+
+      <p-sidebar-content>
+        <p-sidebar-group>
+          <p-sidebar-group-label>MENU PRINCIPAL</p-sidebar-group-label>
+          <p-sidebar-group-content>
+            <nav aria-label="Navegação principal">
+              <p-sidebar-menu>
+                @for (item of navigationItems(); track item.route) {
+                  <p-sidebar-menu-item>
+                    <a
+                      pSidebarMenuButton
+                      [routerLink]="item.route"
+                      routerLinkActive="active-navigation-item"
+                      [routerLinkActiveOptions]="{ exact: true }"
+                      (click)="closeOnMobile()"
+                      [attr.aria-label]="item.label"
+                    >
+                      <svg [pIcon]="item.icon" aria-hidden="true"></svg>
+                      <span>{{ item.label }}</span>
+                    </a>
+                  </p-sidebar-menu-item>
+                }
+              </p-sidebar-menu>
+            </nav>
+          </p-sidebar-group-content>
+        </p-sidebar-group>
+      </p-sidebar-content>
+
+      <p-sidebar-footer>
+        <div class="user-card">
+          <span class="user-avatar" aria-hidden="true">{{ initials() }}</span>
+          <span class="user-copy">
+            <strong>{{ displayName() }}</strong>
+            <small>{{ roleLabel() }}</small>
+          </span>
+          <button class="logout-button" type="button" (click)="signOut.emit()" aria-label="Sair">
+            <svg pIcon="sign-out" aria-hidden="true"></svg>
+          </button>
+        </div>
+      </p-sidebar-footer>
+
+      <button pSidebarRail aria-label="Recolher menu lateral"></button>
+    </p-sidebar-panel>
+  </p-sidebar-aside>
+</p-sidebar>

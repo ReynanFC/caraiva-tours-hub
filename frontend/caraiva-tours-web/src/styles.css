@@ -24,3 +24,7 @@
   --shadow-button: 0 10px 15px -3px rgb(230 57 70 / 25%);
   --shadow-brand-tile: 0 10px 20px rgb(0 0 0 / 20%);
 }
+
+:root {
+  color-scheme: light;
+}

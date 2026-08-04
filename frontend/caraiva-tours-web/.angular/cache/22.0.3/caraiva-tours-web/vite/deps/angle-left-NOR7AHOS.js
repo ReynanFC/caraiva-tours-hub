@@ -1,0 +1,8 @@
+import "./chunk-GOMI4DH3.js";
+
+// node_modules/@primeicons/core/dist/esm/icons/angle-left.mjs
+var e = { name: "angle-left", meta: { tags: ["angle-left", "back", "return", "left", "previous"] }, svg: { xmlns: "http://www.w3.org/2000/svg", width: 20, height: 20, viewBox: "0 0 20 20", fill: "none" }, nodes: [["path", { d: "M11.2197 5.96973C11.5126 5.67683 11.9874 5.67683 12.2803 5.96973C12.5732 6.26262 12.5732 6.73738 12.2803 7.03027L9.31054 10L12.2803 12.9697C12.5732 13.2626 12.5732 13.7374 12.2803 14.0303C11.9874 14.3232 11.5126 14.3232 11.2197 14.0303L7.71972 10.5303C7.42683 10.2374 7.42683 9.76262 7.71972 9.46973L11.2197 5.96973Z", fill: "currentColor", key: "6ofr4b" }]] };
+export {
+  e as angleLeft
+};
+//# sourceMappingURL=angle-left-NOR7AHOS.js.map

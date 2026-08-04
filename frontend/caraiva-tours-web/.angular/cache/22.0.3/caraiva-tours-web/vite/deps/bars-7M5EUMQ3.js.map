@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../node_modules/@primeicons/core/dist/esm/icons/bars.mjs"],
+  "sourcesContent": ["var t={name:\"bars\",meta:{tags:[\"bars\",\"menu\",\"options\",\"list\",\"categories\",\"hamburger\"]},svg:{xmlns:\"http://www.w3.org/2000/svg\",width:20,height:20,viewBox:\"0 0 20 20\",fill:\"none\"},nodes:[[\"path\",{d:\"M17 13.75C17.4142 13.75 17.75 14.0858 17.75 14.5C17.75 14.9142 17.4142 15.25 17 15.25H3C2.58579 15.25 2.25 14.9142 2.25 14.5C2.25 14.0858 2.58579 13.75 3 13.75H17ZM17 9.25C17.4142 9.25 17.75 9.58579 17.75 10C17.75 10.4142 17.4142 10.75 17 10.75H3C2.58579 10.75 2.25 10.4142 2.25 10C2.25 9.58579 2.58579 9.25 3 9.25H17ZM17 4.75C17.4142 4.75 17.75 5.08579 17.75 5.5C17.75 5.91421 17.4142 6.25 17 6.25H3C2.58579 6.25 2.25 5.91421 2.25 5.5C2.25 5.08579 2.58579 4.75 3 4.75H17Z\",fill:\"currentColor\",key:\"1wyj6c\"}]]};\nexport{t as bars};"],
+  "mappings": ";;;AAAA,IAAI,IAAE,EAAC,MAAK,QAAO,MAAK,EAAC,MAAK,CAAC,QAAO,QAAO,WAAU,QAAO,cAAa,WAAW,EAAC,GAAE,KAAI,EAAC,OAAM,8BAA6B,OAAM,IAAG,QAAO,IAAG,SAAQ,aAAY,MAAK,OAAM,GAAE,OAAM,CAAC,CAAC,QAAO,EAAC,GAAE,4dAA2d,MAAK,gBAAe,KAAI,SAAQ,CAAC,CAAC,EAAC;",
+  "names": []
+}

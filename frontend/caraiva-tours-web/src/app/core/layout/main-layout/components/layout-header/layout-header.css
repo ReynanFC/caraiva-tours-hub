@@ -1,0 +1,102 @@
+@reference '../../../../../../styles.css';
+
+.page-header {
+  @apply flex min-h-24 items-center justify-between gap-6 border-b border-border bg-surface px-6 py-4;
+}
+
+.header-leading,
+.header-actions,
+.header-profile {
+  @apply flex items-center;
+}
+
+.header-leading {
+  @apply min-w-0 gap-4;
+}
+
+.header-icon-button {
+  @apply relative grid size-10 shrink-0 cursor-pointer place-items-center rounded-xl border border-border bg-surface text-muted transition-colors duration-200;
+}
+
+.header-icon-button:hover {
+  @apply bg-primary-light text-primary;
+}
+
+.header-icon-button:focus-visible {
+  @apply outline-2 outline-offset-2 outline-primary;
+}
+
+.header-icon-button svg {
+  @apply size-4.5;
+}
+
+.page-heading {
+  @apply min-w-0;
+}
+
+.page-heading p {
+  @apply m-0 text-[0.625rem] font-bold tracking-[0.16em] text-primary uppercase;
+}
+
+.page-heading h1 {
+  @apply mt-1 mb-0 font-display text-xl leading-tight font-bold tracking-[-0.02em];
+}
+
+.page-heading span {
+  @apply mt-1 block text-xs text-muted;
+}
+
+.header-actions {
+  @apply shrink-0 gap-3;
+}
+
+.notification-dot {
+  @apply absolute top-2.5 right-2.5 size-1.5 rounded-full bg-primary ring-2 ring-surface;
+}
+
+.header-profile {
+  @apply gap-2.5 border-l border-border pl-3;
+}
+
+.header-avatar {
+  @apply grid size-9 shrink-0 place-items-center rounded-full bg-primary text-[0.625rem] font-bold text-on-primary;
+}
+
+.header-profile > span:last-child {
+  @apply flex flex-col;
+}
+
+.header-profile strong {
+  @apply text-xs font-semibold;
+}
+
+.header-profile small {
+  @apply mt-0.5 text-[0.625rem] text-muted;
+}
+
+@media (max-width: 1023px) {
+  .page-header {
+    @apply min-h-20 px-4 py-3;
+  }
+
+  .page-heading p,
+  .page-heading span {
+    @apply hidden;
+  }
+
+  .page-heading h1 {
+    @apply mt-0 text-lg;
+  }
+}
+
+@media (max-width: 560px) {
+  .header-profile {
+    @apply hidden;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .header-icon-button {
+    transition: none;
+  }
+}

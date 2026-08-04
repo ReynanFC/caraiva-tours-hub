@@ -42,6 +42,9 @@ export const appConfig: ApplicationConfig = {
     providePrimeNG({
       theme: {
         preset: CaraivaPreset,
+        options: {
+          darkModeSelector: false,
+        },
       },
     }),
   ],
