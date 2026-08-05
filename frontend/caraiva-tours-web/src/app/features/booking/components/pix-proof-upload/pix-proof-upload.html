@@ -1,0 +1,57 @@
+<div class="upload-heading">
+  <div>
+    <strong>Comprovante do pagamento</strong>
+    <p>Envie um print do Pix para confirmar o pagamento de 20%.</p>
+  </div>
+</div>
+
+<input
+  #fileInput
+  id="pixProof"
+  class="file-input"
+  type="file"
+  accept="image/jpeg,image/png,image/webp"
+  [disabled]="disabled()"
+  (click)="fileInput.value = ''"
+  (change)="selectFile($event)"
+/>
+
+@if (!file()) {
+  <label for="pixProof" class="upload-dropzone" [class.upload-dropzone-disabled]="disabled()">
+    <span class="upload-symbol" aria-hidden="true">+</span>
+    <span>
+      <strong>Selecionar print do Pix</strong>
+      <small>JPG, PNG ou WEBP, até 32 MB</small>
+    </span>
+  </label>
+} @else {
+  <div class="proof-preview">
+    <img [src]="previewUrl()" alt="Pré-visualização do comprovante Pix" />
+
+    <div class="proof-info">
+      <strong>{{ file()?.name }}</strong>
+      <small>{{ file()?.size | fileSize }}</small>
+
+      <div class="upload-status" aria-live="polite">
+        @if (uploading()) {
+          <span class="status-uploading">Enviando para o ImgBB...</span>
+        } @else if (uploadedUrl()) {
+          <span class="pix-status-success status-success">Imagem enviada com sucesso</span>
+        } @else if (uploadError()) {
+          <span class="status-error">{{ uploadError() }}</span>
+        }
+      </div>
+    </div>
+
+    <div class="proof-actions">
+      <label for="pixProof" class="change-button">Trocar imagem</label>
+      <button pButton type="button" class="remove-button" (click)="removeFile(fileInput)">
+        Remover
+      </button>
+    </div>
+  </div>
+}
+
+@if (!file() && uploadError()) {
+  <small class="upload-error" role="alert">{{ uploadError() }}</small>
+}

@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../node_modules/@primeicons/core/dist/esm/icons/angle-down.mjs"],
-  "sourcesContent": ["var e={name:\"angle-down\",meta:{tags:[\"angle-down\",\"fall\",\"down\",\"decrease\",\"lower\"]},svg:{xmlns:\"http://www.w3.org/2000/svg\",width:20,height:20,viewBox:\"0 0 20 20\",fill:\"none\"},nodes:[[\"path\",{d:\"M12.9697 7.71973C13.2626 7.42684 13.7374 7.42684 14.0303 7.71973C14.3232 8.01262 14.3232 8.48738 14.0303 8.78028L10.5303 12.2803C10.2374 12.5732 9.76262 12.5732 9.46973 12.2803L5.96973 8.78028C5.67684 8.48738 5.67684 8.01262 5.96973 7.71973C6.26262 7.42684 6.73738 7.42684 7.03028 7.71973L10 10.6895L12.9697 7.71973Z\",fill:\"currentColor\",key:\"r6am4n\"}]]};\nexport{e as angleDown};"],
-  "mappings": ";;;AAAA,IAAI,IAAE,EAAC,MAAK,cAAa,MAAK,EAAC,MAAK,CAAC,cAAa,QAAO,QAAO,YAAW,OAAO,EAAC,GAAE,KAAI,EAAC,OAAM,8BAA6B,OAAM,IAAG,QAAO,IAAG,SAAQ,aAAY,MAAK,OAAM,GAAE,OAAM,CAAC,CAAC,QAAO,EAAC,GAAE,gUAA+T,MAAK,gBAAe,KAAI,SAAQ,CAAC,CAAC,EAAC;",
-  "names": []
-}

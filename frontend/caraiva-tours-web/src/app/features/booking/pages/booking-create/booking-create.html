@@ -3,7 +3,7 @@
     <app-card class="responsible-card" header="Dados do Responsável" icon="user">
       <div formGroupName="client" class="responsible-grid">
         <div class="form-field">
-          <label for="name">Nome</label>
+          <label for="name">Nome <span class="required-mark" aria-hidden="true">*</span></label>
           <input
             pInputText
             id="name"
@@ -16,16 +16,18 @@
         </div>
 
         <div class="form-field">
-          <label for="phone">Telefone</label>
+          <label for="phone"
+            >Telefone <span class="required-mark" aria-hidden="true">*</span></label
+          >
           <input
-            pInputMask
+            [pInputMask]="'(99) 99999-9999'"
             id="phone"
             formControlName="phone"
-            mask="(99) 99999-9999"
             placeholder="(00) 00000-0000"
+            slotChar="0"
             autocomplete="tel-national"
             class="form-control"
-            unmask="true"
+            maxlength="20"
           />
         </div>
 
@@ -44,14 +46,68 @@
       </div>
     </app-card>
 
-    <app-card header="Integrantes">
+    <app-card header="Integrantes" icon="users" class="responsible-card">
+      <div class="members-heading">
+        <p>Adicione outros participantes, se houver.</p>
+        <button
+          pButton
+          type="button"
+          class="add-member-button"
+          aria-label="Adicionar integrante"
+          (click)="bookingFormService.addMember()"
+        >
+          <span aria-hidden="true">+</span>
+          Adicionar
+        </button>
+      </div>
 
+      <div formArrayName="members" class="members-list">
+        @for (member of bookingForm.controls.members.controls; track member; let index = $index) {
+          <div [formGroupName]="index" class="member-row">
+            <div class="form-field member-name-field">
+              <label [for]="'memberName-' + index">
+                Nome <span class="required-mark" aria-hidden="true">*</span>
+              </label>
+              <input
+                pInputText
+                [id]="'memberName-' + index"
+                type="text"
+                formControlName="name"
+                placeholder="Nome"
+                maxlength="100"
+              />
+              @if (member.controls.name.invalid && member.controls.name.touched) {
+                <small class="field-error">Informe o nome do integrante.</small>
+              }
+            </div>
+
+            <div class="member-child-field">
+              <p-checkbox
+                [inputId]="'memberChild-' + index"
+                formControlName="isLapChild"
+                [binary]="true"
+              />
+              <label [for]="'memberChild-' + index">É criança de colo</label>
+            </div>
+
+            <button
+              pButton
+              type="button"
+              class="remove-member-button"
+              [attr.aria-label]="'Remover integrante ' + (index + 1)"
+              (click)="bookingFormService.removeMember(index)"
+            >
+              Remover
+            </button>
+          </div>
+        }
+      </div>
     </app-card>
 
     <app-card header="Passeio / Combo" icon="map" class="responsible-card">
       <div class="tour-grid">
         <div class="form-field">
-          <label for="tour">Passeio</label>
+          <label for="tour">Passeio <span class="required-mark" aria-hidden="true">*</span></label>
           <p-autocomplete
             inputId="tour"
             formControlName="tourId"
@@ -70,6 +126,8 @@
             panelStyleClass="booking-field-overlay"
             optionDisabled="disabled"
             (completeMethod)="searchTours($event)"
+            (onSelect)="selectTour($event)"
+            (onClear)="clearTour()"
           >
             <ng-template #item let-tour>
               <div class="tour-option">
@@ -92,7 +150,9 @@
         </div>
 
         <div class="form-field schedule-field">
-          <label for="scheduleDate">Data e horário</label>
+          <label for="scheduleDate">
+            Data e horário <span class="required-mark" aria-hidden="true">*</span>
+          </label>
           <p-datepicker
             inputId="scheduleDate"
             formControlName="scheduleDate"
@@ -118,43 +178,180 @@
       </div>
     </app-card>
 
-    <app-card header="Logística de Busca / Hospedagem">
+    <app-card header="Logística de Busca / Hospedagem" icon="map-marker" class="responsible-card">
+      <div formGroupName="pickup" class="logistics-grid">
+        <div class="form-field">
+          <label for="cep">CEP</label>
+          <input
+            pInputMask
+            id="cep"
+            formControlName="cep"
+            mask="99999-999"
+            placeholder="00000-000"
+            autocomplete="postal-code"
+            class="form-control"
+            unmask="true"
+            maxlength="9"
+          />
+          @if (
+            bookingForm.controls.pickup.controls.cep.invalid &&
+            bookingForm.controls.pickup.controls.cep.touched
+          ) {
+            <small class="field-error">Informe um CEP válido.</small>
+          }
+        </div>
 
+        <div class="form-field">
+          <label for="locationName">
+            Local <span class="required-mark" aria-hidden="true">*</span>
+          </label>
+          <input
+            pInputText
+            id="locationName"
+            type="text"
+            formControlName="locationName"
+            placeholder="Hotel, pousada ou endereço"
+            autocomplete="street-address"
+            maxlength="150"
+          />
+          @if (
+            bookingForm.controls.pickup.controls.locationName.invalid &&
+            bookingForm.controls.pickup.controls.locationName.touched
+          ) {
+            <small class="field-error">Informe o local de busca.</small>
+          }
+        </div>
+
+        <div class="form-field">
+          <label for="referencePoint">
+            Ponto de referência <span class="required-mark" aria-hidden="true">*</span>
+          </label>
+          <input
+            pInputText
+            id="referencePoint"
+            type="text"
+            formControlName="referencePoint"
+            placeholder="Ex.: próximo à praça"
+            maxlength="255"
+          />
+          @if (
+            bookingForm.controls.pickup.controls.referencePoint.invalid &&
+            bookingForm.controls.pickup.controls.referencePoint.touched
+          ) {
+            <small class="field-error">Informe um ponto de referência.</small>
+          }
+        </div>
+
+        <div class="form-field">
+          <label for="pickupFee">Taxa</label>
+          <p-inputnumber
+            inputId="pickupFee"
+            formControlName="appliedPickupFee"
+            mode="currency"
+            currency="BRL"
+            locale="pt-BR"
+            placeholder="R$ 0,00"
+            inputStyleClass="form-control"
+            [min]="0"
+            [minFractionDigits]="2"
+            [maxFractionDigits]="2"
+          />
+          @if (
+            bookingForm.controls.pickup.controls.appliedPickupFee.invalid &&
+            bookingForm.controls.pickup.controls.appliedPickupFee.touched
+          ) {
+            <small class="field-error">A taxa não pode ser negativa.</small>
+          }
+        </div>
+      </div>
     </app-card>
 
-    <app-card header="Pagamento 20% - Pix">
-
+    <app-card header="Pagamento 20% - Pix" icon="image" class="responsible-card">
+      <app-pix-proof-upload
+        formControlName="pixPaymentUrl"
+        (uploadingChange)="pixProofUploading.set($event)"
+      />
     </app-card>
   </div>
 
   <aside class="booking-summary" aria-label="Resumo da reserva">
     <app-card header="Resumo da Reserva" icon="calculator">
+      <div class="summary-discount-field">
+        <div class="summary-field-heading">
+          <label for="manualDiscount">Desconto manual</label>
+          <span>Opcional</span>
+        </div>
+        <p-inputnumber
+          inputId="manualDiscount"
+          formControlName="manualDiscount"
+          mode="currency"
+          currency="BRL"
+          locale="pt-BR"
+          placeholder="R$ 0,00"
+          inputStyleClass="form-control"
+          [min]="0"
+          [minFractionDigits]="2"
+          [maxFractionDigits]="2"
+        />
+        <small>Use para aplicar cortesias ou ajustes comerciais.</small>
+      </div>
+
       <dl class="summary-items">
         <div class="summary-row">
-          <dt>Adulto (0)</dt>
-          <dd>R$ 0,00</dd>
+          <dt>Adulto ({{ adultCount() }})</dt>
+          <dd>{{ adultSubtotal() | currency: 'BRL' : 'symbol' : '1.2-2' }}</dd>
         </div>
         <div class="summary-row">
-          <dt>Criança de colo (0)</dt>
-          <dd>R$ 0,00</dd>
+          <dt>Criança de colo ({{ lapChildCount() }})</dt>
+          <dd>{{ 0 | currency: 'BRL' : 'symbol' : '1.2-2' }}</dd>
         </div>
         <div class="summary-row">
           <dt>Taxa de busca</dt>
-          <dd>R$ 0,00</dd>
+          <dd>
+            {{ pickupFeeAmount() | currency: 'BRL' : 'symbol' : '1.2-2' }}
+          </dd>
         </div>
         <div class="summary-row">
           <dt>Desconto manual</dt>
-          <dd>− R$ 0,00</dd>
+          <dd>
+            −
+            {{ manualDiscountAmount() | currency: 'BRL' : 'symbol' : '1.2-2' }}
+          </dd>
         </div>
       </dl>
 
       <div class="summary-total">
         <span>Total</span>
-        <strong>R$ 0,00</strong>
+        <strong>{{ total() | currency: 'BRL' : 'symbol' : '1.2-2' }}</strong>
       </div>
 
-      <button pButton type="submit" class="confirm-button">
-        Confirmar reserva
+      @if (bookingSubmitErrors().length) {
+        <div class="booking-submit-error" role="alert">
+          <strong>Não foi possível criar a reserva</strong>
+          <ul>
+            @for (error of bookingSubmitErrors(); track error) {
+              <li>{{ error }}</li>
+            }
+          </ul>
+          @if (bookingErrorTraceId()) {
+            <small>Código de suporte: {{ bookingErrorTraceId() }}</small>
+          }
+        </div>
+      }
+
+      <button
+        pButton
+        type="submit"
+        class="confirm-button disabled:cursor-not-allowed disabled:opacity-60"
+        [disabled]="pixProofUploading() || bookingSubmitting()"
+      >
+        @if (pixProofUploading()) {
+          Enviando comprovante...
+        } @else if (bookingSubmitting()) {
+          Confirmando reserva...
+        } @else {
+          Confirmar reserva
+        }
       </button>
     </app-card>
   </aside>

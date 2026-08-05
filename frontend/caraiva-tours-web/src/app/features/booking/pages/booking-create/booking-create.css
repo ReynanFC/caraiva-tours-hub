@@ -20,8 +20,57 @@
   @apply sm:col-span-2 lg:col-span-1;
 }
 
+.members-heading {
+  @apply mb-4 flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center;
+}
+
+.members-heading p {
+  @apply m-0 text-sm text-muted;
+}
+
+.add-member-button {
+  @apply flex h-10 shrink-0 items-center justify-center gap-2 rounded-control border-0 bg-primary px-4 font-ui text-sm font-semibold text-on-primary;
+  box-shadow: var(--shadow-button);
+}
+
+.add-member-button:hover {
+  @apply bg-primary-hover;
+}
+
+.add-member-button span {
+  @apply text-xl leading-none;
+}
+
+.members-list {
+  @apply grid gap-3;
+}
+
+.member-row {
+  @apply grid min-w-0 grid-cols-1 items-end gap-3 rounded-lg border border-border bg-background p-3 sm:grid-cols-[minmax(0,1fr)_8rem_auto];
+}
+
+.member-child-field {
+  @apply flex h-11 items-center gap-2;
+}
+
+.member-child-field label {
+  @apply cursor-pointer text-sm font-medium text-foreground;
+}
+
+.remove-member-button {
+  @apply h-11 rounded-control border border-danger bg-transparent px-3 font-ui text-sm font-semibold text-danger;
+}
+
+.remove-member-button:hover {
+  @apply bg-red-50;
+}
+
 .tour-grid {
   @apply grid min-w-0 grid-cols-1 items-start gap-4 lg:grid-cols-[minmax(0,1fr)_18rem];
+}
+
+.logistics-grid {
+  @apply grid min-w-0 grid-cols-1 items-start gap-4 sm:grid-cols-2 lg:grid-cols-4;
 }
 
 .form-field {
@@ -32,12 +81,17 @@
   @apply text-sm font-medium text-foreground;
 }
 
+.required-mark {
+  @apply text-danger;
+}
+
 .form-field p-inputmask {
   @apply block w-full;
 }
 
 .form-field p-autocomplete,
-.form-field p-datepicker {
+.form-field p-datepicker,
+.form-field p-inputnumber {
   @apply block w-full;
 }
 
@@ -53,7 +107,8 @@
 }
 
 :host ::ng-deep .p-autocomplete,
-:host ::ng-deep .p-datepicker {
+:host ::ng-deep .p-datepicker,
+:host ::ng-deep .p-inputnumber {
   @apply flex w-full min-w-0;
 }
 
@@ -64,7 +119,8 @@
 }
 
 :host ::ng-deep .p-autocomplete-input,
-:host ::ng-deep .p-datepicker-input {
+:host ::ng-deep .p-datepicker-input,
+:host ::ng-deep .p-inputnumber-input {
   flex: 1 1 0% !important;
   min-width: 0;
   width: auto;
@@ -117,6 +173,40 @@
   @apply min-w-0 xl:sticky xl:top-6;
 }
 
+.summary-discount-field {
+  @apply mb-5 grid gap-1.5 rounded-lg border border-border bg-background p-3;
+}
+
+.summary-field-heading {
+  @apply flex items-center justify-between gap-3;
+}
+
+.summary-field-heading label {
+  @apply text-sm font-medium text-foreground;
+}
+
+.summary-field-heading span {
+  @apply text-xs font-medium text-muted;
+}
+
+.summary-discount-field p-inputnumber,
+:host ::ng-deep .summary-discount-field .p-inputnumber {
+  @apply flex w-full min-w-0;
+}
+
+:host ::ng-deep .summary-discount-field .p-inputnumber-input {
+  @apply h-10 w-full rounded-control border border-border bg-surface px-3.5 font-ui text-sm text-foreground outline-none transition-[border-color,box-shadow] duration-200 placeholder:text-muted;
+}
+
+:host ::ng-deep .summary-discount-field .p-inputnumber-input:focus {
+  @apply border-primary;
+  box-shadow: 0 0 0 4px var(--color-focus-ring);
+}
+
+.summary-discount-field > small {
+  @apply text-xs leading-relaxed text-muted;
+}
+
 .summary-items {
   @apply m-0 grid gap-3;
 }
@@ -143,6 +233,22 @@
 
 .summary-total strong {
   @apply text-xl font-bold text-primary;
+}
+
+.booking-submit-error {
+  @apply mt-4 rounded-lg border border-red-200 bg-red-50 p-3 text-danger;
+}
+
+.booking-submit-error strong {
+  @apply text-sm font-semibold;
+}
+
+.booking-submit-error ul {
+  @apply my-2 list-disc space-y-1 pl-5 text-xs;
+}
+
+.booking-submit-error small {
+  @apply block break-all text-xs text-red-700;
 }
 
 .confirm-button {

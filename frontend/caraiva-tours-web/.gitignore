@@ -1,0 +1,22 @@
+# Dependencies and generated Angular files
+/node_modules/
+/.angular/
+/dist/
+/out-tsc/
+/coverage/
+/tmp/
+
+# Local environment and secrets
+/src/environment/
+.env
+.env.*
+!.env.example
+
+# Local logs and operating-system files
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.DS_Store
+Thumbs.db

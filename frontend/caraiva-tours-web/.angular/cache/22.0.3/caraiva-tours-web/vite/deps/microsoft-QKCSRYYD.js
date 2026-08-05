@@ -1,8 +1,0 @@
-import "./chunk-GOMI4DH3.js";
-
-// node_modules/@primeicons/core/dist/esm/icons/microsoft.mjs
-var o = { name: "microsoft", meta: { tags: ["microsoft", "brand", "computer", "technology", "windows"] }, svg: { xmlns: "http://www.w3.org/2000/svg", width: 20, height: 20, viewBox: "0 0 20 20", fill: "none" }, nodes: [["path", { d: "M2 2H9.5V9.5H2V2ZM10.5 2H18V9.5H10.5V2ZM2 10.5H9.5V18H2V10.5ZM10.5 10.5H18V18H10.5V10.5Z", fill: "currentColor", key: "uvyllt" }]] };
-export {
-  o as microsoft
-};
-//# sourceMappingURL=microsoft-QKCSRYYD.js.map

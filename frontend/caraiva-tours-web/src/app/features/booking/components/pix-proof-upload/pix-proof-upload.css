@@ -1,0 +1,107 @@
+@reference '../../../../../styles.css';
+
+:host {
+  @apply block;
+}
+
+.upload-heading {
+  @apply mb-4 flex flex-col items-start justify-between gap-2 sm:flex-row sm:items-start;
+}
+
+.upload-heading > div {
+  @apply grid gap-1;
+}
+
+.upload-heading strong {
+  @apply text-sm font-semibold text-foreground;
+}
+
+.upload-heading p {
+  @apply m-0 text-sm text-muted;
+}
+
+.file-input {
+  @apply sr-only;
+}
+
+.upload-dropzone {
+  @apply flex min-h-28 cursor-pointer items-center justify-center gap-3 rounded-xl border-2 border-dashed border-border bg-background px-4 py-5 text-center transition-colors hover:border-primary hover:bg-primary-light;
+}
+
+.upload-dropzone-disabled {
+  @apply pointer-events-none cursor-not-allowed opacity-60;
+}
+
+.upload-symbol {
+  @apply flex size-10 shrink-0 items-center justify-center rounded-full bg-primary text-2xl leading-none text-on-primary;
+}
+
+.upload-dropzone > span:last-child {
+  @apply grid gap-1 text-left;
+}
+
+.upload-dropzone strong {
+  @apply text-sm font-semibold text-foreground;
+}
+
+.upload-dropzone small {
+  @apply text-xs text-muted;
+}
+
+.proof-preview {
+  @apply grid min-w-0 grid-cols-[5rem_minmax(0,1fr)] items-center gap-3 rounded-xl border border-border bg-background p-3 sm:grid-cols-[5rem_minmax(0,1fr)_auto];
+}
+
+.proof-preview img {
+  @apply size-20 rounded-lg border border-border bg-surface object-cover;
+}
+
+.proof-info {
+  @apply grid min-w-0 gap-1;
+}
+
+.proof-info > strong {
+  @apply truncate text-sm font-semibold text-foreground;
+}
+
+.proof-info > small {
+  @apply text-xs text-muted;
+}
+
+.upload-status {
+  @apply mt-1 min-h-5 text-xs font-medium;
+}
+
+.status-uploading {
+  @apply text-muted;
+}
+
+.status-success {
+  @apply text-green-700;
+}
+
+.status-error,
+.upload-error {
+  @apply text-danger;
+}
+
+.proof-actions {
+  @apply col-span-2 flex flex-wrap gap-2 sm:col-span-1 sm:justify-end;
+}
+
+.change-button,
+.remove-button {
+  @apply flex h-9 cursor-pointer items-center justify-center rounded-control bg-transparent px-3 font-ui text-xs font-semibold;
+}
+
+.change-button {
+  @apply border border-primary text-primary hover:bg-primary-light;
+}
+
+.remove-button {
+  @apply border border-danger text-danger hover:bg-red-50;
+}
+
+.upload-error {
+  @apply mt-2 block text-xs font-medium;
+}
