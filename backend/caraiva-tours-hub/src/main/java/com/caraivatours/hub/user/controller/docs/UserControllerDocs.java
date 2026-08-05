@@ -6,7 +6,7 @@ import com.caraivatours.hub.user.dto.request.ToggleUserEnabledDTO;
 import com.caraivatours.hub.user.dto.request.UserChangePasswordDTO;
 import com.caraivatours.hub.user.dto.request.UserRegistrationDTO;
 import com.caraivatours.hub.user.dto.request.UserUpdateDTO;
-import com.caraivatours.hub.user.dto.response.UserHeaderProjection;
+import com.caraivatours.hub.user.dto.response.UserHeaderDTO;
 import com.caraivatours.hub.user.dto.response.UserProfileDTO;
 import com.caraivatours.hub.user.dto.response.UserSummaryDTO;
 import io.swagger.v3.oas.annotations.Operation;
@@ -85,13 +85,13 @@ public interface UserControllerDocs {
                     @ApiResponse(
                             description = "Success",
                             responseCode = "200",
-                            content = @Content(schema = @Schema(implementation = UserHeaderProjection.class))
+                            content = @Content(schema = @Schema(implementation = UserHeaderDTO.class))
                     ),
                     @ApiResponse(description = "Unauthorized - Missing or invalid token", responseCode = "401", content = @Content),
                     @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content)
             }
     )
-    ResponseEntity<UserHeaderProjection> findHeaderData(
+    ResponseEntity<UserHeaderDTO> findHeaderData(
             @Parameter(hidden = true) AuthenticatedUser authenticatedUser
     );
 

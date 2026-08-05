@@ -11,7 +11,7 @@ import com.caraivatours.hub.user.dto.request.ToggleUserEnabledDTO;
 import com.caraivatours.hub.user.dto.request.UserChangePasswordDTO;
 import com.caraivatours.hub.user.dto.request.UserRegistrationDTO;
 import com.caraivatours.hub.user.dto.request.UserUpdateDTO;
-import com.caraivatours.hub.user.dto.response.UserHeaderProjection;
+import com.caraivatours.hub.user.dto.response.UserHeaderDTO;
 import com.caraivatours.hub.user.dto.response.UserProfileDTO;
 import com.caraivatours.hub.user.dto.response.UserSummaryDTO;
 import jakarta.persistence.EntityManager;
@@ -422,10 +422,12 @@ class UserTest extends AbstractIntegrationTest {
                         UserRole.EMPLOYEE
                 );
 
-                UserHeaderProjection result = userService.findHeaderDataById(user.getId());
+                UserHeaderDTO result = userService.findHeaderDataById(user.getId());
+                UserHeaderDTO cachedResult = userService.findHeaderDataById(user.getId());
 
-                assertThat(result.getName()).isEqualTo("maria");
-                assertThat(result.getRole()).isEqualTo("EMPLOYEE");
+                assertThat(result.name()).isEqualTo("maria");
+                assertThat(result.role()).isEqualTo("EMPLOYEE");
+                assertThat(cachedResult).isEqualTo(result);
             }
 
             @Test

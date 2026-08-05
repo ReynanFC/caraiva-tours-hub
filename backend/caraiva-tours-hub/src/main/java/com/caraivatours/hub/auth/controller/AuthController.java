@@ -9,8 +9,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Duration;
@@ -41,6 +43,9 @@ public class AuthController implements AuthControllerDocs {
     @PostMapping("/refresh")
     @Override
     public ResponseEntity<TokenDTO> refresh(@CookieValue(name = REFRESH_COOKIE_NAME, required = false) String refreshToken, HttpServletResponse response) {
+        if (!StringUtils.hasText(refreshToken)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
 
         ResponseEntity<TokenDTO> result = authService.refreshToken(refreshToken);
         TokenDTO bodyWithoutRefresh = finalizeTokenResponse(result.getBody(), response);

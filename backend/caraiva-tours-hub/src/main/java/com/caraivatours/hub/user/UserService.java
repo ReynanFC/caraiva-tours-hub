@@ -10,7 +10,7 @@ import com.caraivatours.hub.user.dto.request.ToggleUserEnabledDTO;
 import com.caraivatours.hub.user.dto.request.UserChangePasswordDTO;
 import com.caraivatours.hub.user.dto.request.UserRegistrationDTO;
 import com.caraivatours.hub.user.dto.request.UserUpdateDTO;
-import com.caraivatours.hub.user.dto.response.UserHeaderProjection;
+import com.caraivatours.hub.user.dto.response.UserHeaderDTO;
 import com.caraivatours.hub.user.dto.response.UserProfileDTO;
 import com.caraivatours.hub.user.dto.response.UserSummaryDTO;
 import lombok.RequiredArgsConstructor;
@@ -76,14 +76,16 @@ public class UserService implements UserDetailsService {
 
     @Transactional(readOnly = true)
     @Cacheable(value = "userHeader", key = "#id")
-    public UserHeaderProjection findHeaderDataById(Long id) {
+    public UserHeaderDTO findHeaderDataById(Long id) {
         log.info("Fetching user header data for ID: {}", id);
 
-        return userRepository.findHeaderDataById(id)
+        var projection = userRepository.findHeaderDataById(id)
                 .orElseThrow(() -> {
                     log.debug("Fetch failed: User header data for ID {} not found", id);
                     return new ResourceNotFoundException("User not found with id: " + id);
                 });
+
+        return new UserHeaderDTO(projection.getName(), projection.getRole());
     }
 
     @Cacheable(value = "userProfile", key = "#id")

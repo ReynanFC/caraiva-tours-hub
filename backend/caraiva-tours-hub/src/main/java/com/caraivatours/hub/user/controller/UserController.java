@@ -11,7 +11,7 @@ import com.caraivatours.hub.user.dto.request.ToggleUserEnabledDTO;
 import com.caraivatours.hub.user.dto.request.UserChangePasswordDTO;
 import com.caraivatours.hub.user.dto.request.UserRegistrationDTO;
 import com.caraivatours.hub.user.dto.request.UserUpdateDTO;
-import com.caraivatours.hub.user.dto.response.UserHeaderProjection;
+import com.caraivatours.hub.user.dto.response.UserHeaderDTO;
 import com.caraivatours.hub.user.dto.response.UserProfileDTO;
 import com.caraivatours.hub.user.dto.response.UserSummaryDTO;
 import jakarta.validation.Valid;
@@ -69,7 +69,7 @@ public class UserController implements UserControllerDocs {
     }
 
     @GetMapping("/me/header")
-    public ResponseEntity<UserHeaderProjection> findHeaderData(
+    public ResponseEntity<UserHeaderDTO> findHeaderData(
             @AuthenticationPrincipal AuthenticatedUser authenticatedUser) {
 
         return ResponseEntity.ok(userService.findHeaderDataById(authenticatedUser.id()));

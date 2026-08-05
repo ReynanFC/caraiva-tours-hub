@@ -2,6 +2,7 @@ package com.caraivatours.hub.client;
 
 import com.caraivatours.hub.client.dto.ClientDTO;
 import com.caraivatours.hub.shared.exceptions.BadRequestException;
+import com.caraivatours.hub.shared.exceptions.EmailAlreadyExistsException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,10 @@ public class ClientService {
 
     public Client findOrCreate(ClientDTO clientDTO) {
         log.debug("Looking up client by phone: {}", clientDTO.phone());
+
+        if (clientRepository.existsClientByEmail(clientDTO.email())) {
+            throw new EmailAlreadyExistsException("The email " + clientDTO.email() + " already exists");
+        }
 
         return clientRepository.findByPhone(clientDTO.phone())
                 .map(existing -> {
