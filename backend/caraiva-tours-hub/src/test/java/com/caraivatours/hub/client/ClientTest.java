@@ -3,6 +3,7 @@ package com.caraivatours.hub.client;
 import com.caraivatours.hub.AbstractIntegrationTest;
 import com.caraivatours.hub.client.dto.ClientDTO;
 import com.caraivatours.hub.shared.exceptions.BadRequestException;
+import com.caraivatours.hub.shared.exceptions.EmailAlreadyExistsException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.DisplayName;
@@ -230,7 +231,7 @@ class ClientTest extends AbstractIntegrationTest {
                             "joao.santos@example.com"
                     ));
                     clientRepository.flush();
-                }).isInstanceOf(DataIntegrityViolationException.class);
+                }).isInstanceOf(EmailAlreadyExistsException.class);
             }
         }
 
