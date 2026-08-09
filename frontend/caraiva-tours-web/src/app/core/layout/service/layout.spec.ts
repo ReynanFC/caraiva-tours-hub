@@ -19,11 +19,11 @@ describe('Layout', () => {
 
   it('should request the current user header data', () => {
     service.getUserProfile().subscribe((profile) => {
-      expect(profile).toEqual({ name: 'Maria Oliveira', role: 'ADMIN' });
+      expect(profile).toEqual({ id: 7, name: 'Maria Oliveira', role: 'ADMIN' });
     });
 
     const request = httpTesting.expectOne('/api/users/me/header');
     expect(request.request.method).toBe('GET');
-    request.flush({ name: 'Maria Oliveira', role: 'ADMIN' });
+    request.flush({ id: 7, name: 'Maria Oliveira', role: 'ADMIN' });
   });
 });

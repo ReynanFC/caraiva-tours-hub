@@ -1,0 +1,130 @@
+<form #editForm="ngForm" class="edit-form" (ngSubmit)="save()">
+  <div class="field">
+    <label for="edit-client">Cliente</label>
+    <input
+      pInputText
+      id="edit-client"
+      name="clientName"
+      maxlength="100"
+      [(ngModel)]="clientName"
+    />
+  </div>
+  <div class="field">
+    <label for="edit-phone">Telefone</label>
+    <input
+      pInputText
+      id="edit-phone"
+      name="clientPhone"
+      maxlength="20"
+      placeholder="(73) 90000-0000"
+      [(ngModel)]="clientPhone"
+    />
+  </div>
+  <div class="field">
+    <label for="edit-tour">Passeio</label>
+    <p-select
+      inputId="edit-tour"
+      name="tourId"
+      optionLabel="name"
+      optionValue="id"
+      appendTo="body"
+      [options]="tours()"
+      [(ngModel)]="tourId"
+    />
+  </div>
+  <div class="field">
+    <label for="edit-date">Data / hora</label>
+    <input
+      pInputText
+      id="edit-date"
+      name="scheduleDate"
+      type="datetime-local"
+      [(ngModel)]="scheduleDate"
+    />
+    @if (scheduleDate && !scheduleDateIsFuture()) {
+      <small class="field-error">Informe uma data e hora futuras.</small>
+    }
+  </div>
+
+  <section class="members-section">
+    <div class="members-heading">
+      <div>
+        <strong>Integrantes</strong>
+        <span>O responsável pela reserva não precisa ser adicionado.</span>
+      </div>
+      <button pButton type="button" class="add-member-button" (click)="addMember()">
+        <span aria-hidden="true">+</span> Adicionar
+      </button>
+    </div>
+
+    @if (members.length) {
+      <div class="members-list">
+        @for (member of members; track $index; let index = $index) {
+          <div class="member-row">
+            <div class="field">
+              <label [for]="'edit-member-' + index">Nome</label>
+              <input
+                #memberName="ngModel"
+                pInputText
+                [id]="'edit-member-' + index"
+                [name]="'memberName-' + index"
+                required
+                maxlength="100"
+                [(ngModel)]="member.name"
+              />
+              @if (memberName.invalid && memberName.touched) {
+                <small class="field-error">Informe o nome do integrante.</small>
+              }
+            </div>
+            <div class="lap-child-field">
+              <p-checkbox
+                [inputId]="'edit-lap-child-' + index"
+                [name]="'memberLapChild-' + index"
+                [binary]="true"
+                [(ngModel)]="member.isLapChild"
+              />
+              <label [for]="'edit-lap-child-' + index">Criança de colo</label>
+            </div>
+            <button
+              pButton
+              type="button"
+              class="remove-member-button"
+              [attr.aria-label]="'Remover ' + (member.name || 'integrante')"
+              (click)="removeMember(index)"
+            >
+              <svg pIcon="trash" aria-hidden="true"></svg>
+            </button>
+          </div>
+        }
+      </div>
+    } @else {
+      <p class="members-empty">Nenhum integrante adicional.</p>
+    }
+  </section>
+
+  <div class="field">
+    <label for="edit-discount">Desconto manual (R$)</label>
+    <p-inputnumber
+      inputId="edit-discount"
+      name="manualDiscount"
+      mode="currency"
+      currency="BRL"
+      locale="pt-BR"
+      [min]="0"
+      [(ngModel)]="manualDiscount"
+    />
+  </div>
+  <div class="pix-field">
+    <app-pix-proof-upload
+      name="pixUrl"
+      [(ngModel)]="pixUrl"
+      (uploadingChange)="pixUploading = $event"
+    />
+  </div>
+  <footer>
+    <button pButton type="button" class="cancel-button" (click)="cancel()">Cancelar</button>
+    <button pButton type="submit" class="save-button" [disabled]="!canSave() || editForm.invalid">
+      <svg pIcon="check" aria-hidden="true"></svg>Salvar
+    </button>
+  </footer>
+</form>

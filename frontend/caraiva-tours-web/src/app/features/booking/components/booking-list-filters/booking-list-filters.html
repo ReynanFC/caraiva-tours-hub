@@ -1,0 +1,48 @@
+<div class="filters">
+  <div class="status-filter" role="group" aria-label="Filtrar reservas por status">
+    <div class="status-filter-row">
+      @for (option of mainStateOptions; track option.value) {
+        <button
+          pButton
+          type="button"
+          class="status-button"
+          [class.is-active]="selectedStatus() === option.value"
+          [attr.aria-pressed]="selectedStatus() === option.value"
+          (click)="selectedStatus.set(option.value)"
+        >
+          {{ option.label }}
+        </button>
+      }
+    </div>
+
+    <div class="status-filter-row">
+      @for (option of cancellationStateOptions; track option.value) {
+        <button
+          pButton
+          type="button"
+          class="status-button"
+          [class.is-active]="selectedStatus() === option.value"
+          [attr.aria-pressed]="selectedStatus() === option.value"
+          (click)="selectedStatus.set(option.value)"
+        >
+          {{ option.label }}
+        </button>
+      }
+    </div>
+  </div>
+
+  <label class="search-field">
+    <span class="sr-only">Buscar por telefone</span>
+    <svg pIcon="search" aria-hidden="true"></svg>
+    <input
+      #searchInput
+      [pInputMask]="'(99) 99999-9999'"
+      autocomplete="off"
+      placeholder="Buscar por n° de telefone"
+      slotChar="0"
+      maxlength="20"
+      [ngModel]="search()"
+      (onUnmaskedChange)="updateSearch($event, searchInput.value)"
+    />
+  </label>
+</div>

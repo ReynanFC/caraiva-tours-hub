@@ -11,6 +11,7 @@
   <p-sidebar-main>
     <app-layout-header
       [profile]="userProfile()"
+      [profileLoading]="profileResource.isLoading()"
       [title]="pageTitle()"
       [description]="pageDescription()"
     />

@@ -1,1 +1,72 @@
-<p>Lista de reservas</p>
+<section class="booking-list-page" aria-label="Lista de reservas">
+  <p-toast key="booking-actions" position="top-right" />
+
+  <div class="list-card">
+    <app-booking-list-filters
+      [selectedStatus]="selectedStatus()"
+      [search]="search()"
+      (selectedStatusChange)="changeStatus($event)"
+      (searchChange)="changeSearch($event)"
+    />
+
+    @if (bookingsResource.error()) {
+      <div class="state error-state" role="alert">
+        <svg pIcon="exclamation-triangle" aria-hidden="true"></svg>
+        <strong>Não foi possível carregar as reservas.</strong>
+        <span>Verifique sua conexão e tente novamente.</span>
+        <button pButton type="button" (click)="bookingsResource.reload()">Tentar novamente</button>
+      </div>
+    } @else if (bookingsResource.isLoading() && !bookingsResource.hasValue()) {
+      <div class="state" aria-live="polite">
+        <svg class="spinner" pIcon="spinner" aria-hidden="true"></svg>
+        <span>Carregando reservas...</span>
+      </div>
+    } @else if (!bookingsResource.value()?.content?.length) {
+      <div class="state">
+        <svg pIcon="calendar-times" aria-hidden="true"></svg
+        ><span>Nenhuma reserva encontrada.</span>
+      </div>
+    } @else {
+      <app-booking-list-table
+        [bookings]="bookingsResource.value()!.content"
+        [loading]="bookingsResource.isLoading() || actionLoadingId() !== null"
+        [isAdmin]="isAdmin()"
+        [currentUserId]="currentUserId()"
+        (view)="openBookingDetails($event)"
+        (edit)="openEditDialog($event)"
+        (receipt)="openReceipt($event)"
+        (confirm)="confirmBooking($event)"
+      />
+    }
+
+    <footer class="pager">
+      <span
+        >Página {{ (bookingsResource.value()?.page ?? page()) + 1 }} de
+        {{ bookingsResource.value()?.totalPages || 1 }}</span
+      >
+      <div>
+        <button
+          pButton
+          type="button"
+          aria-label="Página anterior"
+          [disabled]="page() === 0 || bookingsResource.isLoading()"
+          (click)="previousPage()"
+        >
+          <svg pIcon="chevron-left" aria-hidden="true"></svg>
+        </button>
+        <button
+          pButton
+          type="button"
+          aria-label="Próxima página"
+          [disabled]="
+            page() + 1 >= (bookingsResource.value()?.totalPages ?? 0) ||
+            bookingsResource.isLoading()
+          "
+          (click)="nextPage()"
+        >
+          <svg pIcon="chevron-right" aria-hidden="true"></svg>
+        </button>
+      </div>
+    </footer>
+  </div>
+</section>

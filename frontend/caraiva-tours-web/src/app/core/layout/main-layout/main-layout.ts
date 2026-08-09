@@ -1,12 +1,11 @@
-import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
+import { Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { SidebarModule } from 'primeng/sidebar';
-import { catchError, filter, of, startWith } from 'rxjs';
+import { filter, startWith } from 'rxjs';
+import { SessionStore } from '../../auth/session/session-store';
 import { TokenStore } from '../../auth/token/token-store';
 import { NavigationItem } from '../models/navigation-item';
-import { Layout } from '../service/layout';
-import { UserProfile } from '../models/user-profile';
 import { LayoutHeader } from './components/layout-header/layout-header';
 import { LayoutSidebar } from './components/layout-sidebar/layout-sidebar';
 
@@ -17,12 +16,15 @@ import { LayoutSidebar } from './components/layout-sidebar/layout-sidebar';
   styleUrl: './main-layout.css',
 })
 export class MainLayout implements OnInit {
-  private readonly layoutService = inject(Layout);
   private readonly router = inject(Router);
+  private readonly sessionStore = inject(SessionStore);
   private readonly tokenStore = inject(TokenStore);
   private readonly destroyRef = inject(DestroyRef);
 
-  protected readonly userProfile = signal<UserProfile | null>(null);
+  protected readonly profileResource = this.sessionStore.profileResource;
+  protected readonly userProfile = computed(() =>
+    this.profileResource.hasValue() ? this.profileResource.value() : null,
+  );
   protected readonly isMobile = signal(false);
   protected readonly sidebarOpen = signal(true);
   protected readonly pageTitle = signal('Dashboard');
@@ -43,7 +45,7 @@ export class MainLayout implements OnInit {
     },
     {
       label: 'Reservas',
-      description: 'Acompanhe e organize todas as reservas.',
+      description: 'Gerencie e audite todos os agendamentos.',
       icon: 'calendar',
       route: '/reservas',
     },
@@ -77,8 +79,6 @@ export class MainLayout implements OnInit {
   private mediaQueryListener?: (event: MediaQueryListEvent) => void;
 
   ngOnInit(): void {
-    this.loadUserProfile();
-
     this.router.events
       .pipe(
         filter((event): event is NavigationEnd => event instanceof NavigationEnd),
@@ -103,17 +103,8 @@ export class MainLayout implements OnInit {
 
   protected signOut(): void {
     this.tokenStore.clearToken();
+    this.sessionStore.clear();
     void this.router.navigate(['/login']);
-  }
-
-  private loadUserProfile(): void {
-    this.layoutService
-      .getUserProfile()
-      .pipe(
-        catchError(() => of(null)),
-        takeUntilDestroyed(this.destroyRef),
-      )
-      .subscribe((profile) => this.userProfile.set(profile));
   }
 
   private updateViewport(isMobile: boolean): void {

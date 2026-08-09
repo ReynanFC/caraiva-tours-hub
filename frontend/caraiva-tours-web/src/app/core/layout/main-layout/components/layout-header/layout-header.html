@@ -17,11 +17,11 @@
     </div>
   </div>
 
-    <div class="header-profile" aria-label="Usuário atual">
-      <span class="header-avatar" aria-hidden="true">{{ initials() }}</span>
-      <span>
-        <strong>{{ displayName() }}</strong>
-        <small>{{ roleLabel() }}</small>
-      </span>
-    </div>
+  <div class="header-profile" aria-label="Usuário atual" [attr.aria-busy]="profileLoading()">
+    <span class="header-avatar" aria-hidden="true">{{ initials() }}</span>
+    <span>
+      <strong>{{ displayName() }}</strong>
+      <small>{{ roleLabel() }}</small>
+    </span>
+  </div>
 </header>

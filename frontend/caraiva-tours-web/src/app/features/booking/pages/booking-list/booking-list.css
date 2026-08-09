@@ -1,1 +1,90 @@
+@reference '../../../../../styles.css';
 
+:host {
+  @apply block;
+}
+.booking-list-page {
+  @apply flex justify-center mt-5;
+}
+.list-card {
+  @apply w-350 overflow-hidden rounded-lg border border-border bg-surface shadow-sm;
+}
+.state {
+  @apply flex min-h-72 flex-col items-center justify-center gap-3 p-8 text-center font-ui text-sm text-muted;
+}
+.state > svg {
+  @apply size-7 text-muted;
+}
+.state .spinner {
+  @apply size-8 animate-spin text-primary;
+}
+.error-state {
+  @apply text-red-700;
+}
+.error-state > svg {
+  @apply text-danger;
+}
+.error-state strong {
+  @apply text-sm font-semibold text-danger;
+}
+.error-state span {
+  @apply text-sm;
+}
+.error-state button {
+  @apply mt-1 rounded-md! border! border-danger! bg-surface! px-3! py-2! text-sm! font-semibold! text-danger! shadow-none!;
+}
+::ng-deep .p-toast {
+  width: min(22rem, calc(100vw - 2rem)) !important;
+}
+::ng-deep .p-toast-message {
+  @apply rounded-lg! border! bg-surface! shadow-lg!;
+}
+::ng-deep .p-toast-message-success {
+  @apply border-emerald-200!;
+}
+::ng-deep .p-toast-message-error {
+  @apply border-red-200!;
+}
+.pager {
+  @apply flex items-center justify-between border-t border-border px-4 py-3.5 font-ui text-sm text-muted;
+}
+.pager div {
+  @apply flex gap-1;
+}
+.pager button {
+  @apply grid! size-8! min-w-8! place-items-center! rounded-md! border-0! bg-transparent! p-0! text-muted! shadow-none!;
+}
+.pager button:hover:not(:disabled) {
+  @apply bg-gray-100! text-foreground!;
+}
+.pager button:disabled {
+  @apply cursor-default! opacity-40!;
+}
+.pager svg {
+  @apply size-4;
+}
+
+::ng-deep .booking-edit-dialog {
+  @apply overflow-hidden rounded-lg! border! border-border! bg-surface! shadow-2xl!;
+}
+::ng-deep .booking-edit-dialog .p-dialog-header {
+  @apply border-b! border-border! px-5! py-4! font-display! text-base! font-bold!;
+}
+::ng-deep .booking-edit-dialog .p-dialog-content {
+  @apply bg-surface! p-5!;
+}
+::ng-deep .p-dialog-mask {
+  background: rgb(0 0 0 / 40%) !important;
+}
+
+@media (max-width: 767px) {
+  .booking-list-page {
+    @apply gap-2;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .state .spinner {
+    animation: none;
+  }
+}

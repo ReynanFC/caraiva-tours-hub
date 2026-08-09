@@ -1,17 +1,14 @@
-import { TokenStore } from '../auth/token/token-store';
 import { HttpClient, HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { BehaviorSubject, catchError, filter, switchMap, take, throwError } from 'rxjs';
+import { catchError, switchMap, throwError } from 'rxjs';
+import { TokenStore } from '../auth/token/token-store';
+import { Auth } from '../service/auth';
 
-let isRefreshing = false;
-const refreshedToken$ = new BehaviorSubject<string | null>(null);
-
-const REFRESH_URL = '/auth/refresh';
 const AUTH_URL_PREFIX = '/auth/';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const tokenStore = inject(TokenStore);
-  const http = inject(HttpClient);
+  const authService = inject(Auth);
 
   const token = tokenStore.getAccessToken();
 
@@ -31,34 +28,11 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         return throwError(() => error);
       }
 
-      if (isRefreshing) {
-        return refreshedToken$.pipe(
-          filter((t): t is string => t !== null),
-          take(1),
-          switchMap((newToken) =>
-            next(req.clone({ setHeaders: { Authorization: `Bearer ${newToken}` } })),
-          ),
-        );
-      }
-
-      isRefreshing = true;
-      refreshedToken$.next(null);
-
-      return http.post<{ accessToken: string }>(REFRESH_URL, {}, { withCredentials: true }).pipe(
-        switchMap(({ accessToken }) => {
-          tokenStore.setAccessToken(accessToken);
-          isRefreshing = false;
-          refreshedToken$.next(accessToken);
-
-          return next(req.clone({ setHeaders: { Authorization: `Bearer ${accessToken}` } }));
-        }),
-        catchError((refreshError) => {
-          isRefreshing = false;
-          tokenStore.clearToken();
-
-          return throwError(() => refreshError);
-        }),
+      return authService.refreshToken().pipe(
+        switchMap((newToken) =>
+          next(req.clone({ setHeaders: { Authorization: `Bearer ${newToken}` } }))
+        )
       );
-    }),
+    })
   );
 };

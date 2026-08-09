@@ -22,10 +22,44 @@ export interface CreateBookingRequest {
 
 export interface BookingSummary {
   id: number;
+  attendantId: number;
   clientName: string;
   tourName: string;
   date: string;
   groupSize: number;
   totalPrice: number;
-  status: string;
+  status: BookingStatus;
 }
+
+export interface BookingDetails {
+  members: BookingMember[];
+  commissionEarned: number;
+  history: BookingStatusHistory[];
+}
+
+export interface UpdateBookingRequest {
+  clientName: string | null;
+  clientPhone: string | null;
+  tourId: number | null;
+  scheduleDate: string | null;
+  members: BookingMember[] | null;
+  manualDiscount: number | null;
+  pixUrl: string | null;
+}
+
+export interface BookingMember {
+  name: string;
+  isLapChild: boolean;
+}
+
+export interface BookingStatusHistory {
+  previousStatus: BookingStatus | null;
+  newStatus: BookingStatus;
+  changeReason: string | null;
+  changedAt: string;
+  changedByUserName: string;
+}
+
+export type BookingStatus = 'DRAFT' | 'CONFIRMED' | 'COMPLETED' | 'CANCEL_REQUEST' | 'CANCELLED';
+
+export type BookingStatusFilter = BookingStatus | 'ALL';

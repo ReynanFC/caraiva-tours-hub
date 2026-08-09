@@ -1,0 +1,151 @@
+<div class="desktop-table">
+  <p-table [value]="bookings()" [loading]="loading()" styleClass="booking-table">
+    <ng-template #header>
+      <tr>
+        <th>Nº</th>
+        <th>Cliente</th>
+        <th>Passeio</th>
+        <th>Data</th>
+        <th>Qtd. vagas</th>
+        <th>Valor</th>
+        <th>Status</th>
+        <th class="actions-heading">Ações</th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-booking>
+      <tr>
+        <td>#{{ booking.id }}</td>
+        <td class="strong-cell">{{ booking.clientName }}</td>
+        <td>{{ booking.tourName }}</td>
+        <td>
+          <span>{{ booking.date | date: 'dd/MM/yyyy' }}</span>
+          <small><strong> {{ booking.date | date: 'HH:mm' }}</strong></small>
+        </td>
+        <td>{{ booking.groupSize }}</td>
+        <td class="strong-cell">{{ booking.totalPrice | currency: 'BRL' : 'symbol' : '1.2-2' }}</td>
+        <td>
+          <span class="status-badge" [class]="statusClass(booking.status)">
+            <i aria-hidden="true"></i>{{ statusLabel(booking.status) }}
+          </span>
+        </td>
+        <td>
+          <div class="actions">
+            <button
+              pButton
+              type="button"
+              class="icon-button"
+              title="Ver detalhes"
+              aria-label="Ver detalhes"
+              (click)="view.emit(booking)"
+            >
+              <svg pIcon="eye" aria-hidden="true"></svg>
+            </button>
+            @if (canEdit(booking)) {
+              <button
+                pButton
+                type="button"
+                class="icon-button"
+                title="Editar"
+                aria-label="Editar reserva"
+                (click)="edit.emit(booking)"
+              >
+                <svg pIcon="pencil" aria-hidden="true"></svg>
+              </button>
+            }
+            @if (canOpenReport(booking)) {
+              <button
+                pButton
+                type="button"
+                class="icon-button"
+                title="Recibo PDF"
+                aria-label="Abrir recibo PDF"
+                (click)="receipt.emit(booking)"
+              >
+                <svg pIcon="file-pdf" aria-hidden="true"></svg>
+              </button>
+            }
+            @if (isAdmin() && booking.status === 'CONFIRMED') {
+              <button
+                pButton
+                type="button"
+                class="icon-button confirm-button"
+                title="Concluir passeio"
+                aria-label="Concluir passeio"
+                (click)="confirm.emit(booking)"
+              >
+                <svg pIcon="check" aria-hidden="true"></svg>
+              </button>
+            }
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
+
+<div class="mobile-list">
+  @for (booking of bookings(); track booking.id) {
+    <article class="mobile-card">
+      <div class="mobile-heading">
+        <div>
+          <strong>{{ booking.clientName }}</strong>
+          <span>#{{ booking.id }} · {{ booking.tourName }}</span>
+        </div>
+        <span class="status-badge" [class]="statusClass(booking.status)"
+          ><i aria-hidden="true"></i>{{ statusLabel(booking.status) }}</span
+        >
+      </div>
+      <div class="mobile-summary">
+        <span
+          >{{ booking.date | date: 'dd/MM/yyyy' }} · {{ booking.date | date: 'HH:mm' }} ·
+          {{ booking.groupSize }} pax</span
+        >
+        <strong>{{ booking.totalPrice | currency: 'BRL' : 'symbol' : '1.2-2' }}</strong>
+      </div>
+      <div class="actions">
+        <button
+          pButton
+          type="button"
+          class="icon-button"
+          aria-label="Ver detalhes"
+          (click)="view.emit(booking)"
+        >
+          <svg pIcon="eye" aria-hidden="true"></svg>
+        </button>
+        @if (canEdit(booking)) {
+          <button
+            pButton
+            type="button"
+            class="icon-button"
+            aria-label="Editar reserva"
+            (click)="edit.emit(booking)"
+          >
+            <svg pIcon="pencil" aria-hidden="true"></svg>
+          </button>
+        }
+        @if (canOpenReport(booking)) {
+          <button
+            pButton
+            type="button"
+            class="icon-button"
+            aria-label="Abrir recibo PDF"
+            (click)="receipt.emit(booking)"
+          >
+            <svg pIcon="file-pdf" aria-hidden="true"></svg>
+          </button>
+        }
+        @if (isAdmin() && booking.status === 'CONFIRMED') {
+          <button
+            pButton
+            type="button"
+            class="icon-button confirm-button"
+            aria-label="Concluir passeio"
+            (click)="confirm.emit(booking)"
+          >
+            <svg pIcon="check" aria-hidden="true"></svg>
+          </button>
+        }
+      </div>
+    </article>
+  }
+</div>

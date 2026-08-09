@@ -16,6 +16,7 @@ import {
 })
 export class LayoutHeader {
   readonly profile = input<UserProfile | null>(null);
+  readonly profileLoading = input(false);
   readonly title = input.required<string>();
   readonly description = input.required<string>();
 
