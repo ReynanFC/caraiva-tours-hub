@@ -3,6 +3,8 @@ spring:
     type: none
   session:
     store-type: none
+  mail:
+    host: localhost
 
 app:
   security:

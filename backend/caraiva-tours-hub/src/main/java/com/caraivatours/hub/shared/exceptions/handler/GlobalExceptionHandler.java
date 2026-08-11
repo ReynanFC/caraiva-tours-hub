@@ -3,14 +3,15 @@ package com.caraivatours.hub.shared.exceptions.handler;
 import com.caraivatours.hub.shared.exceptions.EmailAlreadyExistsException;
 import com.caraivatours.hub.shared.exceptions.EntityInUseException;
 import com.caraivatours.hub.shared.exceptions.InvalidJwtAuthenticationException;
+import com.caraivatours.hub.shared.exceptions.InvalidPasswordResetTokenException;
 import com.caraivatours.hub.shared.exceptions.JasperPdfExportException;
 import com.caraivatours.hub.shared.exceptions.JasperReportGenerationException;
 import com.caraivatours.hub.shared.exceptions.ResourceNotFoundException;
+import com.caraivatours.hub.shared.exceptions.BadRequestException;
 import com.caraivatours.hub.shared.exceptions.model.StandardError;
 import com.caraivatours.hub.shared.exceptions.model.ValidationError;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.BadRequestException;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -91,6 +92,19 @@ public class GlobalExceptionHandler {
     ) {
         UUID traceId = UUID.randomUUID();
         log.warn("[TraceID: {}] Invalid JWT authentication attempt at path: {} | Reason: {}", traceId, request.getRequestURI(), exception.getMessage());
+
+        return ResponseEntity
+                .status(getStatus(exception))
+                .body(buildError(exception.getMessage(), request, traceId));
+    }
+
+    @ExceptionHandler(InvalidPasswordResetTokenException.class)
+    public ResponseEntity<StandardError> handleInvalidPasswordResetTokenException(
+            InvalidPasswordResetTokenException exception,
+            HttpServletRequest request
+    ) {
+        UUID traceId = UUID.randomUUID();
+        log.warn("[TraceID: {}] Invalid password reset token at path: {}", traceId, request.getRequestURI());
 
         return ResponseEntity
                 .status(getStatus(exception))

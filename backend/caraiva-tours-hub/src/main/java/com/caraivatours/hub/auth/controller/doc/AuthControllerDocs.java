@@ -1,6 +1,8 @@
 package com.caraivatours.hub.auth.controller.doc;
 
 import com.caraivatours.hub.auth.dto.AccountCredentialsDTO;
+import com.caraivatours.hub.auth.dto.ForgotPasswordRequest;
+import com.caraivatours.hub.auth.dto.ResetPasswordRequest;
 import com.caraivatours.hub.auth.dto.TokenDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -68,4 +70,29 @@ public interface AuthControllerDocs {
 
             @Parameter(hidden = true) HttpServletResponse response
     );
+
+    @Operation(
+            summary = "Request password reset instructions",
+            description = "Sends password reset instructions when the supplied email belongs to a registered user. The response is intentionally identical for registered and unregistered emails.",
+            responses = {
+                    @ApiResponse(description = "Request accepted", responseCode = "200"),
+                    @ApiResponse(description = "Bad Request (Validation Error)", responseCode = "400", content = @Content),
+                    @ApiResponse(description = "Too Many Requests", responseCode = "429", content = @Content),
+                    @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content)
+            }
+    )
+    @PostMapping("/forgot-password")
+    ResponseEntity<?> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request);
+
+    @Operation(
+            summary = "Reset password using a recovery token",
+            description = "Validates a single-use password reset token and replaces the user's password. Tokens expire after 15 minutes.",
+            responses = {
+                    @ApiResponse(description = "Password reset successfully", responseCode = "200"),
+                    @ApiResponse(description = "Bad Request (Invalid, Expired Token or Validation Error)", responseCode = "400", content = @Content),
+                    @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content)
+            }
+    )
+    @PostMapping("/reset-password")
+    ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordRequest request);
 }

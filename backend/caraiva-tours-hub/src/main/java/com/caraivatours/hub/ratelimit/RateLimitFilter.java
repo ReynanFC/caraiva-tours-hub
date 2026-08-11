@@ -25,6 +25,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
 
     private static final String SIGNIN_PATH = "/auth/signin";
     private static final String REFRESH_PATH = "/auth/refresh";
+    private static final String FORGOT_PASSWORD_PATH = "/auth/forgot-password";
     private static final String RATE_LIMIT_MESSAGE = "Too many requests, try again later";
 
     private static final Bandwidth SIGNIN_LIMIT =
@@ -37,6 +38,12 @@ public class RateLimitFilter extends OncePerRequestFilter {
             Bandwidth.builder()
                     .capacity(20)
                     .refillIntervally(20, Duration.ofMinutes(5))
+                    .build();
+
+    private static final Bandwidth FORGOT_PASSWORD_LIMIT =
+            Bandwidth.builder()
+                    .capacity(3)
+                    .refillIntervally(3, Duration.ofMinutes(15))
                     .build();
 
     private final RateLimiterService rateLimiterService;
@@ -72,6 +79,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
         return switch (path) {
             case SIGNIN_PATH -> SIGNIN_LIMIT;
             case REFRESH_PATH -> REFRESH_LIMIT;
+            case FORGOT_PASSWORD_PATH -> FORGOT_PASSWORD_LIMIT;
             default -> null;
         };
     }

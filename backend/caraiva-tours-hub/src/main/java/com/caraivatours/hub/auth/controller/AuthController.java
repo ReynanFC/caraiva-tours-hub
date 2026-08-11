@@ -3,7 +3,10 @@ package com.caraivatours.hub.auth.controller;
 import com.caraivatours.hub.auth.AuthService;
 import com.caraivatours.hub.auth.controller.doc.AuthControllerDocs;
 import com.caraivatours.hub.auth.dto.AccountCredentialsDTO;
+import com.caraivatours.hub.auth.dto.ForgotPasswordRequest;
+import com.caraivatours.hub.auth.dto.ResetPasswordRequest;
 import com.caraivatours.hub.auth.dto.TokenDTO;
+import com.caraivatours.hub.auth.passwordreset.PasswordResetService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +19,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Duration;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")
@@ -23,12 +27,12 @@ import java.time.Duration;
 public class AuthController implements AuthControllerDocs {
 
     private static final String REFRESH_COOKIE_NAME = "refreshToken";
+    private final PasswordResetService passwordResetService;
 
     @Value("${app.security.cookie.secure:true}")
     private boolean cookieSecure;
 
     private final AuthService authService;
-
 
     @PostMapping("/signin")
     @Override
@@ -51,6 +55,24 @@ public class AuthController implements AuthControllerDocs {
         TokenDTO bodyWithoutRefresh = finalizeTokenResponse(result.getBody(), response);
 
         return ResponseEntity.status(result.getStatusCode()).body(bodyWithoutRefresh);
+    }
+
+    @PostMapping("/forgot-password")
+    @Override
+    public ResponseEntity<?> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+        passwordResetService.processResetRequest(request.email());
+
+        return ResponseEntity.ok(Map.of("message", "If this e-mail is registered, you will receive instructions."));
+    }
+
+    @PostMapping("/reset-password")
+    @Override
+    public ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+        passwordResetService.resetPassword(request);
+
+        return ResponseEntity.ok(Map.of(
+                "message", "Senha redefinida com sucesso."
+        ));
     }
 
     private TokenDTO finalizeTokenResponse(TokenDTO tokenDTO, HttpServletResponse response) {

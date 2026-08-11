@@ -3,7 +3,8 @@ package com.caraivatours.hub.ratelimit;
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.ConsumptionProbe;
 import jakarta.servlet.FilterChain;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -19,9 +20,10 @@ class RateLimitFilterTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @Test
-    void shouldReturnRateLimitErrorWhenRequestLimitIsExceeded() throws Exception {
-        MockHttpServletRequest request = new MockHttpServletRequest("POST", "/auth/signin");
+    @ParameterizedTest
+    @ValueSource(strings = {"/auth/signin", "/auth/forgot-password"})
+    void shouldReturnRateLimitErrorWhenRequestLimitIsExceeded(String path) throws Exception {
+        MockHttpServletRequest request = new MockHttpServletRequest("POST", path);
         request.setRemoteAddr("192.168.1.10");
         MockHttpServletResponse response = new MockHttpServletResponse();
         AtomicBoolean filterChainCalled = new AtomicBoolean(false);
@@ -41,7 +43,7 @@ class RateLimitFilterTest {
         assertThat(response.getHeader("Retry-After")).isEqualTo("2");
         assertThat(body.get("timestamp").asText()).isNotBlank();
         assertThat(body.get("message").asText()).isEqualTo("Too many requests, try again later");
-        assertThat(body.get("path").asText()).isEqualTo("/auth/signin");
+        assertThat(body.get("path").asText()).isEqualTo(path);
         assertThatCodeIsUuid(body.get("traceId").asText());
         assertThat(body.get("retryAfterSeconds").asLong()).isEqualTo(2);
         assertThat(filterChainCalled).isFalse();
