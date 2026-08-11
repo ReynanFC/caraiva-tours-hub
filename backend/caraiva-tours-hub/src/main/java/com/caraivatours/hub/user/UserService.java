@@ -3,6 +3,7 @@ package com.caraivatours.hub.user;
 import com.caraivatours.hub.auth.PermissionRepository;
 import com.caraivatours.hub.auth.entity.Permission;
 import com.caraivatours.hub.auth.entity.enums.UserRole;
+import com.caraivatours.hub.auth.passwordreset.PasswordResetService;
 import com.caraivatours.hub.shared.dto.PagedResult;
 import com.caraivatours.hub.shared.exceptions.EmailAlreadyExistsException;
 import com.caraivatours.hub.shared.exceptions.ResourceNotFoundException;
@@ -28,16 +29,22 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.SecureRandom;
+import java.util.Base64;
+
 @Service
 @Transactional
 @Slf4j
 @RequiredArgsConstructor
 public class UserService implements UserDetailsService {
 
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
+
     private final UserRepository userRepository;
     private final PermissionRepository permissionRepository;
     private final UserMapper mapper;
     private final PasswordEncoder passwordEncoder;
+    private final PasswordResetService passwordResetService;
 
     @Override
     @Transactional(readOnly = true)
@@ -114,13 +121,15 @@ public class UserService implements UserDetailsService {
         User entity = mapper.toEntity(dto);
         entity.setEnabled(true);
 
-        log.debug("Hashing user password before persisting");
-        entity.setPassword(generateHashedPassword(dto.password()));
+        log.debug("Generating an inaccessible initial credential before persisting the user");
+        entity.setPassword(generateHashedPassword(generateInitialCredential()));
 
         insertUserPermissions(entity, dto.role().toUpperCase());
 
         entity = userRepository.save(entity);
         log.info("User registered successfully with ID: '{}' and email: '{}'", entity.getId(), entity.getEmail());
+
+        passwordResetService.processInitialPasswordSetup(entity.getEmail());
 
         return mapper.toDTO(entity);
     }
@@ -206,5 +215,11 @@ public class UserService implements UserDetailsService {
 
     private String generateHashedPassword(String password) {
         return passwordEncoder.encode(password);
+    }
+
+    private String generateInitialCredential() {
+        byte[] randomBytes = new byte[32];
+        SECURE_RANDOM.nextBytes(randomBytes);
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(randomBytes);
     }
 }

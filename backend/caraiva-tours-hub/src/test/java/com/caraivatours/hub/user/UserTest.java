@@ -4,6 +4,7 @@ import com.caraivatours.hub.AbstractIntegrationTest;
 import com.caraivatours.hub.auth.PermissionRepository;
 import com.caraivatours.hub.auth.entity.Permission;
 import com.caraivatours.hub.auth.entity.enums.UserRole;
+import com.caraivatours.hub.auth.passwordreset.PasswordResetService;
 import com.caraivatours.hub.shared.dto.PagedResult;
 import com.caraivatours.hub.shared.exceptions.EmailAlreadyExistsException;
 import com.caraivatours.hub.shared.exceptions.ResourceNotFoundException;
@@ -29,12 +30,14 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
 
 import static com.caraivatours.hub.support.fixtures.PermissionTestDataBuilder.aPermission;
 import static com.caraivatours.hub.support.fixtures.UserTestDataBuilder.aUser;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.verify;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -56,6 +59,9 @@ class UserTest extends AbstractIntegrationTest {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @MockitoBean
+    private PasswordResetService passwordResetService;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -479,13 +485,12 @@ class UserTest extends AbstractIntegrationTest {
         class CreateUserTests {
 
             @Test
-            @DisplayName("should create enabled user with hashed password and case-insensitive role")
-            void shouldCreateEnabledUserWithHashedPasswordAndPermission() {
+            @DisplayName("should create enabled user with inaccessible credential and send password setup link")
+            void shouldCreateEnabledUserWithInaccessibleCredentialAndSendPasswordSetupLink() {
                 savePermission(UserRole.EMPLOYEE);
                 UserRegistrationDTO request = registration(
                         "new.user",
                         "new.user@example.com",
-                        CURRENT_PASSWORD,
                         "employee"
                 );
 
@@ -502,13 +507,15 @@ class UserTest extends AbstractIntegrationTest {
                         .isPresent()
                         .get()
                         .satisfies(user -> {
+                            assertThat(user.getPassword()).isNotBlank();
                             assertThat(user.getPassword()).isNotEqualTo(CURRENT_PASSWORD);
-                            assertThat(passwordEncoder.matches(CURRENT_PASSWORD, user.getPassword())).isTrue();
                             assertThat(user.getPermission())
                                     .singleElement()
                                     .extracting(Permission::getRole)
                                     .isEqualTo(UserRole.EMPLOYEE);
                         });
+
+                verify(passwordResetService).processInitialPasswordSetup("new.user@example.com");
             }
 
             @Test
@@ -524,7 +531,6 @@ class UserTest extends AbstractIntegrationTest {
                 UserRegistrationDTO request = registration(
                         "other",
                         "existing@example.com",
-                        CURRENT_PASSWORD,
                         "ADMIN"
                 );
 
@@ -540,7 +546,6 @@ class UserTest extends AbstractIntegrationTest {
                 UserRegistrationDTO request = registration(
                         "new.user",
                         "new.user@example.com",
-                        CURRENT_PASSWORD,
                         "ADMIN"
                 );
 
@@ -784,14 +789,12 @@ class UserTest extends AbstractIntegrationTest {
     private UserRegistrationDTO registration(
             String userName,
             String email,
-            String password,
             String role
     ) {
         return new UserRegistrationDTO(
                 userName,
                 "New User Full Name",
                 email,
-                password,
                 "new-user-pix-key",
                 role
         );

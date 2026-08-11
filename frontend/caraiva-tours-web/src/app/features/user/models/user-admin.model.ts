@@ -4,7 +4,6 @@ export interface CreateUserRequest {
   fullName: string;
   userName: string;
   email: string;
-  password: string;
   pixKey: string;
   role: UserRole;
 }

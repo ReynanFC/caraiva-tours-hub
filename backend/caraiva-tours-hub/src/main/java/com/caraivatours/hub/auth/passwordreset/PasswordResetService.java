@@ -31,6 +31,14 @@ public class PasswordResetService {
     private final PasswordEncoder passwordEncoder;
 
     public void processResetRequest(String email) {
+        issueToken(email, false);
+    }
+
+    public void processInitialPasswordSetup(String email) {
+        issueToken(email, true);
+    }
+
+    private void issueToken(String email, boolean initialPasswordSetup) {
 
         Optional<User> userOpt = userRepository.findByEmail(email);
 
@@ -45,6 +53,11 @@ public class PasswordResetService {
                 user.getId().toString(),
                 Duration.ofMinutes(15)
         );
+
+        if (initialPasswordSetup) {
+            emailService.sendPasswordSetupEmail(user.getEmail(), token);
+            return;
+        }
 
         emailService.sendResetEmail(user.getEmail(), token);
     }

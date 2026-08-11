@@ -120,7 +120,7 @@ public interface UserControllerDocs {
 
     @Operation(
             summary = "Register a new user",
-            description = "Creates and configures a new user account profile in the system. The provided email address must be unique. \n\n**Role Required:** `ADMIN`",
+            description = "Creates a new user with an inaccessible generated credential and sends a password setup link to the provided unique email address. \n\n**Role Required:** `ADMIN`",
             responses = {
                     @ApiResponse(
                             description = "Created Successfully",

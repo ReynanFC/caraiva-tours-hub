@@ -8,7 +8,7 @@
     <header>
       <div>
         <h2>Novo usuário</h2>
-        <p>Cadastre um novo acesso para a equipe.</p>
+        <p>O usuário receberá um e-mail para definir a própria senha.</p>
       </div>
       <button type="button" aria-label="Fechar" (click)="closed.emit()">×</button>
     </header>
@@ -21,9 +21,6 @@
       /></label>
       <label>Nome de usuário<app-input formControlName="userName" placeholder="Ex: mariasilva" /></label>
       <label>E-mail<app-input formControlName="email" format="email" maxlength="100" placeholder="exemplo@dominio.com"/></label>
-      <label
-        >Senha<app-input formControlName="password" format="password" passwordFeedback
-      /></label>
       <label>Chave PIX<app-input formControlName="pixKey" maxlength="255" placeholder="CPF/CNPJ, e-mail, telefone ou chave aleatória" /></label>
       <fieldset>
         <legend>Tipo de acesso</legend>

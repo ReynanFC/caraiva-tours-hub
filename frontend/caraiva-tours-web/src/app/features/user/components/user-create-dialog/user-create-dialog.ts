@@ -3,7 +3,6 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { ButtonModule } from 'primeng/button';
 
 import { Input } from '../../../../shared/components/input/input';
-import { passwordMeetsRequirements } from '../../../../shared/utils/password.utils';
 import { CreateUserRequest } from '../../models/user-admin.model';
 
 @Component({
@@ -28,14 +27,6 @@ export class UserCreateDialog {
     email: new FormControl('', {
       nonNullable: true,
       validators: [Validators.required, Validators.email, Validators.maxLength(100)],
-    }),
-    password: new FormControl('', {
-      nonNullable: true,
-      validators: [
-        Validators.required,
-        (control) =>
-          passwordMeetsRequirements(control.value) ? null : { passwordRequirements: true },
-      ],
     }),
     pixKey: new FormControl('', { nonNullable: true, validators: [Validators.maxLength(255)] }),
     role: new FormControl<'ADMIN' | 'EMPLOYEE'>('EMPLOYEE', { nonNullable: true }),
