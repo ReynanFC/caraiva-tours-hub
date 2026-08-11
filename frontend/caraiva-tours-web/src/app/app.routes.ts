@@ -14,6 +14,20 @@ export const routes: Routes = [
     loadComponent: () => import('./features/login/page/login').then((m) => m.Login),
   },
   {
+    path: 'forgot-password',
+    loadComponent: () =>
+      import('./features/login/page/password-recovery/password-recovery').then(
+        (m) => m.PasswordRecovery,
+      ),
+  },
+  {
+    path: 'reset-password',
+    loadComponent: () =>
+      import('./features/login/page/password-recovery/password-recovery').then(
+        (m) => m.PasswordRecovery,
+      ),
+  },
+  {
     path: '',
     canActivate: [authGuard],
     loadComponent: () => import('./core/layout/main-layout/main-layout').then((m) => m.MainLayout),

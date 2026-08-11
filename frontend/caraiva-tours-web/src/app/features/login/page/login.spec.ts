@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpErrorResponse } from '@angular/common/http';
+import { provideRouter } from '@angular/router';
 
 import { Login } from './login';
 import { ActionNotificationService } from '../../../shared/components/action-notification/action-notification.service';
@@ -11,6 +12,7 @@ describe('Login', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [Login],
+      providers: [provideRouter([])],
     }).compileComponents();
 
     fixture = TestBed.createComponent(Login);

@@ -36,4 +36,25 @@ describe('API error translation', () => {
       'Você não tem permissão para realizar esta operação.',
     );
   });
+
+  it('should translate password recovery errors', async () => {
+    expect(translateApiMessage('Invalid or expired password reset token')).toBe(
+      'O link de redefinição de senha é inválido ou expirou.',
+    );
+
+    const validationError = new HttpErrorResponse({
+      status: 400,
+      error: {
+        errors: {
+          token: 'must not be blank',
+          newPassword:
+            'Password must be at least 12 characters long and include uppercase, lowercase, number, and special character',
+        },
+      },
+    });
+
+    await expect(getApiErrorMessage(validationError, 'Erro inesperado.')).resolves.toBe(
+      'Este campo é obrigatório. A senha deve ter pelo menos 12 caracteres e incluir letra maiúscula, letra minúscula, número e caractere especial.',
+    );
+  });
 });
