@@ -64,9 +64,9 @@ describe('BookingListTable', () => {
       fixture.componentRef.setInput('bookings', [{ ...booking, status }]);
       fixture.detectChanges();
 
-      expect(fixture.nativeElement.querySelectorAll('[aria-label="Abrir recibo PDF"]')).toHaveLength(
-        2,
-      );
+      expect(
+        fixture.nativeElement.querySelectorAll('[aria-label="Abrir recibo PDF"]'),
+      ).toHaveLength(2);
     },
   );
 

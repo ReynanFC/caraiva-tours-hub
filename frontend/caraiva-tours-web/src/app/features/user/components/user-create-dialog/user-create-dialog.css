@@ -1,0 +1,57 @@
+@reference '../../../../../styles.css';
+
+.modal-overlay {
+  @apply fixed inset-0 z-50 grid place-items-center bg-black/40 p-4;
+}
+.create-modal {
+  @apply max-h-[calc(100vh-2rem)] w-full max-w-md overflow-y-auto rounded-lg bg-surface shadow-2xl;
+}
+.create-modal > header {
+  @apply flex items-start justify-between border-b border-border p-5;
+}
+.create-modal h2 {
+  @apply font-display text-lg font-bold;
+}
+.create-modal header p {
+  @apply mt-1 text-xs text-muted;
+}
+.create-modal header button {
+  @apply text-2xl text-muted;
+}
+.create-fields {
+  @apply flex flex-col gap-4 p-5;
+}
+.create-fields label {
+  @apply flex flex-col gap-1.5 text-xs font-semibold text-muted;
+}
+.create-fields > small {
+  @apply -mt-2 text-xs text-muted;
+}
+.create-fields fieldset {
+  @apply rounded-lg border border-border p-3;
+}
+.create-fields legend {
+  @apply px-1 text-xs font-semibold text-muted;
+}
+.create-fields fieldset div {
+  @apply grid grid-cols-2 gap-2;
+}
+.create-fields fieldset button {
+  @apply rounded-lg border border-border px-3 py-2 text-sm font-semibold text-muted;
+}
+.create-fields fieldset button.active {
+  @apply border-primary bg-primary-light text-primary-dark;
+}
+.create-modal > footer {
+  @apply flex justify-end gap-2 border-t border-border p-4;
+}
+.create-modal footer button {
+  @apply rounded-lg border border-primary bg-primary px-4 py-2 text-sm font-semibold text-white;
+}
+.create-modal footer .cancel {
+  @apply border-border bg-surface text-muted;
+}
+
+button {
+  cursor: pointer;
+}

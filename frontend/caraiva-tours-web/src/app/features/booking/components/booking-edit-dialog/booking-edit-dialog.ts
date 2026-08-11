@@ -4,11 +4,10 @@ import { PIcon } from '@primeicons/angular/p-icon';
 import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
-import { InputNumberModule } from 'primeng/inputnumber';
-import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 
-import { PixProofUpload } from '../pix-proof-upload/pix-proof-upload';
+import { ImageUpload } from '../../../../shared/components/image-upload/image-upload';
+import { Input } from '../../../../shared/components/input/input';
 import {
   BookingDetails,
   BookingMember,
@@ -19,16 +18,7 @@ import { TourSummary } from '../../models/tour.model';
 
 @Component({
   selector: 'app-booking-edit-dialog',
-  imports: [
-    ButtonModule,
-    CheckboxModule,
-    FormsModule,
-    InputNumberModule,
-    InputTextModule,
-    PIcon,
-    PixProofUpload,
-    SelectModule,
-  ],
+  imports: [ButtonModule, CheckboxModule, FormsModule, Input, PIcon, ImageUpload, SelectModule],
   templateUrl: './booking-edit-dialog.html',
   styleUrl: './booking-edit-dialog.css',
 })

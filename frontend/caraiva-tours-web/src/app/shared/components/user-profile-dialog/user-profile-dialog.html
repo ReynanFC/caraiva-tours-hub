@@ -1,0 +1,100 @@
+<header class="profile-head">
+  <span class="avatar">{{ initials() }}</span>
+  <div>
+    <h2>{{ profile().fullName }}</h2>
+    <span class="role-badge" [class.admin]="profile().role === 'ADMIN'">
+      <svg [pIcon]="profile().role === 'ADMIN' ? 'shield' : 'user'" aria-hidden="true"></svg>
+      {{ roleLabel() }}
+    </span>
+    <small>#{{ profile().id }}</small>
+  </div>
+</header>
+
+<nav class="profile-tabs" aria-label="Seções do perfil">
+  <button type="button" [class.active]="tab() === 'details'" (click)="openTab('details')">
+    Dados
+  </button>
+  @if (editable()) {
+    <button type="button" [class.active]="tab() === 'edit'" (click)="openTab('edit')">
+      Atualizar dados
+    </button>
+    <button type="button" [class.active]="tab() === 'password'" (click)="openTab('password')">
+      Alterar senha
+    </button>
+  }
+</nav>
+
+@if (tab() === 'details') {
+  <dl class="profile-details">
+    <div>
+      <svg pIcon="id-card" aria-hidden="true"></svg>
+      <dt>Nome completo</dt>
+      <dd>{{ profile().fullName }}</dd>
+    </div>
+    <div>
+      <svg pIcon="user" aria-hidden="true"></svg>
+      <dt>Nome de usuário</dt>
+      <dd>{{ profile().userName }}</dd>
+    </div>
+    <div>
+      <svg pIcon="envelope" aria-hidden="true"></svg>
+      <dt>E-mail</dt>
+      <dd>{{ profile().email }}</dd>
+    </div>
+    <div>
+      <svg pIcon="wallet" aria-hidden="true"></svg>
+      <dt>Chave PIX</dt>
+      <dd>{{ profile().pixKey || 'Não informada' }}</dd>
+    </div>
+    <div>
+      <svg pIcon="shield" aria-hidden="true"></svg>
+      <dt>Perfil de acesso</dt>
+      <dd>{{ roleLabel() }}</dd>
+    </div>
+    <div>
+      <svg pIcon="calendar" aria-hidden="true"></svg>
+      <dt>Criado em</dt>
+      <dd>{{ profile().createdAt | date: 'dd/MM/yyyy HH:mm' }}</dd>
+    </div>
+  </dl>
+  <footer>
+    <button pButton type="button" class="secondary" (click)="close()">Fechar</button>
+    @if (editable()) {
+      <button pButton type="button" (click)="openTab('edit')">Atualizar dados</button>
+    }
+  </footer>
+} @else if (tab() === 'edit') {
+  <form [formGroup]="editForm" class="profile-form" (ngSubmit)="saveProfile()">
+    <label>Nome de usuário<app-input formControlName="userName" maxlength="50" /></label>
+    <label>E-mail<app-input formControlName="email" format="email" maxlength="100" /></label>
+    <label>Chave PIX<app-input formControlName="pixKey" maxlength="255" /></label>
+    <footer>
+      <button pButton type="button" class="secondary" (click)="openTab('details')">Cancelar</button
+      ><button pButton type="submit" [disabled]="saving() || editForm.invalid">
+        {{ saving() ? 'Salvando…' : 'Salvar alterações' }}
+      </button>
+    </footer>
+  </form>
+} @else {
+  <form [formGroup]="passwordForm" class="profile-form" (ngSubmit)="changePassword()">
+    <label>Senha atual<app-input formControlName="currentPassword" format="password" /></label>
+    <label
+      >Nova senha<app-input formControlName="newPassword" format="password" passwordFeedback
+    /></label>
+    <label
+      >Confirmar nova senha<app-input formControlName="passwordConfirmation" format="password"
+    /></label>
+    @if (
+      passwordForm.hasError('passwordMismatch') &&
+      passwordForm.controls.passwordConfirmation.touched
+    ) {
+      <small class="error">As senhas não conferem.</small>
+    }
+    <footer>
+      <button pButton type="button" class="secondary" (click)="openTab('details')">Cancelar</button
+      ><button pButton type="submit" [disabled]="saving() || passwordForm.invalid">
+        {{ saving() ? 'Alterando…' : 'Alterar senha' }}
+      </button>
+    </footer>
+  </form>
+}

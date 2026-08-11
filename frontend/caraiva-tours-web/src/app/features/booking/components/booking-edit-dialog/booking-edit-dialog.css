@@ -9,14 +9,8 @@
 .field label {
   @apply text-xs font-semibold text-muted;
 }
-.field > input,
-::ng-deep .field .p-select,
-::ng-deep .field .p-inputnumber,
-::ng-deep .field .p-inputnumber-input {
+::ng-deep .field .p-select {
   @apply h-10 w-full rounded-md border-border text-sm;
-}
-.field > input:focus {
-  @apply border-primary ring-3 ring-primary/15;
 }
 .field-error {
   @apply text-xs font-medium text-danger;

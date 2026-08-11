@@ -25,16 +25,7 @@
 }
 
 .search-field {
-  @apply relative block w-full shrink-0 xl:max-w-72;
-}
-
-.search-field svg {
-  @apply pointer-events-none absolute top-1/2 left-3 z-10 size-4 -translate-y-1/2 text-muted;
-}
-
-.search-field input {
-  @apply h-10 w-full rounded-md border-border pl-9 font-ui text-sm outline-none;
-  background-color: rgba(173, 173, 173, 0.241);
+  @apply block w-full shrink-0 xl:max-w-72;
 }
 
 .sr-only {

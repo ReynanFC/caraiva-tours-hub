@@ -1,0 +1,86 @@
+<div class="input-control">
+  @if (icon()) {
+    <svg [pIcon]="icon()!" aria-hidden="true"></svg>
+  }
+
+  @if (format() === 'cep') {
+    <input
+      pInputMask
+      mask="99999-999"
+      [id]="inputId()"
+      [ngModel]="value"
+      [placeholder]="placeholder()"
+      [autocomplete]="autocomplete()"
+      [maxlength]="maxlength() ?? 9"
+      [slotChar]="'0'"
+      unmask="true"
+      [disabled]="disabled"
+      [required]="required()"
+      [class]="inputClass()"
+      (ngModelChange)="change($event)"
+      (onUnmaskedChange)="maskedChange($event)"
+      (blur)="blur()"
+    />
+  } @else if (format() === 'phone') {
+    <input
+      [pInputMask]="'(99) 99999-9999'"
+      [id]="inputId()"
+      [ngModel]="value"
+      [placeholder]="placeholder()"
+      [autocomplete]="autocomplete()"
+      [maxlength]="maxlength() ?? 20"
+      [slotChar]="'0'"
+      [disabled]="disabled"
+      [required]="required()"
+      [class]="inputClass()"
+      (ngModelChange)="change($event)"
+      (onUnmaskedChange)="maskedChange($event)"
+      (blur)="blur()"
+    />
+  } @else if (isNumeric) {
+    <p-inputnumber
+      [inputId]="inputId()"
+      [ngModel]="value"
+      [mode]="format() === 'currency' ? 'currency' : 'decimal'"
+      [currency]="format() === 'currency' ? 'BRL' : undefined"
+      locale="pt-BR"
+      [placeholder]="placeholder()"
+      [min]="min()"
+      [max]="max()"
+      [suffix]="format() === 'percentage' ? '%' : suffix()"
+      [useGrouping]="format() !== 'integer'"
+      [minFractionDigits]="format() === 'currency' ? 2 : undefined"
+      [maxFractionDigits]="format() === 'currency' ? 2 : undefined"
+      [disabled]="disabled"
+      [inputStyleClass]="inputClass()"
+      (ngModelChange)="change($event)"
+      (onBlur)="blur()"
+    />
+  } @else {
+    <input
+      pInputText
+      [id]="inputId()"
+      [type]="nativeType"
+      [ngModel]="value"
+      [placeholder]="placeholder()"
+      [autocomplete]="autocomplete()"
+      [maxlength]="maxlength() ?? null"
+      [disabled]="disabled"
+      [required]="required()"
+      [class]="inputClass()"
+      (ngModelChange)="change($event)"
+      (blur)="blur()"
+    />
+  }
+</div>
+
+@if (format() === 'password' && passwordFeedback()) {
+  <ul class="password-requirements" aria-label="Requisitos da senha" aria-live="polite">
+    @for (requirement of passwordRequirements; track requirement.id) {
+      <li [class.valid]="requirement.test(passwordValue)">
+        <svg pIcon="check-circle" aria-hidden="true"></svg>
+        <span>{{ requirement.label }}</span>
+      </li>
+    }
+  </ul>
+}

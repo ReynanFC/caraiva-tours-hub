@@ -1,0 +1,8 @@
+@reference '../../../../../styles.css';
+
+footer {
+  @apply mt-6 flex items-center justify-center gap-4 text-sm text-muted;
+}
+button {
+  @apply rounded-lg border border-border bg-surface px-3 py-2 font-semibold disabled:opacity-40;
+}

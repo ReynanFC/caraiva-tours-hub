@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environment/environment';
 import { ImgBbResponse } from '../models/img-bb-response';
-import { environment } from '../../../../environment/environment';
 
 @Service()
 export class Imgbb {

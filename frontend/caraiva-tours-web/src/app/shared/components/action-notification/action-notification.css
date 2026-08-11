@@ -1,0 +1,17 @@
+@reference '../../../../styles.css';
+
+:host ::ng-deep .p-toast {
+  width: min(22rem, calc(100vw - 2rem)) !important;
+}
+
+:host ::ng-deep .p-toast-message {
+  @apply rounded-lg! border! bg-surface! shadow-lg!;
+}
+
+:host ::ng-deep .p-toast-message-success {
+  @apply border-emerald-200!;
+}
+
+:host ::ng-deep .p-toast-message-error {
+  @apply border-red-200!;
+}

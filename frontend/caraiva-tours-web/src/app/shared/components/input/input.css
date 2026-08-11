@@ -1,0 +1,48 @@
+@reference '../../../../styles.css';
+
+:host {
+  @apply block w-full min-w-0;
+}
+
+.input-control {
+  @apply flex h-10 w-full min-w-0 items-center gap-2 rounded-[10px] border border-border bg-surface px-3 focus-within:border-primary focus-within:ring-3 focus-within:ring-primary/15;
+}
+
+svg {
+  @apply size-4 shrink-0 text-muted;
+}
+
+input,
+:host ::ng-deep .p-inputnumber,
+:host ::ng-deep .p-inputnumber-input {
+  @apply h-full w-full min-w-0 flex-1 border-0! bg-transparent! px-0! text-sm outline-none! shadow-none! ring-0!;
+}
+
+input.shared-input,
+:host ::ng-deep .shared-input {
+  @apply w-full;
+}
+
+.password-requirements {
+  @apply mt-2 flex w-full list-none flex-col gap-1.5 px-1;
+}
+
+.password-requirements li {
+  @apply flex items-center gap-2 text-xs text-muted transition-all duration-300;
+}
+
+.password-requirements svg {
+  @apply size-3.5 scale-90 opacity-60 transition-all duration-300;
+}
+
+.password-requirements li.valid {
+  @apply text-green-700;
+}
+
+.password-requirements li.valid svg {
+  @apply scale-110 text-green-500 opacity-100;
+}
+
+.password-requirements li.valid span {
+  @apply line-through decoration-2 decoration-green-500/70;
+}

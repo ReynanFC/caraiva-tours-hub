@@ -1,0 +1,39 @@
+<div class="filters">
+  <label class="search-field">
+    <app-input
+      icon="search"
+      [ngModel]="search()"
+      (ngModelChange)="searchChange.emit($event)"
+      placeholder="Buscar passeio…"
+    />
+  </label>
+  <div class="chips" role="group" aria-label="Filtrar por categoria">
+    <span>Filtrar na página atual (categoria):</span>
+    <button
+      type="button"
+      class="chip"
+      [class.active]="selectedCategoryId() === undefined"
+      (click)="categoryChange.emit(undefined)"
+    >
+      Todos <b>{{ totalTours() }}</b>
+    </button>
+    @for (category of visibleCategories(); track category.id) {
+      <button
+        type="button"
+        class="chip"
+        [class.active]="selectedCategoryId() === category.id"
+        (click)="categoryChange.emit(category.id)"
+      >
+        {{ category.name }} <b>{{ category.tourCount }}</b>
+      </button>
+    }
+    @if (overflowCategories().length) {
+      <select class="category-select" (change)="selectOverflow($any($event.target).value)">
+        <option value="">Mais categorias…</option>
+        @for (category of overflowCategories(); track category.id) {
+          <option [value]="category.id">{{ category.name }} ({{ category.tourCount }})</option>
+        }
+      </select>
+    }
+  </div>
+</div>

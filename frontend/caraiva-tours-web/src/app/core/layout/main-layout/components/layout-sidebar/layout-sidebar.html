@@ -56,10 +56,15 @@
       <p-sidebar-footer>
         <div class="user-card">
           <span class="user-avatar" aria-hidden="true">{{ initials() }}</span>
-          <span class="user-copy">
+          <button
+            class="user-copy"
+            type="button"
+            (click)="profileRequested.emit()"
+            aria-label="Abrir meu perfil"
+          >
             <strong>{{ displayName() }}</strong>
             <small>{{ roleLabel() }}</small>
-          </span>
+          </button>
           <button class="logout-button" type="button" (click)="signOut.emit()" aria-label="Sair">
             <svg pIcon="sign-out" aria-hidden="true"></svg>
           </button>

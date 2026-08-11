@@ -1,13 +1,13 @@
-<div class="upload-heading">
+<div class="upload-heading" data-image-upload>
   <div>
-    <strong>Comprovante do pagamento</strong>
-    <p>Envie um print do Pix para confirmar o pagamento de 20%.</p>
+    <strong>{{ title() }}</strong>
+    <p>{{ description() }}</p>
   </div>
 </div>
 
 <input
   #fileInput
-  id="pixProof"
+  [id]="inputId()"
   class="file-input"
   type="file"
   accept="image/jpeg,image/png,image/webp"
@@ -17,16 +17,16 @@
 />
 
 @if (!file()) {
-  <label for="pixProof" class="upload-dropzone" [class.upload-dropzone-disabled]="disabled()">
+  <label [for]="inputId()" class="upload-dropzone" [class.upload-dropzone-disabled]="disabled()">
     <span class="upload-symbol" aria-hidden="true">+</span>
     <span>
-      <strong>Selecionar print do Pix</strong>
+      <strong>{{ selectLabel() }}</strong>
       <small>JPG, PNG ou WEBP, até 32 MB</small>
     </span>
   </label>
 } @else {
   <div class="proof-preview">
-    <img [src]="previewUrl()" alt="Pré-visualização do comprovante Pix" />
+    <img [src]="previewUrl()" [alt]="previewAlt()" />
 
     <div class="proof-info">
       <strong>{{ file()?.name }}</strong>
@@ -44,7 +44,7 @@
     </div>
 
     <div class="proof-actions">
-      <label for="pixProof" class="change-button">Trocar imagem</label>
+      <label [for]="inputId()" class="change-button">Trocar imagem</label>
       <button pButton type="button" class="remove-button" (click)="removeFile(fileInput)">
         Remover
       </button>

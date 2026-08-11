@@ -1,9 +1,7 @@
 import { Component, computed, debounced, inject, resource, signal } from '@angular/core';
 import { PIcon } from '@primeicons/angular/p-icon';
-import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { DialogService } from 'primeng/dynamicdialog';
-import { ToastModule } from 'primeng/toast';
 import { firstValueFrom } from 'rxjs';
 
 import { BookingDetailsDialog } from '../../components/booking-details-dialog/booking-details-dialog';
@@ -18,18 +16,19 @@ import {
   UpdateBookingRequest,
 } from '../../models/booking.model';
 import { BookingService } from '../../services/booking';
+import { ActionNotificationService } from '../../../../shared/components/action-notification/action-notification.service';
 
 @Component({
   selector: 'app-booking-list',
   templateUrl: './booking-list.html',
-  imports: [BookingListFilters, BookingListTable, ButtonModule, PIcon, ToastModule],
-  providers: [DialogService, MessageService],
+  imports: [BookingListFilters, BookingListTable, ButtonModule, PIcon],
+  providers: [DialogService],
   styleUrl: './booking-list.css',
 })
 export class BookingList {
   private readonly bookingService = inject(BookingService);
   private readonly dialogService = inject(DialogService);
-  private readonly messageService = inject(MessageService);
+  private readonly notifications = inject(ActionNotificationService);
   private readonly sessionStore = inject(SessionStore);
 
   protected readonly search = signal('');
@@ -41,11 +40,7 @@ export class BookingList {
 
   protected readonly actionLoadingId = signal<number | null>(null);
 
-  protected readonly isAdmin = computed(
-    () =>
-      this.sessionStore.profileResource.hasValue() &&
-      this.sessionStore.profileResource.value()?.role === 'ADMIN',
-  );
+  protected readonly isAdmin = this.sessionStore.isAdmin;
 
   protected readonly currentUserId = computed(() =>
     this.sessionStore.profileResource.hasValue()
@@ -109,7 +104,7 @@ export class BookingList {
         inputValues: { booking, details },
       });
     } catch (error: unknown) {
-      this.showError(
+      this.notifications.error(
         await getApiErrorMessage(error, 'Não foi possível carregar os detalhes da reserva.'),
       );
     } finally {
@@ -143,7 +138,7 @@ export class BookingList {
         },
       });
     } catch (error: unknown) {
-      this.showError(
+      this.notifications.error(
         await getApiErrorMessage(error, 'Não foi possível preparar a edição da reserva.'),
       );
     } finally {
@@ -161,7 +156,9 @@ export class BookingList {
       window.open(url, '_blank', 'noopener,noreferrer');
       window.setTimeout(() => URL.revokeObjectURL(url), 60_000);
     } catch (error: unknown) {
-      this.showError(await getApiErrorMessage(error, 'Não foi possível gerar o recibo da reserva.'));
+      this.notifications.error(
+        await getApiErrorMessage(error, 'Não foi possível gerar o recibo da reserva.'),
+      );
     } finally {
       this.actionLoadingId.set(null);
     }
@@ -173,10 +170,12 @@ export class BookingList {
 
     try {
       await firstValueFrom(this.bookingService.confirmBooking(booking.id));
-      this.showSuccess(`Passeio da reserva #${booking.id} concluído com sucesso.`);
+      this.notifications.success(`Passeio da reserva #${booking.id} concluído com sucesso.`);
       this.bookingsResource.reload();
     } catch (error: unknown) {
-      this.showError(await getApiErrorMessage(error, 'Não foi possível concluir o passeio.'));
+      this.notifications.error(
+        await getApiErrorMessage(error, 'Não foi possível concluir o passeio.'),
+      );
     } finally {
       this.actionLoadingId.set(null);
     }
@@ -190,10 +189,10 @@ export class BookingList {
 
     try {
       await firstValueFrom(this.bookingService.updateBooking(booking.id, payload));
-      this.showSuccess(`Reserva #${booking.id} atualizada com sucesso.`);
+      this.notifications.success(`Reserva #${booking.id} atualizada com sucesso.`);
       this.bookingsResource.reload();
     } catch (error: unknown) {
-      this.showError(
+      this.notifications.error(
         await getApiErrorMessage(error, 'Não foi possível salvar as alterações da reserva.'),
       );
     } finally {
@@ -202,28 +201,6 @@ export class BookingList {
   }
 
   private clearActionFeedback(): void {
-    this.messageService.clear('booking-actions');
-  }
-
-  private showSuccess(detail: string): void {
-    this.messageService.add({
-      key: 'booking-actions',
-      severity: 'success',
-      summary: 'Ação concluída',
-      detail,
-      life: 2_000,
-      closable: false,
-    });
-  }
-
-  private showError(detail: string): void {
-    this.messageService.add({
-      key: 'booking-actions',
-      severity: 'error',
-      summary: 'Ação não realizada',
-      detail,
-      life: 2_000,
-      closable: false,
-    });
+    this.notifications.clear();
   }
 }

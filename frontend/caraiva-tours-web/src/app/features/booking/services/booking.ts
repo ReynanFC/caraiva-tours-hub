@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 
 import {
   BookingDetails,
@@ -9,8 +9,8 @@ import {
   CreateBookingRequest,
   UpdateBookingRequest,
 } from '../models/booking.model';
-import { PagedResult } from '../models/paged-result.model';
-import { TourSummary } from '../models/tour.model';
+import { PagedResult } from '../../../shared/models/paged-result.model';
+import { TourApiResponse, TourSummary } from '../models/tour.model';
 
 @Service()
 export class BookingService {
@@ -26,14 +26,17 @@ export class BookingService {
     size = 10,
     status?: BookingStatus,
   ): Observable<PagedResult<BookingSummary>> {
-    let params = new HttpParams().set('page', page).set('size', size).set('sort', 'createdAt,desc');
+    let params = new HttpParams()
+      .set('search', search.trim())
+      .set('page', page)
+      .set('size', size)
+      .set('sort', 'createdAt,desc');
 
-    const url = status ? `/api/bookings/status/${status}` : '/api/bookings';
-    if (!status) {
-      params = params.set('search', search.trim());
+    if (status) {
+      params = params.set('status', status);
     }
 
-    return this.http.get<PagedResult<BookingSummary>>(url, { params });
+    return this.http.get<PagedResult<BookingSummary>>('/api/bookings', { params });
   }
 
   getBookingsDetails(id: number): Observable<BookingDetails> {
@@ -59,6 +62,17 @@ export class BookingService {
       .set('size', 10)
       .set('sort', 'name,asc');
 
-    return this.http.get<PagedResult<TourSummary>>('/api/tours', { params });
+    return this.http.get<PagedResult<TourApiResponse>>('/api/tours', { params }).pipe(
+      map((result) => ({
+        ...result,
+        content: result.content.map((tour) => ({
+          ...tour,
+          effectivePrice:
+            tour.isPromotional && tour.promoPricePerPerson != null
+              ? tour.promoPricePerPerson
+              : tour.basePricePerPerson,
+        })),
+      })),
+    );
   }
 }

@@ -1,0 +1,44 @@
+<div class="dialog-backdrop" (click)="closed.emit()">
+  <section class="categories-dialog" (click)="$event.stopPropagation()">
+    <header>
+      <h2>Categorias</h2>
+      <button type="button" aria-label="Fechar" (click)="closed.emit()">×</button>
+    </header>
+
+    <div class="new-category">
+      <app-input
+        [formControl]="categoryName"
+        placeholder="Nova categoria"
+        (input)="clearError()"
+        (keyup.enter)="createCategory()"
+      />
+      <button type="button" (click)="createCategory()">Adicionar</button>
+    </div>
+
+    <ul>
+      @for (category of categories(); track category.id) {
+        <li>
+          @if (editingCategoryId() === category.id) {
+            <app-input
+              [formControl]="editingCategoryName"
+              (input)="clearError()"
+              (keyup.enter)="saveCategory(category)"
+            />
+            <button type="button" class="save-button" (click)="saveCategory(category)">
+              Salvar
+            </button>
+          } @else {
+            <span>{{ category.name }}</span>
+            <button type="button" aria-label="Editar categoria" (click)="startEdit(category)">
+              <svg pIcon="pencil" aria-hidden="true"></svg>
+            </button>
+          }
+          <small>{{ category.tourCount }} passeios</small>
+          <button type="button" aria-label="Excluir categoria" (click)="removeCategory(category)">
+            <svg pIcon="trash" aria-hidden="true"></svg>
+          </button>
+        </li>
+      }
+    </ul>
+  </section>
+</div>

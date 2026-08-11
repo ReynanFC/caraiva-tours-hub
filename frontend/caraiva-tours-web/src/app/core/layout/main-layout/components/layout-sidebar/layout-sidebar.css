@@ -87,7 +87,7 @@
 }
 
 .user-copy {
-  @apply flex-1;
+  @apply flex-1 cursor-pointer bg-transparent text-left;
 }
 
 .user-copy strong {

@@ -1,0 +1,72 @@
+@reference '../../../../../styles.css';
+
+.dialog-backdrop {
+  @apply fixed inset-0 z-50 grid place-items-center bg-black/40 p-4;
+}
+
+.categories-dialog {
+  @apply w-full max-w-xl rounded-[10px] bg-surface p-5 shadow-2xl;
+}
+
+.categories-dialog header {
+  @apply mb-4 flex items-center justify-between;
+}
+
+.categories-dialog h2 {
+  @apply font-display text-lg font-bold;
+}
+
+.categories-dialog header button {
+  @apply text-2xl text-muted;
+}
+
+.new-category {
+  @apply mb-3 flex gap-2;
+}
+
+.new-category button,
+.save-button {
+  @apply rounded-md border border-primary bg-primary px-4 py-2 text-sm font-semibold text-white;
+}
+
+.categories-dialog li {
+  @apply flex items-center gap-2 border-t border-border py-3 text-sm;
+}
+
+.categories-dialog li small {
+  @apply ml-auto text-xs text-muted;
+}
+
+.categories-dialog li > button:not(.save-button) {
+  @apply grid size-8 place-items-center rounded-md border border-border text-muted;
+}
+
+@media (max-width: 640px) {
+  .categories-dialog {
+    @apply m-auto flex max-h-[85vh] w-[calc(100vw-2rem)] flex-col p-4;
+  }
+
+  .new-category {
+    @apply flex-col;
+  }
+
+  .new-category button {
+    @apply w-full;
+  }
+
+  .categories-dialog ul {
+    @apply max-h-[50vh] overflow-y-auto pr-1;
+  }
+
+  .categories-dialog li {
+    @apply flex-wrap px-0 py-2;
+  }
+
+  .categories-dialog li span {
+    @apply min-w-30 flex-1 wrap-break-word;
+  }
+
+  .save-button {
+    @apply w-full;
+  }
+}

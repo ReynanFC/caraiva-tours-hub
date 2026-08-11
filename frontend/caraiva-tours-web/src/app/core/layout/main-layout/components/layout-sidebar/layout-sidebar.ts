@@ -24,6 +24,7 @@ export class LayoutSidebar {
 
   readonly openChange = output<boolean>();
   readonly signOut = output<void>();
+  readonly profileRequested = output<void>();
 
   protected readonly displayName = computed(() => getUserDisplayName(this.profile()));
   protected readonly roleLabel = computed(() => getUserRoleLabel(this.profile()));

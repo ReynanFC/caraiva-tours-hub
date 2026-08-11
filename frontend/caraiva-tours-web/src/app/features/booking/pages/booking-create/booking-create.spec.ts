@@ -4,10 +4,10 @@ import { Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
 
 import { BookingSummary } from '../../models/booking.model';
-import { ImgBbResponse } from '../../models/img-bb-response';
+import { ImgBbResponse } from '../../../../shared/models/img-bb-response';
 import { TourOption } from '../../models/tour.model';
 import { BookingService } from '../../services/booking';
-import { Imgbb } from '../../services/imgbb';
+import { Imgbb } from '../../../../shared/services/imgbb';
 import { BookingCreate } from './booking-create';
 
 describe('BookingCreate', () => {
@@ -131,6 +131,9 @@ describe('BookingCreate', () => {
     const tour: TourOption = {
       id: 1,
       name: 'Passeio de barco',
+      basePricePerPerson: 120,
+      promoPricePerPerson: 99.99,
+      isPromotional: true,
       effectivePrice: 99.99,
       available: true,
       disabled: false,

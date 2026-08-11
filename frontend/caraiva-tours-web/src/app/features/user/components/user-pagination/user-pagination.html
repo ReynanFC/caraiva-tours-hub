@@ -1,0 +1,7 @@
+<footer>
+  <button type="button" [disabled]="page() === 0" (click)="previous.emit()">Anterior</button>
+  <span>Página {{ page() + 1 }} de {{ totalPages() || 1 }}</span>
+  <button type="button" [disabled]="page() + 1 >= totalPages()" (click)="next.emit()">
+    Próxima
+  </button>
+</footer>

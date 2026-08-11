@@ -1,0 +1,306 @@
+@reference '../../../../../styles.css';
+
+:host {
+  @apply block;
+}
+
+.tours-page {
+  @apply mx-auto max-w-350 p-5 font-ui text-foreground;
+}
+
+.page-head {
+  @apply mb-6 flex flex-wrap items-center justify-between gap-4;
+}
+
+.page-head h2 {
+  @apply font-display text-2xl font-bold;
+}
+
+.page-head p {
+  @apply mt-1 text-sm text-muted;
+}
+
+.head-actions {
+  @apply flex gap-2;
+}
+
+.secondary-button,
+.new-button {
+  @apply h-10 rounded-[10px]! px-4! text-sm! font-semibold! shadow-none!;
+}
+
+.secondary-button {
+  @apply border-border! bg-surface! text-foreground!;
+}
+
+.new-button {
+  @apply border-primary! bg-primary! text-white!;
+}
+
+.filters {
+  @apply mb-5;
+}
+
+.chips {
+  @apply mt-4 flex flex-wrap items-center gap-2;
+}
+
+.chips > span {
+  @apply mr-1 text-xs font-medium text-muted;
+}
+
+.chip,
+.category-select {
+  @apply inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1.5 text-xs font-medium;
+}
+
+.chip:hover {
+  @apply bg-gray-100;
+}
+
+.chip.active {
+  @apply border-primary bg-primary text-white;
+}
+
+.chip b {
+  @apply rounded-full bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium text-muted;
+}
+
+.chip.active b {
+  @apply bg-white/20 text-white;
+}
+
+.category-select {
+  @apply py-1;
+}
+
+.tour-grid {
+  @apply grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3;
+}
+
+.tour-card {
+  @apply rounded-[10px] border border-border bg-surface p-5 shadow-sm transition-shadow hover:shadow-lg;
+}
+
+.card-top {
+  @apply flex justify-between;
+}
+
+.tour-icon {
+  @apply grid size-11 place-items-center rounded-lg bg-primary-light text-primary-dark;
+}
+
+.tour-icon svg {
+  @apply size-5;
+}
+
+.price {
+  @apply text-right;
+}
+
+.price del {
+  @apply block text-xs text-muted;
+}
+
+.price strong {
+  @apply block font-display text-lg font-bold text-primary;
+}
+
+.price small {
+  @apply block text-[10px] text-muted;
+}
+
+.tour-card h3 {
+  @apply mt-4 text-sm font-semibold;
+}
+
+.off-pill,
+.pill {
+  @apply ml-1 inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-semibold text-muted;
+}
+
+.description {
+  @apply mt-1 line-clamp-2 min-h-9 text-xs text-muted;
+}
+
+.tags {
+  @apply mt-3 flex flex-wrap gap-1;
+}
+
+.pill {
+  @apply ml-0 font-medium text-foreground;
+}
+
+.pill svg,
+.meta svg {
+  @apply size-3;
+}
+
+.promo {
+  @apply bg-primary-light text-primary-dark;
+}
+
+.meta {
+  @apply mt-3 flex text-xs text-muted;
+}
+
+.meta span {
+  @apply inline-flex items-center gap-1;
+}
+
+.commission {
+  @apply mt-3 text-xs text-muted;
+}
+
+.commission b {
+  @apply text-foreground;
+}
+
+.card-actions {
+  @apply mt-4 flex gap-2 border-t border-border pt-3;
+}
+
+.card-actions button {
+  @apply grid size-9 place-items-center rounded-md border border-border bg-surface text-muted hover:bg-gray-100 hover:text-foreground;
+}
+
+.card-actions button:first-child {
+  @apply h-9 flex-1 px-2 text-sm text-foreground;
+}
+
+.card-actions .danger:hover {
+  @apply border-red-100 bg-red-50 text-danger;
+}
+
+.state {
+  @apply flex min-h-72 flex-col items-center justify-center gap-3 rounded-[10px] border border-dashed border-border bg-surface p-8 text-center text-sm text-muted;
+}
+
+.state svg {
+  @apply size-7;
+}
+
+.state.error {
+  @apply border-danger text-danger;
+}
+
+.state button {
+  @apply rounded-md! border-danger! bg-surface! text-danger!;
+}
+
+.spinner {
+  @apply animate-spin text-primary;
+}
+
+.pagination {
+  @apply mt-6 flex items-center justify-center gap-2;
+}
+
+.pagination button,
+.current-page {
+  @apply grid h-9 min-w-9 place-items-center rounded-md border border-border bg-surface px-3 text-sm disabled:cursor-default disabled:opacity-40;
+}
+
+.current-page {
+  @apply border-primary bg-primary text-white;
+}
+
+.dialog-backdrop {
+  @apply fixed inset-0 z-50 grid place-items-center bg-black/40 p-4;
+}
+
+.editor-dialog {
+  @apply max-h-[calc(100vh-2rem)] w-full max-w-2xl overflow-y-auto rounded-[10px] bg-surface p-5 shadow-2xl;
+}
+
+.editor-dialog header {
+  @apply mb-4 flex items-center justify-between;
+}
+
+.editor-dialog h2 {
+  @apply font-display text-lg font-bold;
+}
+
+.editor-dialog header button {
+  @apply text-2xl text-muted;
+}
+
+.form-grid {
+  @apply grid grid-cols-1 gap-3 sm:grid-cols-2;
+}
+
+.form-field {
+  @apply flex flex-col gap-1;
+}
+
+.form-field > label,
+.duration-field legend {
+  @apply text-xs font-semibold text-foreground;
+}
+.required {
+  @apply text-danger;
+}
+
+.form-grid textarea {
+  @apply min-h-24 w-full resize-y;
+}
+
+.form-grid .full,
+.duration-field {
+  @apply sm:col-span-2;
+}
+
+.duration-field {
+  @apply grid grid-cols-1 gap-3 rounded-lg border border-border p-3 sm:grid-cols-2;
+}
+
+.duration-field legend {
+  @apply px-1;
+}
+
+.form-grid .toggle {
+  @apply flex items-center gap-2 pt-3 text-sm font-semibold;
+}
+
+.editor-dialog footer {
+  @apply mt-5 flex justify-end gap-2 border-t border-border pt-4;
+}
+
+.editor-dialog footer button {
+  @apply rounded-md border border-border bg-surface px-4 py-2 text-sm font-semibold;
+}
+
+.editor-dialog footer .save {
+  @apply border-primary bg-primary text-white disabled:opacity-60;
+}
+
+.form-error {
+  @apply mt-3 text-sm text-danger;
+}
+
+::ng-deep .editor-dialog .p-inputtext,
+::ng-deep .editor-dialog .p-select {
+  @apply w-full;
+}
+
+@media (max-width: 640px) {
+  .tours-page {
+    @apply p-4;
+  }
+
+  .head-actions {
+    @apply w-full flex-col sm:flex-row;
+  }
+
+  .head-actions button {
+    @apply flex-1 justify-center;
+  }
+
+  .form-error {
+    @apply mb-5;
+  }
+}
+
+button {
+  cursor: pointer;
+}

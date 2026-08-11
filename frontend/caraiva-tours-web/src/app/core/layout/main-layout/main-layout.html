@@ -6,6 +6,7 @@
     [open]="sidebarOpen()"
     (openChange)="sidebarOpen.set($event)"
     (signOut)="signOut()"
+    (profileRequested)="openOwnProfile()"
   />
 
   <p-sidebar-main>

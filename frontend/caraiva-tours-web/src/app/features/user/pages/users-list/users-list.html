@@ -1,0 +1,56 @@
+@if (!isAdmin()) {
+  <section class="restricted-state" role="alert">
+    <svg pIcon="shield" aria-hidden="true"></svg>
+    <h2>Acesso restrito</h2>
+    <p>Esta área está disponível somente para administradores.</p>
+  </section>
+} @else {
+  <section class="users-page" aria-label="Administração de usuários">
+    <header class="users-heading">
+      <div>
+        <h2>Usuários</h2>
+        <p>Gerencie administradores e funcionários da equipe.</p>
+      </div>
+      <button pButton type="button" class="new-user" (click)="openCreate()">
+        <span aria-hidden="true">＋</span> Novo usuário
+      </button>
+    </header>
+
+    <app-user-list-filter [search]="search()" (searchChange)="changeSearch($event)" />
+
+    @if (usersResource.error()) {
+      <div class="page-state error">Não foi possível carregar os usuários.</div>
+    } @else if (usersResource.isLoading() && !usersResource.hasValue()) {
+      <div class="page-state">Carregando usuários…</div>
+    } @else if (!usersResource.value()?.content?.length) {
+      <div class="page-state">Nenhum usuário encontrado.</div>
+    } @else {
+      <div class="users-grid">
+        @for (user of usersResource.value()!.content; track user.id) {
+          <app-user-card
+            [user]="user"
+            [currentUserId]="currentUserId()"
+            [loading]="actionLoadingId() !== null"
+            (profileRequested)="openProfile($event)"
+            (statusToggle)="toggleStatus($event)"
+          />
+        }
+      </div>
+    }
+
+    <app-user-pagination
+      [page]="page()"
+      [totalPages]="usersResource.value()?.totalPages ?? 0"
+      (previous)="previousPage()"
+      (next)="nextPage()"
+    />
+  </section>
+}
+
+@if (createOpen()) {
+  <app-user-create-dialog
+    [saving]="saving()"
+    (closed)="createOpen.set(false)"
+    (submitted)="createUser($event)"
+  />
+}

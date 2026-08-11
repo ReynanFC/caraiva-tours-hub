@@ -8,16 +8,14 @@ import { AutoCompleteModule } from 'primeng/autocomplete';
 import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
 import { DatePickerModule } from 'primeng/datepicker';
-import { InputMaskModule } from 'primeng/inputmask';
-import { InputNumberModule } from 'primeng/inputnumber';
-import { InputTextModule } from 'primeng/inputtext';
 import { AutoCompleteSelectEvent } from 'primeng/types/autocomplete';
 import { finalize } from 'rxjs';
 
 import { Card } from '../../../../shared/components/card/card';
 import { ValidationError } from '../../../../core/http/api-error';
 import { fromCents, toCents } from '../../../../shared/utils/money.utils';
-import { PixProofUpload } from '../../components/pix-proof-upload/pix-proof-upload';
+import { ImageUpload } from '../../../../shared/components/image-upload/image-upload';
+import { Input } from '../../../../shared/components/input/input';
 import { TourOption } from '../../models/tour.model';
 import { BookingService } from '../../services/booking';
 import { BookingFormService } from '../../services/booking-form';
@@ -33,10 +31,8 @@ import { BookingFormService } from '../../services/booking-form';
     CheckboxModule,
     CurrencyPipe,
     DatePickerModule,
-    InputMaskModule,
-    InputNumberModule,
-    InputTextModule,
-    PixProofUpload,
+    Input,
+    ImageUpload,
     ReactiveFormsModule,
   ],
   providers: [BookingFormService],

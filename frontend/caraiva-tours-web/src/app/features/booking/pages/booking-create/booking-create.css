@@ -85,30 +85,13 @@
   @apply text-danger;
 }
 
-.form-field p-inputmask {
-  @apply block w-full;
-}
-
 .form-field p-autocomplete,
-.form-field p-datepicker,
-.form-field p-inputnumber {
+.form-field p-datepicker {
   @apply block w-full;
-}
-
-.form-field input,
-:host ::ng-deep .form-control {
-  @apply h-11 w-full rounded-control border border-border bg-surface px-3.5 font-ui text-sm text-foreground outline-none transition-[border-color,box-shadow] duration-200 placeholder:text-muted;
-}
-
-.form-field input:focus,
-:host ::ng-deep .form-control:focus {
-  @apply border-primary;
-  box-shadow: 0 0 0 4px var(--color-focus-ring);
 }
 
 :host ::ng-deep .p-autocomplete,
-:host ::ng-deep .p-datepicker,
-:host ::ng-deep .p-inputnumber {
+:host ::ng-deep .p-datepicker {
   @apply flex w-full min-w-0;
 }
 
@@ -119,8 +102,7 @@
 }
 
 :host ::ng-deep .p-autocomplete-input,
-:host ::ng-deep .p-datepicker-input,
-:host ::ng-deep .p-inputnumber-input {
+:host ::ng-deep .p-datepicker-input {
   flex: 1 1 0% !important;
   min-width: 0;
   width: auto;
@@ -187,20 +169,6 @@
 
 .summary-field-heading span {
   @apply text-xs font-medium text-muted;
-}
-
-.summary-discount-field p-inputnumber,
-:host ::ng-deep .summary-discount-field .p-inputnumber {
-  @apply flex w-full min-w-0;
-}
-
-:host ::ng-deep .summary-discount-field .p-inputnumber-input {
-  @apply h-10 w-full rounded-control border border-border bg-surface px-3.5 font-ui text-sm text-foreground outline-none transition-[border-color,box-shadow] duration-200 placeholder:text-muted;
-}
-
-:host ::ng-deep .summary-discount-field .p-inputnumber-input:focus {
-  @apply border-primary;
-  box-shadow: 0 0 0 4px var(--color-focus-ring);
 }
 
 .summary-discount-field > small {

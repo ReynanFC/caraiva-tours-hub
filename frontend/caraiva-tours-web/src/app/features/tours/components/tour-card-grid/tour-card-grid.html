@@ -1,0 +1,64 @@
+<div class="tour-grid">
+  @for (tour of tours(); track tour.id) {
+    <article class="tour-card" [class.unavailable]="!tour.available">
+      @if (!tour.available) {
+        <div class="availability-banner">
+          <svg pIcon="ban" aria-hidden="true"></svg>
+          Indisponível para reservas
+        </div>
+      }
+      <div class="card-top">
+        @if (tour.imageUrl) {
+          <img class="tour-image" [src]="tour.imageUrl" [alt]="tour.name" />
+        } @else {
+          <span class="tour-icon"><svg pIcon="map" aria-hidden="true"></svg></span>
+        }
+        <div class="price">
+          @if (tour.isPromotional) {
+            <del>{{ currency.format(tour.basePricePerPerson) }}</del>
+          }
+
+          <strong>{{ currency.format(priceFor(tour)) }}</strong>
+          <small>por pessoa</small>
+        </div>
+      </div>
+      <h3>
+        {{ tour.name }}
+      </h3>
+      <p class="description" [class.expanded]="isExpanded(tour.id)">{{ tour.description }}</p>
+      @if (tour.description) {
+        <button type="button" class="details-button" (click)="toggleDetails(tour.id)">
+          {{ isExpanded(tour.id) ? 'Ver menos' : 'Ver mais' }}
+        </button>
+      }
+      <div class="tags">
+        <span class="pill"><svg pIcon="tag" aria-hidden="true"></svg>{{ tour.category.name }}</span>
+        @if (tour.isPromotional) {
+          <span class="pill promo"><svg pIcon="percentage" aria-hidden="true"></svg>Promo</span>
+        }
+      </div>
+      <div class="meta">
+        <span><svg pIcon="clock" aria-hidden="true"></svg>{{ tour.duration | tourDuration }}</span>
+      </div>
+      <p class="commission">
+        Comissão: <b>{{ commissionFor(tour) }}</b>
+      </p>
+      @if (isAdmin()) {
+        <footer class="card-actions">
+          <button type="button" (click)="availabilityToggle.emit(tour)">
+            Marcar {{ tour.available ? 'indisponível' : 'disponível' }}</button
+          ><button type="button" aria-label="Editar passeio" (click)="edit.emit(tour)">
+            <svg pIcon="pencil" aria-hidden="true"></svg></button
+          ><button
+            type="button"
+            class="danger"
+            aria-label="Excluir passeio"
+            (click)="remove.emit(tour)"
+          >
+            <svg pIcon="trash" aria-hidden="true"></svg>
+          </button>
+        </footer>
+      }
+    </article>
+  }
+</div>

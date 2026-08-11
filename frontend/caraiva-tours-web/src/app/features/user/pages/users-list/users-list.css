@@ -1,0 +1,55 @@
+@reference '../../../../../styles.css';
+
+:host {
+  @apply block;
+}
+.users-page {
+  @apply mx-auto max-w-7xl p-6;
+}
+.users-heading {
+  @apply mb-5 flex items-center justify-between gap-4;
+}
+.users-heading h2 {
+  @apply font-display text-2xl font-bold;
+}
+.users-heading p {
+  @apply mt-1 text-sm text-muted;
+}
+.new-user {
+  @apply border-primary! bg-primary! font-semibold! text-white!;
+}
+app-user-list-filter {
+  @apply mb-5;
+}
+.users-grid {
+  @apply grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3;
+}
+.page-state {
+  @apply py-20 text-center text-sm text-muted;
+}
+.page-state.error {
+  @apply text-danger;
+}
+.restricted-state {
+  @apply mx-auto mt-16 flex max-w-lg flex-col items-center rounded-lg border border-border bg-surface p-10 text-center shadow-sm;
+}
+.restricted-state svg {
+  @apply mb-3 size-10 text-primary;
+}
+.restricted-state h2 {
+  @apply font-display text-xl font-bold;
+}
+.restricted-state p {
+  @apply mt-2 text-sm text-muted;
+}
+@media (max-width: 640px) {
+  .users-page {
+    @apply p-4;
+  }
+  .users-heading {
+    @apply items-start;
+  }
+  .new-user {
+    @apply shrink-0;
+  }
+}

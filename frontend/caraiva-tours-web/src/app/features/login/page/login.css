@@ -18,7 +18,12 @@
 
 .brand-veil {
   @apply opacity-90;
-  background: linear-gradient(135deg, var(--color-primary), var(--color-primary) 45%, var(--color-primary-dark));
+  background: linear-gradient(
+    135deg,
+    var(--color-primary),
+    var(--color-primary) 45%,
+    var(--color-primary-dark)
+  );
 }
 
 .brand-blob {
@@ -85,9 +90,15 @@
   animation: fadeInUp 0.5s ease-out both;
 }
 
-.benefit-list li:nth-child(1) { animation-delay: 0.3s; }
-.benefit-list li:nth-child(2) { animation-delay: 0.4s; }
-.benefit-list li:nth-child(3) { animation-delay: 0.5s; }
+.benefit-list li:nth-child(1) {
+  animation-delay: 0.3s;
+}
+.benefit-list li:nth-child(2) {
+  animation-delay: 0.4s;
+}
+.benefit-list li:nth-child(3) {
+  animation-delay: 0.5s;
+}
 
 .benefit-icon {
   @apply grid size-8 shrink-0 place-items-center rounded-[0.625rem] bg-brand-highlight;
@@ -203,13 +214,8 @@ form {
   margin: 0 auto;
 }
 
-.field-error,
-.authentication-error {
+.field-error {
   @apply text-xs leading-[1.4] font-medium text-danger;
-}
-
-.authentication-error {
-  @apply m-0 rounded-control bg-primary-light p-3;
 }
 
 .submit-button {
@@ -235,18 +241,33 @@ form {
 }
 
 @keyframes kenburns {
-  0%   { transform: scale(1); }
-  100% { transform: scale(1.08); }
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.08);
+  }
 }
 
 @keyframes floatBlob {
-  0%, 100% { transform: translate(0, 0); }
-  50%      { transform: translate(16px, -20px); }
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(16px, -20px);
+  }
 }
 
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(16px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @media (min-width: 1024px) {

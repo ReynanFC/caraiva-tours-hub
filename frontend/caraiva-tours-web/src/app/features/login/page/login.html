@@ -84,7 +84,9 @@
             [invalid]="emailControl.invalid && emailControl.touched"
             [class.input-error]="emailControl.invalid && emailControl.touched"
             [attr.aria-invalid]="emailControl.invalid && emailControl.touched"
-            [attr.aria-describedby]="emailControl.invalid && emailControl.touched ? 'email-error' : null"
+            [attr.aria-describedby]="
+              emailControl.invalid && emailControl.touched ? 'email-error' : null
+            "
           />
 
           @if (emailControl.invalid && emailControl.touched) {
@@ -114,7 +116,9 @@
               [invalid]="passwordControl.invalid && passwordControl.touched"
               [class.input-error]="passwordControl.invalid && passwordControl.touched"
               [attr.aria-invalid]="passwordControl.invalid && passwordControl.touched"
-              [attr.aria-describedby]="passwordControl.invalid && passwordControl.touched ? 'password-error' : null"
+              [attr.aria-describedby]="
+                passwordControl.invalid && passwordControl.touched ? 'password-error' : null
+              "
             />
             <button
               pButton
@@ -134,7 +138,9 @@
                 </svg>
               } @else {
                 <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="m3 3 18 18M10.6 6.2A10.8 10.8 0 0 1 12 6c6.3 0 9.9 6 9.9 6a17.8 17.8 0 0 1-2.1 2.8M6.2 6.2C3.5 8 2.1 12 2.1 12s3.6 6 9.9 6c1 0 1.9-.2 2.7-.4M9.9 9.9a3 3 0 0 0 4.2 4.2" />
+                  <path
+                    d="m3 3 18 18M10.6 6.2A10.8 10.8 0 0 1 12 6c6.3 0 9.9 6 9.9 6a17.8 17.8 0 0 1-2.1 2.8M6.2 6.2C3.5 8 2.1 12 2.1 12s3.6 6 9.9 6c1 0 1.9-.2 2.7-.4M9.9 9.9a3 3 0 0 0 4.2 4.2"
+                  />
                 </svg>
               }
             </button>
@@ -150,10 +156,6 @@
             </small>
           }
         </div>
-
-        @if (authenticationError) {
-          <p class="authentication-error" role="alert">{{ authenticationError }}</p>
-        }
 
         <button
           pButton
@@ -171,7 +173,9 @@
         </button>
       </form>
 
-      <p class="mt-8 text-center text-xs text-muted">Acesso exclusivo para a equipe Porto Caraíva.</p>
+      <p class="mt-8 text-center text-xs text-muted">
+        Acesso exclusivo para a equipe Porto Caraíva.
+      </p>
     </div>
   </section>
 </main>

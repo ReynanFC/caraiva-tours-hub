@@ -46,6 +46,15 @@ describe('SessionStore', () => {
     });
   });
 
+  it('should identify an administrator from the loaded profile', async () => {
+    TestBed.inject(TokenStore).setAccessToken('access-token');
+    const store = TestBed.inject(SessionStore);
+
+    TestBed.tick();
+
+    await vi.waitFor(() => expect(store.isAdmin()).toBe(true));
+  });
+
   it('should request the header once per access token', async () => {
     const tokenStore = TestBed.inject(TokenStore);
     tokenStore.setAccessToken('access-token');

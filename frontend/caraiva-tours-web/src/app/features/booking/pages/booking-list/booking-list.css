@@ -33,18 +33,6 @@
 .error-state button {
   @apply mt-1 rounded-md! border! border-danger! bg-surface! px-3! py-2! text-sm! font-semibold! text-danger! shadow-none!;
 }
-::ng-deep .p-toast {
-  width: min(22rem, calc(100vw - 2rem)) !important;
-}
-::ng-deep .p-toast-message {
-  @apply rounded-lg! border! bg-surface! shadow-lg!;
-}
-::ng-deep .p-toast-message-success {
-  @apply border-emerald-200!;
-}
-::ng-deep .p-toast-message-error {
-  @apply border-red-200!;
-}
 .pager {
   @apply flex items-center justify-between border-t border-border px-4 py-3.5 font-ui text-sm text-muted;
 }

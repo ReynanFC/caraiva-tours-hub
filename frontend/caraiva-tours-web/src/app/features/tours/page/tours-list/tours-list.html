@@ -1,0 +1,213 @@
+<section class="tours-page" aria-label="Catálogo de passeios">
+  <header class="page-head">
+    <div>
+      <h2>Passeios</h2>
+      <p>Catálogo de passeios e combos disponíveis.</p>
+    </div>
+    <div class="head-actions">
+      <button pButton type="button" class="secondary-button" (click)="categoriesOpen.set(true)">
+        <svg pIcon="tag" aria-hidden="true"></svg> Categorias
+      </button>
+      @if (isAdmin()) {
+        <button pButton type="button" class="new-button" (click)="openCreateTour()">
+          <svg pIcon="plus" aria-hidden="true"></svg> Novo Passeio
+        </button>
+      }
+    </div>
+  </header>
+
+  <app-tours-list-filters
+    [search]="search()"
+    [selectedCategoryId]="selectedCategoryId()"
+    [categories]="categories()"
+    [totalTours]="totalTours()"
+    (searchChange)="changeSearch($event)"
+    (categoryChange)="selectCategory($event)"
+  />
+
+  @if (toursResource.error()) {
+    <div class="state error">
+      <svg pIcon="exclamation-triangle" aria-hidden="true"></svg
+      ><strong>Não foi possível carregar os passeios.</strong
+      ><button pButton type="button" (click)="toursResource.reload()">Tentar novamente</button>
+    </div>
+  } @else if (toursResource.isLoading() && !toursResource.hasValue()) {
+    <div class="state">
+      <svg class="spinner" pIcon="spinner" aria-hidden="true"></svg> Carregando passeios…
+    </div>
+  } @else if (!toursResource.value()?.content?.length) {
+    <div class="state">
+      <svg pIcon="map-marker" aria-hidden="true"></svg> Nenhum passeio nesta categoria.
+    </div>
+  } @else {
+    <app-tour-card-grid
+      [tours]="toursResource.value()!.content"
+      [isAdmin]="isAdmin()"
+      (availabilityToggle)="toggleAvailability($event)"
+      (edit)="openEditTour($event)"
+      (remove)="removeTour($event)"
+    />
+  }
+
+  <footer class="pagination">
+    <button type="button" [disabled]="page() === 0" (click)="previousPage()">Anterior</button
+    ><span class="current-page">{{ page() + 1 }}</span
+    ><button
+      type="button"
+      [disabled]="page() + 1 >= (toursResource.value()?.totalPages ?? 0)"
+      (click)="nextPage()"
+    >
+      Próxima
+    </button>
+  </footer>
+</section>
+
+@if (editorOpen()) {
+  <div class="dialog-backdrop" (click)="editorOpen.set(false)">
+    <form
+      [formGroup]="tourForm"
+      class="editor-dialog"
+      (click)="$event.stopPropagation()"
+      (ngSubmit)="saveTour()"
+    >
+      <header>
+        <h2>{{ editingTour() ? 'Editar passeio' : 'Novo passeio' }}</h2>
+        <button type="button" (click)="editorOpen.set(false)">×</button>
+      </header>
+      <div class="form-grid">
+        <div class="form-field">
+          <label for="tour-name">Nome <span class="required">*</span></label>
+          <app-input inputId="tour-name" maxlength="150" formControlName="name" />
+        </div>
+        <div class="form-field">
+          <label for="tour-category">Categoria <span class="required">*</span></label>
+          <p-select
+            inputId="tour-category"
+            [options]="categories()"
+            optionLabel="name"
+            optionValue="id"
+            placeholder="Selecione uma categoria"
+            appendTo="body"
+            formControlName="categoryTourId"
+          />
+        </div>
+        <div class="form-field full">
+          <label for="tour-description">Descrição <span class="required">*</span></label>
+          <textarea
+            pTextarea
+            id="tour-description"
+            rows="4"
+            maxlength="1000"
+            formControlName="description"
+          ></textarea>
+        </div>
+        <div class="form-field">
+          <label for="tour-base-price">Preço base <span class="required">*</span></label>
+          <app-input
+            inputId="tour-base-price"
+            format="currency"
+            [min]="0"
+            formControlName="basePricePerPerson"
+          />
+        </div>
+        <div class="form-field">
+          <label for="tour-promo-price">Preço promocional</label>
+          <app-input
+            inputId="tour-promo-price"
+            format="currency"
+            [min]="0"
+            formControlName="promoPricePerPerson"
+          />
+        </div>
+        <div class="form-field">
+          <label for="tour-commission-type">Tipo de comissão</label>
+          <p-select
+            inputId="tour-commission-type"
+            [options]="commissionTypes"
+            optionLabel="label"
+            optionValue="value"
+            appendTo="body"
+            formControlName="commissionType"
+          />
+        </div>
+        <div class="form-field">
+          <label for="tour-commission-value"
+            >Valor da comissão <span class="required">*</span></label
+          >
+          @if (tourForm.controls.commissionType.value === 'FIXED') {
+            <app-input
+              inputId="tour-commission-value"
+              format="currency"
+              [min]="0"
+              formControlName="commissionValue"
+            />
+          } @else {
+            <app-input
+              inputId="tour-commission-value"
+              format="percentage"
+              [min]="0"
+              [max]="100"
+              formControlName="commissionValue"
+            />
+          }
+        </div>
+        <fieldset formGroupName="duration" class="duration-field">
+          <legend>Duração <span class="required">*</span></legend>
+          <div class="form-field">
+            <label for="tour-duration-hours">Horas</label>
+            <app-input
+              inputId="tour-duration-hours"
+              format="integer"
+              suffix=" h"
+              [min]="0"
+              [max]="999"
+              formControlName="hours"
+            />
+          </div>
+          <div class="form-field">
+            <label for="tour-duration-minutes">Minutos</label>
+            <app-input
+              inputId="tour-duration-minutes"
+              format="integer"
+              suffix=" min"
+              [min]="0"
+              [max]="59"
+              formControlName="minutes"
+            />
+          </div>
+        </fieldset>
+        <app-image-upload
+          class="full"
+          formControlName="imageUrl"
+          inputId="tour-image"
+          title="Imagem do passeio"
+          description="Envie uma foto para ilustrar o passeio."
+          selectLabel="Selecionar imagem"
+          previewAlt="Pré-visualização da imagem do passeio"
+        />
+        <label class="toggle">
+          <p-checkbox inputId="tour-available" [binary]="true" formControlName="available" />
+          Disponível
+        </label>
+        <label class="toggle">
+          <p-checkbox inputId="tour-promotional" [binary]="true" formControlName="isPromotional" />
+          Promocional
+        </label>
+      </div>
+      <footer>
+        <button type="button" (click)="editorOpen.set(false)">Cancelar</button
+        ><button type="submit" class="save" [disabled]="saving() || tourForm.invalid">
+          {{ saving() ? 'Salvando…' : 'Salvar passeio' }}
+        </button>
+      </footer>
+    </form>
+  </div>
+}
+
+@if (categoriesOpen()) {
+  <app-category-dialog
+    [categories]="categories()"
+    (closed)="categoriesOpen.set(false)"
+    (categoriesChanged)="categoriesResource.reload()"
+  />
+}

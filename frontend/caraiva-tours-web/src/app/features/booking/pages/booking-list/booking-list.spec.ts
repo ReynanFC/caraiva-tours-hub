@@ -1,10 +1,10 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MessageService } from 'primeng/api';
 import { of, throwError } from 'rxjs';
 
 import { BookingService } from '../../services/booking';
 import { BookingList } from './booking-list';
+import { ActionNotificationService } from '../../../../shared/components/action-notification/action-notification.service';
 
 describe('BookingList', () => {
   let fixture: ComponentFixture<BookingList>;
@@ -81,14 +81,14 @@ describe('BookingList', () => {
       status: 'CONFIRMED' as const,
     };
     bookingServiceMock.confirmBooking.mockReturnValue(of({ ...booking, status: 'COMPLETED' }));
-    const messageService = fixture.debugElement.injector.get(MessageService);
-    const addMessage = vi.spyOn(messageService, 'add');
+    const notifications = TestBed.inject(ActionNotificationService);
+    const addMessage = vi.spyOn(notifications.messages, 'add');
 
     await (fixture.componentInstance as any).confirmBooking(booking);
 
     expect(addMessage).toHaveBeenCalledWith(
       expect.objectContaining({
-        key: 'booking-actions',
+        key: 'action-notifications',
         severity: 'success',
         detail: 'Passeio da reserva #42 concluído com sucesso.',
         life: 2_000,
@@ -117,8 +117,8 @@ describe('BookingList', () => {
           }),
       ),
     );
-    const messageService = fixture.debugElement.injector.get(MessageService);
-    const addMessage = vi.spyOn(messageService, 'add');
+    const notifications = TestBed.inject(ActionNotificationService);
+    const addMessage = vi.spyOn(notifications.messages, 'add');
 
     await (fixture.componentInstance as any).openBookingDetails(booking);
 

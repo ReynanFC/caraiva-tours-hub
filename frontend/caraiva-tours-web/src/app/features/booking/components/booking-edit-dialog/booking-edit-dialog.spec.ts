@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
 import { of } from 'rxjs';
 
-import { Imgbb } from '../../services/imgbb';
+import { Imgbb } from '../../../../shared/services/imgbb';
 import { BookingEditDialog } from './booking-edit-dialog';
 
 describe('BookingEditDialog', () => {
@@ -41,6 +41,9 @@ describe('BookingEditDialog', () => {
       {
         id: 3,
         name: 'Corumbau',
+        basePricePerPerson: 225,
+        promoPricePerPerson: null,
+        isPromotional: false,
         effectivePrice: 225,
         available: true,
         category: { id: 1, name: 'Praia' },

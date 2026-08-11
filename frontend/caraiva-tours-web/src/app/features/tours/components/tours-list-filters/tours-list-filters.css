@@ -1,0 +1,46 @@
+@reference '../../../../../styles.css';
+
+.filters {
+  @apply mb-5;
+}
+
+.search-field {
+  @apply block max-w-96;
+}
+
+.chips {
+  @apply mt-4 flex flex-wrap items-center gap-2;
+}
+
+.chips > span {
+  @apply mr-1 text-xs font-medium text-muted;
+}
+
+.chip,
+.category-select {
+  @apply inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1.5 text-xs font-medium;
+}
+
+.chip:hover {
+  @apply bg-gray-100;
+}
+
+.chip.active {
+  @apply border-primary bg-primary text-white;
+}
+
+.chip b {
+  @apply rounded-full bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium text-muted;
+}
+
+.chip.active b {
+  @apply bg-white/20 text-white;
+}
+
+.category-select {
+  @apply py-1;
+}
+
+button {
+  cursor: pointer;
+}

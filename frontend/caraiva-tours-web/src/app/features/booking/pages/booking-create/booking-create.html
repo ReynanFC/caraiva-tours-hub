@@ -4,10 +4,8 @@
       <div formGroupName="client" class="responsible-grid">
         <div class="form-field">
           <label for="name">Nome <span class="required-mark" aria-hidden="true">*</span></label>
-          <input
-            pInputText
-            id="name"
-            type="text"
+          <app-input
+            inputId="name"
             formControlName="name"
             placeholder="Digite o nome completo"
             autocomplete="name"
@@ -19,24 +17,21 @@
           <label for="phone"
             >Telefone <span class="required-mark" aria-hidden="true">*</span></label
           >
-          <input
-            [pInputMask]="'(99) 99999-9999'"
-            id="phone"
+          <app-input
+            inputId="phone"
+            format="phone"
             formControlName="phone"
             placeholder="(00) 00000-0000"
-            slotChar="0"
             autocomplete="tel-national"
-            class="form-control"
             maxlength="20"
           />
         </div>
 
         <div class="form-field">
           <label for="email">E-mail</label>
-          <input
-            pInputText
-            id="email"
-            type="email"
+          <app-input
+            inputId="email"
+            format="email"
             formControlName="email"
             placeholder="seuemail@exemplo.com"
             autocomplete="email"
@@ -68,10 +63,8 @@
               <label [for]="'memberName-' + index">
                 Nome <span class="required-mark" aria-hidden="true">*</span>
               </label>
-              <input
-                pInputText
-                [id]="'memberName-' + index"
-                type="text"
+              <app-input
+                [inputId]="'memberName-' + index"
                 formControlName="name"
                 placeholder="Nome"
                 maxlength="100"
@@ -182,15 +175,13 @@
       <div formGroupName="pickup" class="logistics-grid">
         <div class="form-field">
           <label for="cep">CEP</label>
-          <input
-            pInputMask
-            id="cep"
+          <app-input
+            inputId="cep"
+            format="cep"
             formControlName="cep"
             mask="99999-999"
             placeholder="00000-000"
             autocomplete="postal-code"
-            class="form-control"
-            unmask="true"
             maxlength="9"
           />
           @if (
@@ -205,10 +196,8 @@
           <label for="locationName">
             Local <span class="required-mark" aria-hidden="true">*</span>
           </label>
-          <input
-            pInputText
-            id="locationName"
-            type="text"
+          <app-input
+            inputId="locationName"
             formControlName="locationName"
             placeholder="Hotel, pousada ou endereço"
             autocomplete="street-address"
@@ -226,10 +215,8 @@
           <label for="referencePoint">
             Ponto de referência <span class="required-mark" aria-hidden="true">*</span>
           </label>
-          <input
-            pInputText
-            id="referencePoint"
-            type="text"
+          <app-input
+            inputId="referencePoint"
             formControlName="referencePoint"
             placeholder="Ex.: próximo à praça"
             maxlength="255"
@@ -244,17 +231,12 @@
 
         <div class="form-field">
           <label for="pickupFee">Taxa</label>
-          <p-inputnumber
+          <app-input
             inputId="pickupFee"
+            format="currency"
             formControlName="appliedPickupFee"
-            mode="currency"
-            currency="BRL"
-            locale="pt-BR"
             placeholder="R$ 0,00"
-            inputStyleClass="form-control"
             [min]="0"
-            [minFractionDigits]="2"
-            [maxFractionDigits]="2"
           />
           @if (
             bookingForm.controls.pickup.controls.appliedPickupFee.invalid &&
@@ -267,7 +249,8 @@
     </app-card>
 
     <app-card header="Pagamento 20% - Pix" icon="image" class="responsible-card">
-      <app-pix-proof-upload
+      <app-image-upload
+        inputId="pixProof"
         formControlName="pixPaymentUrl"
         (uploadingChange)="pixProofUploading.set($event)"
       />
@@ -281,17 +264,12 @@
           <label for="manualDiscount">Desconto manual</label>
           <span>Opcional</span>
         </div>
-        <p-inputnumber
+        <app-input
           inputId="manualDiscount"
+          format="currency"
           formControlName="manualDiscount"
-          mode="currency"
-          currency="BRL"
-          locale="pt-BR"
           placeholder="R$ 0,00"
-          inputStyleClass="form-control"
           [min]="0"
-          [minFractionDigits]="2"
-          [maxFractionDigits]="2"
         />
         <small>Use para aplicar cortesias ou ajustes comerciais.</small>
       </div>

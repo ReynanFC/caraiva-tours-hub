@@ -1,0 +1,33 @@
+<article
+  tabindex="0"
+  role="button"
+  (click)="profileRequested.emit(user())"
+  (keyup.enter)="profileRequested.emit(user())"
+>
+  <span class="user-avatar">{{ initials() }}</span>
+  <div class="user-info">
+    <strong>{{ user().userName }}</strong>
+    <small>{{ user().email }}</small>
+    <div class="badges">
+      <span class="role" [class.admin]="user().role === 'ADMIN'">
+        <svg [pIcon]="user().role === 'ADMIN' ? 'shield' : 'user'" aria-hidden="true"></svg>
+        {{ roleLabel() }}
+      </span>
+      @if (!user().enabled) {
+        <span class="inactive">Inativo</span>
+      }
+    </div>
+  </div>
+  <button
+    type="button"
+    class="status-pill"
+    [class.enabled]="user().enabled"
+    [class.protected]="statusActionBlocked() && !loading()"
+    [disabled]="statusActionBlocked()"
+    [attr.title]="statusActionTitle()"
+    (click)="toggleStatus($event)"
+  >
+    {{ statusActionBlocked() && !loading() ? 'Protegido' : user().enabled ? 'Ativo' : 'Ativar' }}
+    <span aria-hidden="true">›</span>
+  </button>
+</article>

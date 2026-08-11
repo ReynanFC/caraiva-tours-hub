@@ -1,19 +1,13 @@
 <form #editForm="ngForm" class="edit-form" (ngSubmit)="save()">
   <div class="field">
     <label for="edit-client">Cliente</label>
-    <input
-      pInputText
-      id="edit-client"
-      name="clientName"
-      maxlength="100"
-      [(ngModel)]="clientName"
-    />
+    <app-input inputId="edit-client" name="clientName" maxlength="100" [(ngModel)]="clientName" />
   </div>
   <div class="field">
     <label for="edit-phone">Telefone</label>
-    <input
-      pInputText
-      id="edit-phone"
+    <app-input
+      inputId="edit-phone"
+      format="phone"
       name="clientPhone"
       maxlength="20"
       placeholder="(73) 90000-0000"
@@ -34,11 +28,10 @@
   </div>
   <div class="field">
     <label for="edit-date">Data / hora</label>
-    <input
-      pInputText
-      id="edit-date"
+    <app-input
+      inputId="edit-date"
       name="scheduleDate"
-      type="datetime-local"
+      format="datetime-local"
       [(ngModel)]="scheduleDate"
     />
     @if (scheduleDate && !scheduleDateIsFuture()) {
@@ -63,10 +56,9 @@
           <div class="member-row">
             <div class="field">
               <label [for]="'edit-member-' + index">Nome</label>
-              <input
+              <app-input
                 #memberName="ngModel"
-                pInputText
-                [id]="'edit-member-' + index"
+                [inputId]="'edit-member-' + index"
                 [name]="'memberName-' + index"
                 required
                 maxlength="100"
@@ -104,18 +96,17 @@
 
   <div class="field">
     <label for="edit-discount">Desconto manual (R$)</label>
-    <p-inputnumber
+    <app-input
       inputId="edit-discount"
       name="manualDiscount"
-      mode="currency"
-      currency="BRL"
-      locale="pt-BR"
+      format="currency"
       [min]="0"
       [(ngModel)]="manualDiscount"
     />
   </div>
   <div class="pix-field">
-    <app-pix-proof-upload
+    <app-image-upload
+      inputId="pixProof"
       name="pixUrl"
       [(ngModel)]="pixUrl"
       (uploadingChange)="pixUploading = $event"

@@ -33,16 +33,13 @@
 
   <label class="search-field">
     <span class="sr-only">Buscar por telefone</span>
-    <svg pIcon="search" aria-hidden="true"></svg>
-    <input
-      #searchInput
-      [pInputMask]="'(99) 99999-9999'"
+    <app-input
+      icon="search"
+      format="phone"
       autocomplete="off"
       placeholder="Buscar por n° de telefone"
-      slotChar="0"
       maxlength="20"
-      [ngModel]="search()"
-      (onUnmaskedChange)="updateSearch($event, searchInput.value)"
+      [(ngModel)]="search"
     />
   </label>
 </div>

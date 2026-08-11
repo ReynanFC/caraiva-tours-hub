@@ -1,27 +1,27 @@
-import { Component, forwardRef, inject, OnDestroy, output, signal } from '@angular/core';
+import { Component, forwardRef, inject, input, OnDestroy, output, signal } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 
-import { FileSizePipe } from '../../../../shared/pipes/file-size.pipe';
+import { FileSizePipe } from '../../pipes/file-size.pipe';
 import { Imgbb } from '../../services/imgbb';
 
 const MAX_FILE_SIZE = 32 * 1024 * 1024;
 const ACCEPTED_FILE_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
 
 @Component({
-  selector: 'app-pix-proof-upload',
+  selector: 'app-image-upload',
   imports: [ButtonModule, FileSizePipe],
-  templateUrl: './pix-proof-upload.html',
-  styleUrl: './pix-proof-upload.css',
+  templateUrl: './image-upload.html',
+  styleUrl: './image-upload.css',
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => PixProofUpload),
+      useExisting: forwardRef(() => ImageUpload),
       multi: true,
     },
   ],
 })
-export class PixProofUpload implements ControlValueAccessor, OnDestroy {
+export class ImageUpload implements ControlValueAccessor, OnDestroy {
   private readonly imgbb = inject(Imgbb);
   private uploadSequence = 0;
   private objectUrl: string | null = null;
@@ -29,6 +29,11 @@ export class PixProofUpload implements ControlValueAccessor, OnDestroy {
   private onTouched: () => void = () => undefined;
 
   readonly uploadingChange = output<boolean>();
+  readonly title = input('Comprovante do pagamento');
+  readonly description = input('Envie um print do Pix para confirmar o pagamento de 20%.');
+  readonly selectLabel = input('Selecionar print do Pix');
+  readonly previewAlt = input('Pré-visualização da imagem enviada');
+  readonly inputId = input('image-upload');
 
   protected readonly file = signal<File | null>(null);
   protected readonly previewUrl = signal<string | null>(null);

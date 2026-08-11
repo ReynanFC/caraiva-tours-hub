@@ -1,0 +1,55 @@
+<div class="modal-overlay" (click)="closed.emit()">
+  <form
+    [formGroup]="form"
+    class="create-modal"
+    (click)="$event.stopPropagation()"
+    (ngSubmit)="submit()"
+  >
+    <header>
+      <div>
+        <h2>Novo usuário</h2>
+        <p>Cadastre um novo acesso para a equipe.</p>
+      </div>
+      <button type="button" aria-label="Fechar" (click)="closed.emit()">×</button>
+    </header>
+    <div class="create-fields">
+      <label
+        >Nome completo<app-input
+          placeholder="Ex: mariasilva"
+          formControlName="fullName"
+          maxlength="100"
+      /></label>
+      <label>Nome de usuário<app-input formControlName="userName" placeholder="Ex: mariasilva" /></label>
+      <label>E-mail<app-input formControlName="email" format="email" maxlength="100" placeholder="exemplo@dominio.com"/></label>
+      <label
+        >Senha<app-input formControlName="password" format="password" passwordFeedback
+      /></label>
+      <label>Chave PIX<app-input formControlName="pixKey" maxlength="255" placeholder="CPF/CNPJ, e-mail, telefone ou chave aleatória" /></label>
+      <fieldset>
+        <legend>Tipo de acesso</legend>
+        <div>
+          <button
+            type="button"
+            [class.active]="form.controls.role.value === 'EMPLOYEE'"
+            (click)="form.controls.role.setValue('EMPLOYEE')"
+          >
+            Funcionário
+          </button>
+          <button
+            type="button"
+            [class.active]="form.controls.role.value === 'ADMIN'"
+            (click)="form.controls.role.setValue('ADMIN')"
+          >
+            Administrador
+          </button>
+        </div>
+      </fieldset>
+    </div>
+    <footer>
+      <button type="button" class="cancel" (click)="closed.emit()">Cancelar</button>
+      <button pButton type="submit" [disabled]="saving() || form.invalid">
+        {{ saving() ? 'Criando…' : 'Criar usuário' }}
+      </button>
+    </footer>
+  </form>
+</div>

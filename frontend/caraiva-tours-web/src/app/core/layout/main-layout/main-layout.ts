@@ -2,16 +2,22 @@ import { Component, DestroyRef, OnInit, computed, inject, signal } from '@angula
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { SidebarModule } from 'primeng/sidebar';
-import { filter, startWith } from 'rxjs';
+import { filter, firstValueFrom, startWith } from 'rxjs';
+import { DialogService } from 'primeng/dynamicdialog';
 import { SessionStore } from '../../auth/session/session-store';
 import { TokenStore } from '../../auth/token/token-store';
 import { NavigationItem } from '../models/navigation-item';
 import { LayoutHeader } from './components/layout-header/layout-header';
 import { LayoutSidebar } from './components/layout-sidebar/layout-sidebar';
+import { ActionNotificationService } from '../../../shared/components/action-notification/action-notification.service';
+import { UserProfileDialog } from '../../../shared/components/user-profile-dialog/user-profile-dialog';
+import { UserProfileService } from '../../../shared/services/user-profile.service';
+import { getApiErrorMessage } from '../../http/api-error';
 
 @Component({
   selector: 'app-main-layout',
   imports: [SidebarModule, RouterOutlet, LayoutHeader, LayoutSidebar],
+  providers: [DialogService],
   templateUrl: './main-layout.html',
   styleUrl: './main-layout.css',
 })
@@ -20,6 +26,9 @@ export class MainLayout implements OnInit {
   private readonly sessionStore = inject(SessionStore);
   private readonly tokenStore = inject(TokenStore);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly dialogs = inject(DialogService);
+  private readonly userProfiles = inject(UserProfileService);
+  private readonly notifications = inject(ActionNotificationService);
 
   protected readonly profileResource = this.sessionStore.profileResource;
   protected readonly userProfile = computed(() =>
@@ -105,6 +114,28 @@ export class MainLayout implements OnInit {
     this.tokenStore.clearToken();
     this.sessionStore.clear();
     void this.router.navigate(['/login']);
+  }
+
+  protected async openOwnProfile(): Promise<void> {
+    try {
+      const profile = await firstValueFrom(this.userProfiles.getMyProfile());
+      this.dialogs.open(UserProfileDialog, {
+        header: 'Meu perfil',
+        width: '32rem',
+        modal: true,
+        dismissableMask: true,
+        breakpoints: { '560px': 'calc(100vw - 2rem)' },
+        inputValues: {
+          profile,
+          editable: true,
+          profileUpdated: () => this.profileResource.reload(),
+        },
+      });
+    } catch (error: unknown) {
+      this.notifications.error(
+        await getApiErrorMessage(error, 'Não foi possível carregar seu perfil.'),
+      );
+    }
   }
 
   private updateViewport(isMobile: boolean): void {

@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpErrorResponse } from '@angular/common/http';
 
 import { Login } from './login';
+import { ActionNotificationService } from '../../../shared/components/action-notification/action-notification.service';
 
 describe('Login', () => {
   let component: Login;
@@ -44,5 +46,37 @@ describe('Login', () => {
 
     expect(component.emailControl.touched).toBe(true);
     expect(component.passwordControl.touched).toBe(true);
+  });
+
+  it('should show the translated backend message for invalid credentials', async () => {
+    const notifications = TestBed.inject(ActionNotificationService);
+    const notify = vi.spyOn(notifications, 'error');
+    const error = new HttpErrorResponse({
+      status: 401,
+      error: { message: 'Invalid username or password' },
+    });
+
+    await (component as any).handleAuthenticationError(error);
+
+    expect(notify).toHaveBeenCalledWith('E-mail ou senha inválidos.', 5_000);
+  });
+
+  it('should include the backend retry time in rate-limit errors', async () => {
+    const notifications = TestBed.inject(ActionNotificationService);
+    const notify = vi.spyOn(notifications, 'error');
+    const error = new HttpErrorResponse({
+      status: 429,
+      error: {
+        message: 'Too many requests, try again later',
+        retryAfterSeconds: 121,
+      },
+    });
+
+    await (component as any).handleAuthenticationError(error);
+
+    expect(notify).toHaveBeenCalledWith(
+      'Muitas tentativas realizadas. Tente novamente em 3 minutos.',
+      8_000,
+    );
   });
 });
