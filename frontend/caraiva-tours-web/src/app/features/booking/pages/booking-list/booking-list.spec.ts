@@ -12,6 +12,7 @@ describe('BookingList', () => {
     getBookings: vi.fn(),
     getBookingsDetails: vi.fn(),
     confirmBooking: vi.fn(),
+    cancelBooking: vi.fn(),
   };
 
   beforeEach(async () => {

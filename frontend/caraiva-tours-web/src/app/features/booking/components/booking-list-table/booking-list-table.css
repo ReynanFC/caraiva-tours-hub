@@ -43,6 +43,9 @@
 .confirm-button {
   @apply text-emerald-700!;
 }
+.cancel-button {
+  @apply text-danger!;
+}
 .status-badge {
   @apply inline-flex max-w-44 items-center gap-1.5 rounded-full border px-2.5 py-1 font-ui text-xs text-center font-semibold leading-tight;
 }

@@ -5,10 +5,10 @@
       <p>Catálogo de passeios e combos disponíveis.</p>
     </div>
     <div class="head-actions">
-      <button pButton type="button" class="secondary-button" (click)="categoriesOpen.set(true)">
-        <svg pIcon="tag" aria-hidden="true"></svg> Categorias
-      </button>
       @if (isAdmin()) {
+        <button pButton type="button" class="secondary-button" (click)="categoriesOpen.set(true)">
+          <svg pIcon="tag" aria-hidden="true"></svg> Categorias
+        </button>
         <button pButton type="button" class="new-button" (click)="openCreateTour()">
           <svg pIcon="plus" aria-hidden="true"></svg> Novo Passeio
         </button>
@@ -204,7 +204,7 @@
   </div>
 }
 
-@if (categoriesOpen()) {
+@if (isAdmin() && categoriesOpen()) {
   <app-category-dialog
     [categories]="categories()"
     (closed)="categoriesOpen.set(false)"

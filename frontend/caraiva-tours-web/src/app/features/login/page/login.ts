@@ -4,7 +4,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ButtonModule } from 'primeng/button';
 import { InputPasswordModule } from 'primeng/inputpassword';
 import { InputTextModule } from 'primeng/inputtext';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { TokenStore } from '../../../core/auth/token/token-store';
 import { finalize, timeout, TimeoutError } from 'rxjs';
 import { getApiErrorMessage, RateLimitError } from '../../../core/http/api-error';
@@ -15,7 +15,7 @@ const LOGIN_TIMEOUT_MS = 10_000;
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule, ButtonModule, InputPasswordModule, InputTextModule],
+  imports: [ReactiveFormsModule, RouterLink, ButtonModule, InputPasswordModule, InputTextModule],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })

@@ -168,6 +168,14 @@ form {
   @apply text-sm font-medium text-foreground;
 }
 
+.forgot-password-link {
+  @apply -mt-1 justify-self-end text-xs font-semibold text-primary no-underline transition-colors;
+}
+
+.forgot-password-link:hover {
+  @apply text-primary-hover underline;
+}
+
 .form-field input:not([type='checkbox']) {
   @apply h-12 w-full rounded-control border border-border bg-surface px-4 font-ui text-sm text-foreground outline-none transition-[border-color,box-shadow] duration-200 placeholder:text-muted;
 }

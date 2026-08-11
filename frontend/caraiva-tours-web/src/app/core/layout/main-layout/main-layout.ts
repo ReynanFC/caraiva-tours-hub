@@ -39,7 +39,7 @@ export class MainLayout implements OnInit {
   protected readonly pageTitle = signal('Dashboard');
   protected readonly pageDescription = signal('Visão geral da operação da Porto Caraíva.');
 
-  protected readonly navigationItems: readonly NavigationItem[] = [
+  private readonly allNavigationItems: readonly NavigationItem[] = [
     {
       label: 'Dashboard',
       description: 'Visão geral da operação da Porto Caraíva.',
@@ -83,6 +83,11 @@ export class MainLayout implements OnInit {
       route: '/reembolso',
     },
   ];
+  protected readonly navigationItems = computed(() =>
+    this.allNavigationItems.filter(
+      (item) => item.route !== '/usuarios' || this.userProfile()?.role === 'ADMIN',
+    ),
+  );
 
   private mediaQuery?: MediaQueryList;
   private mediaQueryListener?: (event: MediaQueryListEvent) => void;
@@ -145,7 +150,7 @@ export class MainLayout implements OnInit {
 
   private updatePageHeader(): void {
     const currentPath = `/${this.router.url.split('?')[0].split('/').filter(Boolean)[0] ?? 'dashboard'}`;
-    const activeItem = this.navigationItems.find((item) => item.route === currentPath);
+    const activeItem = this.navigationItems().find((item) => item.route === currentPath);
 
     this.pageTitle.set(activeItem?.label ?? 'Dashboard');
     this.pageDescription.set(

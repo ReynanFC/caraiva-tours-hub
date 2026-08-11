@@ -66,5 +66,12 @@
   "Manual discount cannot be negative.": "O desconto manual não pode ser negativo.",
   "Group member name is required.": "O nome do integrante é obrigatório.",
   "Group member name must not exceed 100 characters.": "O nome do integrante deve ter no máximo 100 caracteres.",
-  "Invalid email format": "Formato de e-mail inválido."
+  "Invalid email format": "Formato de e-mail inválido.",
+  "Invalid or expired password reset token": "O link de redefinição de senha é inválido ou expirou.",
+  "Password must be at least 12 characters long and include uppercase, lowercase, number, and special character": "A senha deve ter pelo menos 12 caracteres e incluir letra maiúscula, letra minúscula, número e caractere especial.",
+  "must not be blank": "Este campo é obrigatório.",
+  "must be a well-formed email address": "Informe um endereço de e-mail válido.",
+  "Booking ID is required": "A reserva é obrigatória.",
+  "Refund reason is required": "O motivo do reembolso é obrigatório.",
+  "Refund reason must have at most 255 characters": "O motivo do reembolso deve ter no máximo 255 caracteres."
 }

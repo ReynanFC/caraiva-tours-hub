@@ -22,13 +22,14 @@ export class BookingListTable {
   readonly edit = output<BookingSummary>();
   readonly receipt = output<BookingSummary>();
   readonly confirm = output<BookingSummary>();
+  readonly cancel = output<BookingSummary>();
 
   protected readonly statusLabels: Record<BookingStatus, string> = {
     DRAFT: 'Aguard. comprovante',
     CONFIRMED: 'Confirmado',
     COMPLETED: 'Concluído',
-    CANCELLED: 'Canc. em análise',
-    CANCEL_REQUEST: 'Cancelado',
+    CANCELLED: 'Cancelado',
+    CANCEL_REQUEST: 'Canc. em análise',
   };
 
   protected statusClass(status: BookingStatus): string {
@@ -41,7 +42,7 @@ export class BookingListTable {
 
   protected canEdit(booking: BookingSummary): boolean {
     return (
-      booking.status !== 'COMPLETED' &&
+      (booking.status === 'DRAFT' || booking.status === 'CONFIRMED') &&
       (this.isAdmin() || booking.attendantId === this.currentUserId())
     );
   }

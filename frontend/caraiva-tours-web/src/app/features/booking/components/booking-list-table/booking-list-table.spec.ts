@@ -49,14 +49,37 @@ describe('BookingListTable', () => {
     expect(fixture.nativeElement.querySelectorAll('[aria-label="Editar reserva"]')).toHaveLength(2);
   });
 
-  it('should hide edit actions when the booking is completed', () => {
-    fixture.componentRef.setInput('bookings', [{ ...booking, status: 'COMPLETED' }]);
+  it('should show cancellation only to an administrator for an eligible booking', () => {
     fixture.componentRef.setInput('isAdmin', true);
-    fixture.componentRef.setInput('currentUserId', 7);
     fixture.detectChanges();
+    expect(fixture.nativeElement.querySelectorAll('[aria-label="Cancelar reserva"]')).toHaveLength(2);
 
-    expect(fixture.nativeElement.querySelectorAll('[aria-label="Editar reserva"]')).toHaveLength(0);
+    fixture.componentRef.setInput('isAdmin', false);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelectorAll('[aria-label="Cancelar reserva"]')).toHaveLength(0);
   });
+
+  it.each(['COMPLETED', 'CANCEL_REQUEST', 'CANCELLED'] as const)(
+    'should hide cancellation when the booking is %s',
+    (status) => {
+      fixture.componentRef.setInput('bookings', [{ ...booking, status }]);
+      fixture.componentRef.setInput('isAdmin', true);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.querySelectorAll('[aria-label="Cancelar reserva"]')).toHaveLength(0);
+    },
+  );
+
+  it.each(['COMPLETED', 'CANCEL_REQUEST', 'CANCELLED'] as const)(
+    'should hide edit actions when the booking is %s',
+    (status) => {
+      fixture.componentRef.setInput('bookings', [{ ...booking, status }]);
+      fixture.componentRef.setInput('isAdmin', true);
+      fixture.componentRef.setInput('currentUserId', 7);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.querySelectorAll('[aria-label="Editar reserva"]')).toHaveLength(0);
+    },
+  );
 
   it.each(['CONFIRMED', 'COMPLETED'] as const)(
     'should show report actions when the booking is %s',

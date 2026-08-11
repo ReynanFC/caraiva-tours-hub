@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/auth/guard/auth-guard';
 
-const emptyProtectedSections = ['dashboard', 'pagamentos', 'reembolso'];
+const emptyProtectedSections = ['dashboard', 'pagamentos'];
 
 export const routes: Routes = [
   {
@@ -12,6 +12,20 @@ export const routes: Routes = [
   {
     path: 'login',
     loadComponent: () => import('./features/login/page/login').then((m) => m.Login),
+  },
+  {
+    path: 'forgot-password',
+    loadComponent: () =>
+      import('./features/login/page/password-recovery/password-recovery').then(
+        (m) => m.PasswordRecovery,
+      ),
+  },
+  {
+    path: 'reset-password',
+    loadComponent: () =>
+      import('./features/login/page/password-recovery/password-recovery').then(
+        (m) => m.PasswordRecovery,
+      ),
   },
   {
     path: '',
@@ -39,6 +53,13 @@ export const routes: Routes = [
         path: 'usuarios',
         loadComponent: () =>
           import('./features/user/pages/users-list/users-list').then((m) => m.UsersList),
+      },
+      {
+        path: 'reembolso',
+        loadComponent: () =>
+          import('./features/refundrequest/pages/refund-page/refund-page').then(
+            (m) => m.RefundPage,
+          ),
       },
       ...emptyProtectedSections.map((path) => ({ path, children: [] })),
     ],

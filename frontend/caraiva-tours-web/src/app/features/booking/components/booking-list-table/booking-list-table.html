@@ -78,6 +78,18 @@
                 <svg pIcon="check" aria-hidden="true"></svg>
               </button>
             }
+            @if (isAdmin() && (booking.status === 'DRAFT' || booking.status === 'CONFIRMED')) {
+              <button
+                pButton
+                type="button"
+                class="icon-button cancel-button"
+                title="Cancelar reserva"
+                aria-label="Cancelar reserva"
+                (click)="cancel.emit(booking)"
+              >
+                <svg pIcon="times" aria-hidden="true"></svg>
+              </button>
+            }
           </div>
         </td>
       </tr>
@@ -145,6 +157,17 @@
             (click)="confirm.emit(booking)"
           >
             <svg pIcon="check" aria-hidden="true"></svg>
+          </button>
+        }
+        @if (isAdmin() && (booking.status === 'DRAFT' || booking.status === 'CONFIRMED')) {
+          <button
+            pButton
+            type="button"
+            class="icon-button cancel-button"
+            aria-label="Cancelar reserva"
+            (click)="cancel.emit(booking)"
+          >
+            <svg pIcon="times" aria-hidden="true"></svg>
           </button>
         }
       </div>

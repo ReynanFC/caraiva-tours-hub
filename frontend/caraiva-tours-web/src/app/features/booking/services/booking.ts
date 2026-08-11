@@ -4,6 +4,7 @@ import { map, Observable } from 'rxjs';
 
 import {
   BookingDetails,
+  CancelBookingRequest,
   BookingStatus,
   BookingSummary,
   CreateBookingRequest,
@@ -49,6 +50,10 @@ export class BookingService {
 
   confirmBooking(id: number): Observable<BookingSummary> {
     return this.http.patch<BookingSummary>(`/api/bookings/${id}/confirm`, {});
+  }
+
+  cancelBooking(id: number, request: CancelBookingRequest): Observable<BookingSummary> {
+    return this.http.patch<BookingSummary>(`/api/bookings/${id}/cancel`, request);
   }
 
   getReceipt(id: number): Observable<Blob> {
