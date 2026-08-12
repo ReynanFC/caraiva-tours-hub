@@ -51,4 +51,18 @@ describe('MainLayout', () => {
     expect((fixture.nativeElement as HTMLElement).textContent).toContain('Maria Oliveira');
     expect((fixture.nativeElement as HTMLElement).textContent).toContain('Administrador');
   });
+
+  it('should hide user management from employees', () => {
+    profileValue.set({ id: 8, name: 'João Silva', role: 'EMPLOYEE' });
+    fixture.detectChanges();
+
+    expect((fixture.nativeElement as HTMLElement).textContent).not.toContain('Usuários');
+  });
+
+  it('should show user management to administrators', () => {
+    profileValue.set({ id: 7, name: 'Maria Oliveira', role: 'ADMIN' });
+    fixture.detectChanges();
+
+    expect((fixture.nativeElement as HTMLElement).textContent).toContain('Usuários');
+  });
 });

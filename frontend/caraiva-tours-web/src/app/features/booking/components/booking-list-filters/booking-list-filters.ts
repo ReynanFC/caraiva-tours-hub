@@ -26,7 +26,7 @@ export class BookingListFilters {
     label: string;
     value: BookingStatusFilter;
   }[] = [
-    { label: 'Cancelamento em análise', value: 'CANCELLED' },
-    { label: 'Cancelamento concluído', value: 'CANCEL_REQUEST' },
+    { label: 'Cancelamento em análise', value: 'CANCEL_REQUEST' },
+    { label: 'Cancelamento concluído', value: 'CANCELLED' },
   ];
 }

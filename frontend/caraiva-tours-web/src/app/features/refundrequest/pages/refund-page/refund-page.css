@@ -1,0 +1,31 @@
+@reference '../../../../../styles.css';
+
+:host {
+  @apply block;
+}
+
+.refund-page {
+  @apply mx-auto grid max-w-350 gap-5 p-5 font-ui text-foreground;
+}
+
+.page-header {
+  @apply mb-1;
+}
+
+.eyebrow {
+  @apply mb-1 text-xs font-semibold tracking-[0.16em] text-primary uppercase;
+}
+
+.page-header h2 {
+  @apply font-display text-2xl font-bold tracking-[-0.02em];
+}
+
+.page-header > p:last-child {
+  @apply mt-1 text-sm text-muted;
+}
+
+@media (max-width: 640px) {
+  .refund-page {
+    @apply p-4;
+  }
+}

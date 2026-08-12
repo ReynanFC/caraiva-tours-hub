@@ -20,8 +20,8 @@ export class BookingDetailsDialog {
     DRAFT: 'Aguardando comprovante',
     CONFIRMED: 'Passeio confirmado',
     COMPLETED: 'Passeio concluído',
-    CANCELLED: 'Cancelamento em análise',
-    CANCEL_REQUEST: 'Cancelamento concluído',
+    CANCELLED: 'Cancelamento concluído',
+    CANCEL_REQUEST: 'Cancelamento em análise',
   };
 
   protected statusClass(status: import('../../models/booking.model').BookingStatus): string {

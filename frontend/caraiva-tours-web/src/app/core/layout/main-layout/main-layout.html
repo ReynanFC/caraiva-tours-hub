@@ -1,7 +1,7 @@
 <p-sidebar-layout class="app-layout">
   <app-layout-sidebar
     [profile]="userProfile()"
-    [navigationItems]="navigationItems"
+    [navigationItems]="navigationItems()"
     [isMobile]="isMobile()"
     [open]="sidebarOpen()"
     (openChange)="sidebarOpen.set($event)"

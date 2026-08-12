@@ -1,0 +1,13 @@
+@reference '../../../../../styles.css';
+
+.cancel-content { @apply flex flex-col gap-5; }
+.cancel-content > p { @apply text-sm leading-6 text-muted; }
+.field { @apply flex flex-col gap-1.5; }
+.field label { @apply text-xs font-semibold; }
+.field label span { @apply text-danger; }
+textarea { @apply w-full resize-y rounded-control border-border px-3 py-2.5 text-sm outline-none; }
+textarea:focus { @apply border-danger; box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-danger) 15%, transparent); }
+.field small { @apply text-right text-xs text-muted; }
+footer { @apply flex justify-end gap-2; }
+.back-button { @apply border-border! bg-surface! text-foreground! shadow-none!; }
+.cancel-button { @apply border-danger! bg-danger! text-white! shadow-none!; }

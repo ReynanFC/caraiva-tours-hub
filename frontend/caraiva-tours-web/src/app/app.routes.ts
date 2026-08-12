@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/auth/guard/auth-guard';
 
-const emptyProtectedSections = ['dashboard', 'pagamentos', 'reembolso'];
+const emptyProtectedSections = ['dashboard', 'pagamentos'];
 
 export const routes: Routes = [
   {
@@ -53,6 +53,13 @@ export const routes: Routes = [
         path: 'usuarios',
         loadComponent: () =>
           import('./features/user/pages/users-list/users-list').then((m) => m.UsersList),
+      },
+      {
+        path: 'reembolso',
+        loadComponent: () =>
+          import('./features/refundrequest/pages/refund-page/refund-page').then(
+            (m) => m.RefundPage,
+          ),
       },
       ...emptyProtectedSections.map((path) => ({ path, children: [] })),
     ],

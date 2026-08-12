@@ -1,0 +1,35 @@
+<section class="refund-page" aria-labelledby="refund-page-title">
+  <header class="page-header">
+    <p class="eyebrow">Financeiro</p>
+    <h2 id="refund-page-title">Reembolsos</h2>
+    <p>
+      {{
+        isAdmin()
+          ? 'Analise e responda às solicitações de reembolso da equipe.'
+          : 'Solicite o reembolso de uma reserva e acompanhe suas solicitações.'
+      }}
+    </p>
+  </header>
+
+  @if (!profileLoading() && !isAdmin()) {
+    <app-refund-form
+      [saving]="saving()"
+      [bookings]="bookingOptionsResource.value() ?? []"
+      [bookingsLoading]="bookingOptionsResource.isLoading()"
+      (requestSubmitted)="createRequest($event)"
+    />
+  }
+
+  <app-refund-list
+    [requests]="requests()"
+    [loading]="requestsResource.isLoading()"
+    [failed]="!!requestsResource.error()"
+    [page]="page()"
+    [totalPages]="requestsResource.value()?.totalPages ?? 0"
+    [adminMode]="isAdmin()"
+    [resolvingId]="resolvingId()"
+    (retry)="requestsResource.reload()"
+    (pageChange)="changePage($event)"
+    (resolutionRequested)="resolveRequest($event.id, $event.status)"
+  />
+</section>

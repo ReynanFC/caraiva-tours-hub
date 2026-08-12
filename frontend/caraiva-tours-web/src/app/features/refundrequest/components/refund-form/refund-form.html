@@ -1,0 +1,109 @@
+<section class="request-card" aria-labelledby="new-refund-title">
+  <header class="card-header">
+    <span class="card-icon" aria-hidden="true"><svg pIcon="undo"></svg></span>
+    <div>
+      <h3 id="new-refund-title">Nova solicitação</h3>
+      <p>Informe a reserva e descreva o motivo do pedido.</p>
+    </div>
+  </header>
+
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <div class="form-field booking-field">
+      <label for="refund-booking">Reserva <span aria-hidden="true">*</span></label>
+      <p-select
+        inputId="refund-booking"
+        formControlName="bookingId"
+        optionValue="id"
+        placeholder="Selecione uma reserva"
+        emptyMessage="Nenhuma reserva disponível"
+        emptyFilterMessage="Nenhuma reserva encontrada"
+        filterPlaceholder="Busque por reserva, passeio ou cliente"
+        panelStyleClass="refund-booking-panel"
+        scrollHeight="22rem"
+        appendTo="body"
+        [options]="bookings()"
+        [loading]="bookingsLoading()"
+        [filter]="true"
+        filterBy="id,tourName,clientName"
+        [showClear]="true"
+      >
+        <ng-template #selectedItem let-booking>
+          <div class="selected-booking">
+            <div class="selected-booking-main">
+              <strong>Reserva #{{ booking.id }}</strong>
+              <span aria-hidden="true">•</span>
+              <span class="selected-tour">{{ booking.tourName }}</span>
+            </div>
+            <small>
+              {{ booking.clientName }} · {{ bookingDate(booking.schedule) }} às
+              {{ bookingTime(booking.schedule) }}
+            </small>
+          </div>
+        </ng-template>
+        <ng-template #item let-booking>
+          <div class="booking-option">
+            <div class="booking-option-topline">
+              <strong>Reserva #{{ booking.id }}</strong>
+              <span
+                class="booking-status"
+                [class]="'booking-status ' + booking.status.toLowerCase()"
+              >
+                {{ bookingStatusLabel(booking.status) }}
+              </span>
+            </div>
+            <span class="booking-tour">{{ booking.tourName }}</span>
+            <div class="booking-metadata">
+              <span><svg pIcon="user" aria-hidden="true"></svg>{{ booking.clientName }}</span>
+              <span>
+                <svg pIcon="calendar" aria-hidden="true"></svg>
+                <time [attr.datetime]="booking.schedule">
+                  {{ bookingDate(booking.schedule) }} às {{ bookingTime(booking.schedule) }}
+                </time>
+              </span>
+            </div>
+          </div>
+        </ng-template>
+      </p-select>
+      @if (form.controls.bookingId.invalid && form.controls.bookingId.touched) {
+        <small id="booking-error" class="field-error">Selecione uma reserva.</small>
+      }
+    </div>
+
+    <div class="form-field reason-field">
+      <label for="refund-reason">Motivo do reembolso <span aria-hidden="true">*</span></label>
+      <textarea
+        pTextarea
+        id="refund-reason"
+        rows="3"
+        maxlength="255"
+        placeholder="Motivo do reembolso"
+        formControlName="reason"
+        [attr.aria-describedby]="form.controls.reason.invalid ? 'reason-error' : null"
+      ></textarea>
+      <div class="reason-help">
+        @if (form.controls.reason.invalid && form.controls.reason.touched) {
+          <small id="reason-error" class="field-error">
+            @if (form.controls.reason.hasError('required')) {
+              Informe o motivo do reembolso.
+            } @else {
+              O motivo deve ter no máximo 255 caracteres.
+            }
+          </small>
+        } @else {
+          <span></span>
+        }
+        <small>{{ form.controls.reason.value.length }}/255</small>
+      </div>
+    </div>
+
+    <footer class="form-actions">
+      <button pButton type="submit" class="submit-button" [disabled]="saving()">
+        @if (saving()) {
+          <svg class="spinner" pIcon="spinner" aria-hidden="true"></svg> Solicitando…
+        } @else {
+          <svg pIcon="send" aria-hidden="true"></svg> Solicitar
+        }
+      </button>
+    </footer>
+  </form>
+</section>

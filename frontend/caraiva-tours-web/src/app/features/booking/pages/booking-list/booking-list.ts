@@ -5,6 +5,7 @@ import { DialogService } from 'primeng/dynamicdialog';
 import { firstValueFrom } from 'rxjs';
 
 import { BookingDetailsDialog } from '../../components/booking-details-dialog/booking-details-dialog';
+import { BookingCancelDialog } from '../../components/booking-cancel-dialog/booking-cancel-dialog';
 import { BookingEditDialog } from '../../components/booking-edit-dialog/booking-edit-dialog';
 import { BookingListFilters } from '../../components/booking-list-filters/booking-list-filters';
 import { BookingListTable } from '../../components/booking-list-table/booking-list-table';
@@ -175,6 +176,39 @@ export class BookingList {
     } catch (error: unknown) {
       this.notifications.error(
         await getApiErrorMessage(error, 'Não foi possível concluir o passeio.'),
+      );
+    } finally {
+      this.actionLoadingId.set(null);
+    }
+  }
+
+  protected openCancelDialog(booking: BookingSummary): void {
+    if (!this.isAdmin()) return;
+    this.clearActionFeedback();
+    this.dialogService.open(BookingCancelDialog, {
+      header: `Cancelar reserva #${booking.id}`,
+      width: '32rem',
+      modal: true,
+      dismissableMask: true,
+      closeOnEscape: true,
+      styleClass: 'booking-cancel-dialog',
+      breakpoints: { '480px': 'calc(100vw - 2rem)' },
+      inputValues: {
+        booking,
+        onConfirm: (reason: string) => this.cancelBooking(booking, reason),
+      },
+    });
+  }
+
+  private async cancelBooking(booking: BookingSummary, reason: string): Promise<void> {
+    this.actionLoadingId.set(booking.id);
+    try {
+      await firstValueFrom(this.bookingService.cancelBooking(booking.id, { reason }));
+      this.notifications.success(`Reserva #${booking.id} cancelada com sucesso.`);
+      this.bookingsResource.reload();
+    } catch (error: unknown) {
+      this.notifications.error(
+        await getApiErrorMessage(error, 'Não foi possível cancelar a reserva.'),
       );
     } finally {
       this.actionLoadingId.set(null);

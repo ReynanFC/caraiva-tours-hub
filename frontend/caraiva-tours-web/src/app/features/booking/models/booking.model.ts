@@ -47,6 +47,10 @@ export interface UpdateBookingRequest {
   pixUrl: string | null;
 }
 
+export interface CancelBookingRequest {
+  reason: string;
+}
+
 export interface BookingMember {
   name: string;
   isLapChild: boolean;

@@ -1,0 +1,109 @@
+<section class="requests-section" aria-labelledby="refund-list-title" aria-live="polite">
+  <header class="section-header">
+    <div>
+      <h3 id="refund-list-title">
+        {{ adminMode() ? 'Solicitações de reembolso' : 'Minhas solicitações' }}
+      </h3>
+      <p>
+        {{
+          adminMode()
+            ? 'Analise e responda aos pedidos enviados pela equipe.'
+            : 'Acompanhe o andamento dos seus pedidos.'
+        }}
+      </p>
+    </div>
+    @if (requests().length) {
+      <span class="request-count">{{ requests().length }} nesta página</span>
+    }
+  </header>
+
+  @if (failed()) {
+    <div class="state error" role="alert">
+      <svg pIcon="exclamation-triangle" aria-hidden="true"></svg>
+      <strong>Não foi possível carregar suas solicitações.</strong>
+      <button type="button" (click)="retry.emit()">Tentar novamente</button>
+    </div>
+  } @else if (loading()) {
+    <div class="state">
+      <svg class="spinner" pIcon="spinner" aria-hidden="true"></svg>
+      <span>Carregando solicitações…</span>
+    </div>
+  } @else if (!requests().length) {
+    <div class="state empty">
+      <span class="empty-icon" aria-hidden="true"><svg pIcon="inbox"></svg></span>
+      <strong>Nenhuma solicitação encontrada</strong>
+      <p>
+        {{
+          adminMode()
+            ? 'As solicitações enviadas pela equipe aparecerão aqui.'
+            : 'Seus pedidos de reembolso aparecerão aqui.'
+        }}
+      </p>
+    </div>
+  } @else {
+    <ul class="request-list">
+      @for (request of requests(); track request.id) {
+        <li>
+          <article class="request-item">
+            <header class="request-header">
+              <div>
+                <h4>Reserva #{{ request.bookingId }}</h4>
+                <p>
+                  Solicitado em
+                  <time [attr.datetime]="request.requestedAt">
+                    {{ request.requestedAt | date: 'dd/MM/yyyy, HH:mm' }}
+                  </time>
+                </p>
+              </div>
+              <app-refund-status-badge [status]="request.refundStatus" />
+            </header>
+            <p class="reason">{{ request.reason }}</p>
+            @if (request.adminObservation) {
+              <aside class="admin-observation" aria-label="Observação administrativa">
+                <strong>Observação:</strong> {{ request.adminObservation }}
+              </aside>
+            }
+            @if (adminMode() && request.refundStatus === 'PENDING') {
+              <footer class="admin-actions" aria-label="Ações da solicitação">
+                <button
+                  type="button"
+                  class="reject-button"
+                  [disabled]="resolvingId() !== null"
+                  (click)="resolutionRequested.emit({ id: request.id, status: 'REJECTED' })"
+                >
+                  <svg pIcon="times" aria-hidden="true"></svg>
+                  {{ resolvingId() === request.id ? 'Processando…' : 'Rejeitar' }}
+                </button>
+                <button
+                  type="button"
+                  class="approve-button"
+                  [disabled]="resolvingId() !== null"
+                  (click)="resolutionRequested.emit({ id: request.id, status: 'APPROVED' })"
+                >
+                  <svg pIcon="check" aria-hidden="true"></svg>
+                  {{ resolvingId() === request.id ? 'Processando…' : 'Aprovar' }}
+                </button>
+              </footer>
+            }
+          </article>
+        </li>
+      }
+    </ul>
+
+    @if (totalPages() > 1) {
+      <nav class="pagination" aria-label="Paginação das solicitações">
+        <button type="button" [disabled]="page() === 0" (click)="pageChange.emit(page() - 1)">
+          Anterior
+        </button>
+        <span aria-current="page">{{ page() + 1 }} de {{ totalPages() }}</span>
+        <button
+          type="button"
+          [disabled]="page() + 1 >= totalPages()"
+          (click)="pageChange.emit(page() + 1)"
+        >
+          Próxima
+        </button>
+      </nav>
+    }
+  }
+</section>

@@ -1,0 +1,19 @@
+<div class="cancel-content">
+  <p>
+    A reserva <strong>#{{ booking().id }}</strong> de
+    <strong>{{ booking().clientName }}</strong> será cancelada imediatamente.
+  </p>
+  <div class="field">
+    <label for="cancellation-reason">Motivo do cancelamento <span>*</span></label>
+    <textarea pTextarea id="cancellation-reason" name="reason" rows="4" maxlength="255"
+      required placeholder="Informe o motivo do cancelamento" [(ngModel)]="reason"></textarea>
+    <small>{{ reason.length }}/255</small>
+  </div>
+  <footer>
+    <button pButton type="button" class="back-button" (click)="close()">Voltar</button>
+    <button pButton type="button" class="cancel-button"
+      [disabled]="!reason.trim() || reason.length > 255" (click)="confirm()">
+      <svg pIcon="times" aria-hidden="true"></svg> Cancelar reserva
+    </button>
+  </footer>
+</div>

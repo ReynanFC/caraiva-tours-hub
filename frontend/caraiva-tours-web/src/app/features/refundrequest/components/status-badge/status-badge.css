@@ -1,0 +1,21 @@
+@reference '../../../../../styles.css';
+
+.status-badge {
+  @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold whitespace-nowrap;
+}
+
+.status-dot {
+  @apply size-1.5 rounded-full bg-current;
+}
+
+.pending {
+  @apply bg-amber-50 text-amber-700;
+}
+
+.approved {
+  @apply bg-emerald-50 text-emerald-700;
+}
+
+.rejected {
+  @apply bg-red-50 text-danger;
+}
