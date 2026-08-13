@@ -1,0 +1,83 @@
+<div class="payment-details">
+  <section class="payment-hero">
+    <div>
+      <span>Valor do sinal</span>
+      <strong>{{ payment().signalAmount | currency: 'BRL' }}</strong>
+      <small>Recebido em {{ payment().paidAt | date: 'dd/MM/yyyy · HH:mm' }}</small>
+    </div>
+    <span class="hero-icon"><svg pIcon="check" aria-hidden="true"></svg></span>
+  </section>
+
+  <section class="details-grid" aria-label="Dados do pagamento">
+    <div>
+      <span>Pagamento</span><strong>#{{ payment().paymentId }}</strong>
+    </div>
+    <div>
+      <span>Cliente</span><strong>{{ payment().clientName }}</strong>
+    </div>
+    <div>
+      <span>Passeio</span><strong>{{ payment().tourName }}</strong>
+    </div>
+    <div>
+      <span>Valor total</span><strong>{{ payment().totalPrice | currency: 'BRL' }}</strong>
+    </div>
+    <div>
+      <span>Sinal (20%)</span><strong>{{ payment().signalAmount | currency: 'BRL' }}</strong>
+    </div>
+    <div>
+      <span>Saldo presencial</span
+      ><strong>{{ payment().presentialAmount | currency: 'BRL' }}</strong>
+    </div>
+  </section>
+
+  <section class="receipt-card">
+    <span class="receipt-icon"><svg pIcon="file" aria-hidden="true"></svg></span>
+    <div>
+      <strong>Comprovante do PIX</strong>
+      <span>{{ payment().receiptUrl ? 'Arquivo vinculado ao pagamento' : 'Não informado' }}</span>
+    </div>
+    @if (payment().receiptUrl) {
+      <a
+        pButton
+        [href]="payment().receiptUrl"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Abrir comprovante em uma nova aba"
+      >
+        Abrir <svg pIcon="external-link" aria-hidden="true"></svg>
+      </a>
+    }
+  </section>
+
+  <section class="history-section">
+    <header>
+      <span>Auditoria</span>
+      <h2>Histórico da reserva</h2>
+    </header>
+
+    @if (payment().history.length) {
+      <div class="payment-history">
+        <p-timeline [value]="payment().history">
+          <ng-template #opposite let-entry>
+            <time>{{ entry.changedAt | date: 'dd/MM/yy' }}</time>
+            <small>{{ entry.changedAt | date: 'HH:mm' }}</small>
+          </ng-template>
+          <ng-template #marker let-entry>
+            <span class="history-marker" [class]="statusClass(entry.newStatus)"></span>
+          </ng-template>
+          <ng-template #content let-entry>
+            <article class="history-entry">
+              <strong>{{ statusLabel(entry.newStatus) }}</strong>
+              @if (entry.changeReason) {
+                <p>{{ entry.changeReason }}</p>
+              }
+              <span>por {{ entry.changedByUserName }}</span>
+            </article>
+          </ng-template>
+        </p-timeline>
+      </div>
+    } @else {
+      <p class="empty-history">Nenhuma alteração registrada.</p>
+    }
+  </section>
+</div>

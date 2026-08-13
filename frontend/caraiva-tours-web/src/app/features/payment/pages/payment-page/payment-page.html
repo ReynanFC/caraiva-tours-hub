@@ -1,0 +1,79 @@
+<section class="payment-page" aria-labelledby="payment-page-title">
+  @if (profileLoading()) {
+    <div class="page-state" aria-live="polite">
+      <svg class="spinner" pIcon="spinner" aria-hidden="true"></svg>
+      <span>Validando acesso ao financeiro...</span>
+    </div>
+  } @else if (!isAdmin()) {
+    <div class="page-state access-denied" role="alert">
+      <span class="state-icon"><svg pIcon="lock" aria-hidden="true"></svg></span>
+      <strong>Acesso restrito</strong>
+      <p>Somente administradores podem consultar os dados financeiros.</p>
+    </div>
+  } @else {
+    <header class="content-header">
+      <div>
+        <span>Controle financeiro</span>
+        <h2 id="payment-page-title">Visão geral dos pagamentos</h2>
+        <p>Acompanhe sinais recebidos, comprovantes pendentes e saldos das reservas.</p>
+      </div>
+      <button
+        pButton
+        type="button"
+        class="refresh-button"
+        [disabled]="overviewResource.isLoading() || rowsResource.isLoading()"
+        (click)="reload()"
+      >
+        <svg pIcon="refresh" aria-hidden="true"></svg>
+        Atualizar dados
+      </button>
+    </header>
+
+    <app-payment-overview
+      [overview]="overviewResource.value() ?? null"
+      [loading]="overviewResource.isLoading()"
+      [failed]="!!overviewResource.error()"
+    />
+
+    <section class="movements-card" aria-label="Movimentações financeiras">
+      <app-payment-filters
+        [view]="view()"
+        [search]="search()"
+        (viewChange)="changeView($event)"
+        (searchChange)="changeSearch($event)"
+      />
+
+      @if (rowsResource.error()) {
+        <div class="list-state error-state" role="alert">
+          <svg pIcon="exclamation-triangle" aria-hidden="true"></svg>
+          <strong>Não foi possível carregar as movimentações.</strong>
+          <span>Verifique sua conexão e tente novamente.</span>
+          <button pButton type="button" (click)="rowsResource.reload()">Tentar novamente</button>
+        </div>
+      } @else if (rowsResource.isLoading() && !rowsResource.hasValue()) {
+        <div class="list-state" aria-live="polite">
+          <svg class="spinner" pIcon="spinner" aria-hidden="true"></svg>
+          <span>Carregando movimentações...</span>
+        </div>
+      } @else if (!rowsResource.value()?.content?.length) {
+        <div class="list-state empty-state">
+          <span class="state-icon"><svg pIcon="wallet" aria-hidden="true"></svg></span>
+          <strong>Nenhum registro encontrado</strong>
+          <span>Tente ajustar a busca ou selecionar outra categoria.</span>
+        </div>
+      } @else {
+        <app-payment-list
+          [rows]="rowsResource.value()!.content"
+          [view]="view()"
+          [loading]="rowsResource.isLoading() || detailLoadingId() !== null"
+          [page]="rowsResource.value()?.page ?? page()"
+          [totalPages]="rowsResource.value()?.totalPages ?? 0"
+          [totalElements]="rowsResource.value()?.totalElements ?? 0"
+          (detailRequested)="openDetails($event)"
+          (previousPage)="previousPage()"
+          (nextPage)="nextPage()"
+        />
+      }
+    </section>
+  }
+</section>

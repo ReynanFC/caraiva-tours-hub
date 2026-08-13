@@ -1,0 +1,46 @@
+<section class="overview-grid" aria-label="Resumo financeiro">
+  <article class="metric-card received">
+    <span class="metric-icon"><svg pIcon="check-circle" aria-hidden="true"></svg></span>
+    <div>
+      <span>Sinais recebidos</span>
+      @if (loading()) {
+        <p-skeleton width="8rem" height="1.75rem" />
+      } @else {
+        <strong>{{ overview()?.receivedDepositAmount ?? 0 | currency: 'BRL' }}</strong>
+      }
+      <small>Comprovantes aprovados</small>
+    </div>
+  </article>
+
+  <article class="metric-card awaiting">
+    <span class="metric-icon"><svg pIcon="clock" aria-hidden="true"></svg></span>
+    <div>
+      <span>Aguardando comprovante</span>
+      @if (loading()) {
+        <p-skeleton width="8rem" height="1.75rem" />
+      } @else {
+        <strong>{{ overview()?.awaitingReceiptAmount ?? 0 | currency: 'BRL' }}</strong>
+      }
+      <small>Sinais ainda pendentes</small>
+    </div>
+  </article>
+
+  <article class="metric-card remaining">
+    <span class="metric-icon"><svg pIcon="wallet" aria-hidden="true"></svg></span>
+    <div>
+      <span>Saldo presencial</span>
+      @if (loading()) {
+        <p-skeleton width="8rem" height="1.75rem" />
+      } @else {
+        <strong>{{ overview()?.remainingAmount ?? 0 | currency: 'BRL' }}</strong>
+      }
+      <small>Previsto para receber no local</small>
+    </div>
+  </article>
+</section>
+
+@if (failed()) {
+  <p class="overview-warning" role="status">
+    O resumo não pôde ser atualizado. A listagem continua disponível.
+  </p>
+}

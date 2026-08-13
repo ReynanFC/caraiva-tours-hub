@@ -1,0 +1,118 @@
+<div class="desktop-table">
+  <p-table [value]="rows()" [loading]="loading()" styleClass="payment-table">
+    <ng-template #header>
+      <tr>
+        <th>{{ referenceLabel() }}</th>
+        <th>Cliente</th>
+        <th>Passeio</th>
+        <th>Data do passeio</th>
+        <th>Sinal (20%)</th>
+        <th>Valor total</th>
+        <th>Status</th>
+        <th class="actions-heading">Ações</th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-row>
+      <tr>
+        <td class="reference-cell">#{{ reference(row) }}</td>
+        <td class="strong-cell">{{ row.clientName }}</td>
+        <td>{{ row.tourName }}</td>
+        <td>
+          <span>{{ row.scheduledAt | date: 'dd/MM/yyyy' }}</span>
+          <small>{{ row.scheduledAt | date: 'HH:mm' }}</small>
+        </td>
+        <td class="signal-cell">{{ row.signalAmount | currency: 'BRL' }}</td>
+        <td class="strong-cell">{{ row.totalPrice | currency: 'BRL' }}</td>
+        <td>
+          <span class="status-badge" [class]="statusClass(row.status)">
+            <i aria-hidden="true"></i>{{ statusLabel(row.status) }}
+          </span>
+        </td>
+        <td>
+          @if (isPayment(row)) {
+            <button
+              pButton
+              type="button"
+              class="detail-button"
+              title="Ver detalhes do pagamento"
+              aria-label="Ver detalhes do pagamento"
+              (click)="detailRequested.emit(row.paymentId)"
+            >
+              <svg pIcon="eye" aria-hidden="true"></svg>
+            </button>
+          } @else {
+            <span class="no-action" aria-label="Sem comprovante disponível">—</span>
+          }
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
+
+<div class="mobile-list">
+  @for (row of rows(); track reference(row)) {
+    <article class="mobile-card">
+      <div class="mobile-heading">
+        <div>
+          <span>{{ referenceLabel() }} #{{ reference(row) }}</span>
+          <strong>{{ row.clientName }}</strong>
+          <small>{{ row.tourName }}</small>
+        </div>
+        <span class="status-badge" [class]="statusClass(row.status)">
+          <i aria-hidden="true"></i>{{ statusLabel(row.status) }}
+        </span>
+      </div>
+      <dl>
+        <div>
+          <dt>Data</dt>
+          <dd>{{ row.scheduledAt | date: 'dd/MM/yy · HH:mm' }}</dd>
+        </div>
+        <div>
+          <dt>Sinal</dt>
+          <dd>{{ row.signalAmount | currency: 'BRL' }}</dd>
+        </div>
+        <div>
+          <dt>Total</dt>
+          <dd>{{ row.totalPrice | currency: 'BRL' }}</dd>
+        </div>
+      </dl>
+      @if (isPayment(row)) {
+        <button
+          pButton
+          type="button"
+          class="mobile-detail"
+          (click)="detailRequested.emit(row.paymentId)"
+        >
+          Ver detalhes <svg pIcon="arrow-right" aria-hidden="true"></svg>
+        </button>
+      }
+    </article>
+  }
+</div>
+
+<footer class="pager">
+  <span>
+    {{ totalElements() }} {{ totalElements() === 1 ? 'registro' : 'registros' }} · Página
+    {{ page() + 1 }} de {{ totalPages() || 1 }}
+  </span>
+  <div>
+    <button
+      pButton
+      type="button"
+      aria-label="Página anterior"
+      [disabled]="page() === 0 || loading()"
+      (click)="previousPage.emit()"
+    >
+      <svg pIcon="chevron-left" aria-hidden="true"></svg>
+    </button>
+    <button
+      pButton
+      type="button"
+      aria-label="Próxima página"
+      [disabled]="page() + 1 >= totalPages() || loading()"
+      (click)="nextPage.emit()"
+    >
+      <svg pIcon="chevron-right" aria-hidden="true"></svg>
+    </button>
+  </div>
+</footer>

@@ -1,0 +1,112 @@
+@reference '../../../../../styles.css';
+
+:host {
+  @apply block;
+}
+
+.payment-page {
+  @apply mx-auto flex w-full max-w-350 flex-col gap-5;
+}
+
+.content-header {
+  @apply flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between;
+}
+
+.content-header > div > span {
+  @apply font-ui text-[0.6875rem] font-bold tracking-[0.14em] text-primary uppercase;
+}
+
+.content-header h2 {
+  @apply mt-1 font-display text-2xl font-bold tracking-tight text-foreground;
+}
+
+.content-header p {
+  @apply mt-1 max-w-2xl font-ui text-sm text-muted;
+}
+
+.refresh-button {
+  @apply flex! min-w-max items-center! justify-center! gap-2! rounded-xl! border! border-border! bg-surface! px-4! py-2.5! font-ui! text-xs! font-semibold! text-foreground! shadow-sm!;
+}
+
+.refresh-button:hover:not(:disabled) {
+  @apply border-primary-light! bg-primary-light! text-primary!;
+}
+
+.refresh-button svg {
+  @apply size-4;
+}
+
+.movements-card {
+  @apply overflow-hidden rounded-2xl border border-border bg-surface shadow-sm;
+}
+
+.list-state,
+.page-state {
+  @apply flex min-h-72 flex-col items-center justify-center gap-3 p-8 text-center font-ui text-sm text-muted;
+}
+
+.list-state > svg,
+.page-state > svg {
+  @apply size-7;
+}
+
+.spinner {
+  @apply animate-spin text-primary;
+}
+
+.state-icon {
+  @apply grid size-12 place-items-center rounded-full bg-gray-100 text-muted;
+}
+
+.state-icon svg {
+  @apply size-5;
+}
+
+.list-state strong,
+.page-state strong {
+  @apply font-ui text-sm font-semibold text-foreground;
+}
+
+.list-state > span:not(.state-icon) {
+  @apply text-xs;
+}
+
+.error-state > svg {
+  @apply text-danger;
+}
+
+.error-state strong {
+  @apply text-danger;
+}
+
+.error-state button {
+  @apply mt-1 rounded-lg! border! border-danger! bg-surface! px-3! py-2! text-xs! font-semibold! text-danger! shadow-none!;
+}
+
+.access-denied {
+  @apply min-h-96 rounded-2xl border border-border bg-surface shadow-sm;
+}
+
+.access-denied p {
+  @apply max-w-sm;
+}
+
+@media (max-width: 767px) {
+  .payment-page {
+    @apply gap-4;
+  }
+
+  .content-header h2 {
+    @apply text-xl;
+  }
+
+  .refresh-button {
+    @apply w-full!;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none;
+  }
+}

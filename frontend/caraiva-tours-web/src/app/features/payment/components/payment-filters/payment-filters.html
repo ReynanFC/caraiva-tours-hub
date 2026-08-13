@@ -1,0 +1,29 @@
+<div class="filters">
+  <div class="view-tabs" role="tablist" aria-label="Tipo de movimentação">
+    @for (option of views; track option.value) {
+      <button
+        pButton
+        type="button"
+        role="tab"
+        class="view-tab"
+        [class.is-active]="view() === option.value"
+        [attr.aria-selected]="view() === option.value"
+        [attr.title]="option.countLabel"
+        (click)="view.set(option.value)"
+      >
+        {{ option.label }}
+      </button>
+    }
+  </div>
+
+  <label class="search-field">
+    <span class="sr-only">Buscar movimentação</span>
+    <app-input
+      icon="search"
+      autocomplete="off"
+      [placeholder]="placeholder()"
+      maxlength="80"
+      [(ngModel)]="search"
+    />
+  </label>
+</div>

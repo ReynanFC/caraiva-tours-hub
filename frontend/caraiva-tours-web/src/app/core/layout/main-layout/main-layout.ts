@@ -85,7 +85,8 @@ export class MainLayout implements OnInit {
   ];
   protected readonly navigationItems = computed(() =>
     this.allNavigationItems.filter(
-      (item) => item.route !== '/usuarios' || this.userProfile()?.role === 'ADMIN',
+      (item) =>
+        !['/usuarios', '/pagamentos'].includes(item.route) || this.userProfile()?.role === 'ADMIN',
     ),
   );
 

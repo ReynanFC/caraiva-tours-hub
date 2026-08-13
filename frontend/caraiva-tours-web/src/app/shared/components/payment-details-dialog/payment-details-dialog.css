@@ -1,0 +1,232 @@
+@reference '../../../../styles.css';
+
+::ng-deep .payment-details-dialog {
+  @apply overflow-hidden rounded-2xl! border! border-border! bg-surface! shadow-2xl!;
+}
+
+::ng-deep .payment-details-dialog .p-dialog-header {
+  @apply border-b! border-border! px-6! py-5! font-ui! text-lg! font-bold! text-foreground!;
+}
+
+::ng-deep .payment-details-dialog .p-dialog-content {
+  @apply bg-background! px-6! py-6!;
+}
+
+::ng-deep .payment-details-dialog .p-dialog-close-button:hover {
+  @apply bg-primary-light! text-primary!;
+}
+
+.payment-details {
+  @apply flex flex-col gap-5;
+}
+
+.payment-hero {
+  @apply flex items-center justify-between rounded-2xl bg-emerald-600 p-5 text-white;
+  background-image: radial-gradient(circle at 90% 10%, rgb(255 255 255 / 16%), transparent 45%);
+}
+
+.payment-hero > div {
+  @apply flex flex-col;
+}
+
+.payment-hero span {
+  @apply font-ui text-xs font-semibold text-white/75;
+}
+
+.payment-hero strong {
+  @apply mt-1 font-display text-3xl font-bold;
+}
+
+.payment-hero small {
+  @apply mt-1 font-ui text-xs text-white/75;
+}
+
+.hero-icon {
+  @apply grid size-12 place-items-center rounded-full bg-white/15! text-white!;
+}
+
+.hero-icon svg {
+  @apply size-6;
+}
+
+.details-grid {
+  @apply grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-3;
+}
+
+.details-grid > div {
+  @apply flex min-h-20 flex-col justify-center gap-1.5 bg-surface px-4 py-3;
+}
+
+.details-grid span,
+.history-section header > span {
+  @apply font-ui text-[0.625rem] font-bold tracking-wider text-muted uppercase;
+}
+
+.details-grid strong {
+  @apply font-ui text-sm font-semibold text-foreground;
+}
+
+.receipt-card {
+  @apply flex items-center gap-3 rounded-xl border border-border bg-surface p-4;
+}
+
+.receipt-icon {
+  @apply grid size-10 shrink-0 place-items-center rounded-lg bg-primary-light text-primary;
+}
+
+.receipt-icon svg {
+  @apply size-5;
+}
+
+.receipt-card > div {
+  @apply min-w-0 flex-1;
+}
+
+.receipt-card strong {
+  @apply block font-ui text-sm font-semibold text-foreground;
+}
+
+.receipt-card > div span {
+  @apply mt-0.5 block truncate font-ui text-xs text-muted;
+}
+
+.receipt-card a {
+  @apply flex! shrink-0 items-center! gap-2! rounded-lg! border-0! bg-primary! px-3! py-2! font-ui! text-xs! font-semibold! text-white! no-underline! shadow-none!;
+}
+
+.receipt-card a svg {
+  @apply size-3.5;
+}
+
+.history-section {
+  @apply rounded-xl border border-border bg-surface p-5 pb-1;
+}
+
+.history-section header {
+  @apply mb-5;
+}
+
+.history-section header > span {
+  @apply text-primary;
+}
+
+.history-section h2 {
+  @apply mt-0.5 font-ui text-base font-bold text-foreground;
+}
+
+.payment-history {
+  @apply mx-auto;
+  max-width: 32rem;
+}
+
+::ng-deep .payment-history .p-timeline-event-opposite {
+  @apply flex-none px-2 py-1 text-right;
+  width: 7rem;
+}
+
+::ng-deep .payment-history .p-timeline-event-opposite time {
+  @apply font-ui text-xs font-semibold text-muted;
+}
+
+::ng-deep .payment-history .p-timeline-event-opposite small {
+  @apply mt-0.5 block font-ui text-[0.625rem] text-muted;
+}
+
+::ng-deep .payment-history .p-timeline-event-connector {
+  @apply bg-border gap-2.5;
+}
+
+::ng-deep .payment-history .p-timeline-event-content {
+  @apply min-w-0 px-3 pb-5 pt-0;
+}
+
+::ng-deep .payment-history .p-timeline-event:last-child .p-timeline-event-content {
+  @apply pb-0;
+}
+
+.history-marker {
+  @apply relative grid size-5 place-items-center rounded-full border-4 border-surface shadow-sm;
+  box-sizing: border-box;
+}
+
+.history-marker::after {
+  @apply size-2 rounded-full bg-current;
+  content: '';
+}
+
+.status-draft {
+  @apply text-amber-500;
+}
+
+.status-confirmed {
+  @apply text-blue-500;
+}
+
+.status-completed {
+  @apply text-emerald-500;
+}
+
+.status-cancel-request {
+  @apply text-danger;
+}
+
+.status-cancelled {
+  @apply text-orange-500;
+}
+
+.history-entry {
+  @apply rounded-lg border border-border bg-background px-4 py-3;
+}
+
+.history-entry strong {
+  @apply font-ui text-sm font-semibold text-foreground;
+}
+
+.history-entry p {
+  @apply mt-1 font-ui text-sm leading-relaxed text-muted;
+}
+
+.history-entry span {
+  @apply mt-2 block font-ui text-[0.6875rem] font-semibold text-muted;
+}
+
+.empty-history {
+  @apply mb-4 rounded-lg bg-background p-5 text-center font-ui text-sm text-muted;
+}
+
+@media (max-width: 767px) {
+  ::ng-deep .payment-details-dialog .p-dialog-header {
+    @apply px-4! py-4! text-base!;
+  }
+
+  ::ng-deep .payment-details-dialog .p-dialog-content {
+    @apply px-4! py-4!;
+  }
+}
+
+@media (max-width: 560px) {
+  .details-grid {
+    @apply grid-cols-1;
+  }
+
+  .receipt-card {
+    @apply flex-wrap;
+  }
+
+  .receipt-card a {
+    @apply ml-13;
+  }
+
+  ::ng-deep .payment-history .p-timeline-event-opposite {
+    @apply px-1;
+    width: 5rem;
+  }
+
+  ::ng-deep .payment-history .p-timeline-event-content {
+    @apply pr-0 pl-2.5;
+  }
+
+  .history-entry {
+    @apply px-3 py-2.5;
+  }
+}
