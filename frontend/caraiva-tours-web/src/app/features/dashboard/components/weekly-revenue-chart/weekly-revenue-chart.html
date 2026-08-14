@@ -1,0 +1,16 @@
+<app-card header="Faturamento semanal" icon="chart-line">
+  <section class="chart-content" aria-labelledby="weekly-chart-description">
+    <p id="weekly-chart-description">Receita confirmada por dia nesta semana.</p>
+    @if (hasData()) {
+      <div class="chart-wrapper">
+        <canvas #chartCanvas aria-label="Gráfico de faturamento semanal" role="img"></canvas>
+      </div>
+      <p class="sr-only">{{ accessibleSummary() }}</p>
+    } @else {
+      <div class="empty-state">
+        <strong>Sem faturamento nesta semana</strong>
+        <span>Os valores confirmados aparecerão aqui.</span>
+      </div>
+    }
+  </section>
+</app-card>

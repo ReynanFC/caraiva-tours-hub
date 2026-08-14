@@ -26,9 +26,7 @@
         <td>{{ booking.groupSize }}</td>
         <td class="strong-cell">{{ booking.totalPrice | currency: 'BRL' : 'symbol' : '1.2-2' }}</td>
         <td>
-          <span class="status-badge" [class]="statusClass(booking.status)">
-            <i aria-hidden="true"></i>{{ statusLabel(booking.status) }}
-          </span>
+          <app-booking-status-badge [status]="booking.status" />
         </td>
         <td>
           <div class="actions">
@@ -105,9 +103,7 @@
           <strong>{{ booking.clientName }}</strong>
           <span>#{{ booking.id }} · {{ booking.tourName }}</span>
         </div>
-        <span class="status-badge" [class]="statusClass(booking.status)"
-          ><i aria-hidden="true"></i>{{ statusLabel(booking.status) }}</span
-        >
+        <app-booking-status-badge [status]="booking.status" />
       </div>
       <div class="mobile-summary">
         <span

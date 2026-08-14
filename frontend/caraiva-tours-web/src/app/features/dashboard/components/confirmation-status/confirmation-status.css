@@ -1,0 +1,34 @@
+@reference '../../../../../styles.css';
+
+:host,
+app-card {
+  @apply block h-full;
+}
+
+.section-description {
+  @apply mb-4 font-ui text-xs leading-5 text-muted;
+}
+
+.status-list {
+  @apply flex flex-col;
+}
+
+.status-list li {
+  @apply flex items-center justify-between gap-4 border-b border-border py-3 last:border-0;
+}
+
+.status-list strong {
+  @apply shrink-0 font-ui text-sm font-bold text-foreground;
+}
+
+.empty-state {
+  @apply flex min-h-44 flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-border bg-gray-50 p-6 text-center;
+}
+
+.empty-state strong {
+  @apply font-ui text-sm font-semibold text-foreground;
+}
+
+.empty-state span {
+  @apply font-ui text-xs text-muted;
+}

@@ -61,7 +61,7 @@ describe('BookingList', () => {
     expect(tableText).toContain('3');
     expect(tableText).toContain('R$');
     expect(tableText).toMatch(/450[,.]00/);
-    expect(tableText).toContain('Confirmado');
+    expect(tableText).toContain('Confirmada');
   });
 
   it('should apply the status-specific appearance', () => {

@@ -36,4 +36,13 @@ export class UsersService {
 
     return this.http.patch<UserSummary>(`${this.BASE_ENDPOINT}/${id}/toggle-status`, { enabled });
   }
+
+  getCommissionReport(id: number, month: number, year: number): Observable<Blob> {
+    this.sessionStore.hasPermissionEmployee();
+
+    return this.http.get(`${this.BASE_ENDPOINT}/finance/${id}`, {
+      params: new HttpParams().set('month', month).set('year', year),
+      responseType: 'blob',
+    });
+  }
 }

@@ -1,0 +1,78 @@
+<app-card header="Últimas reservas" icon="calendar">
+  <section aria-label="Cinco reservas mais recentes">
+    @if (bookings().length) {
+      <div class="desktop-table">
+        <table>
+          <caption class="sr-only">
+            Reservas mais recentes com cliente, passeio, data, pessoas, valor e status
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col">Cliente</th>
+              <th scope="col">Passeio</th>
+              <th scope="col">Data</th>
+              <th scope="col">Pessoas</th>
+              <th scope="col">Valor</th>
+              <th scope="col">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (booking of bookings(); track booking.id) {
+              <tr>
+                <td>
+                  <strong>{{ booking.clientName }}</strong
+                  ><small>#{{ booking.id }}</small>
+                </td>
+                <td>{{ booking.tourName }}</td>
+                <td>
+                  {{ booking.date | date: 'dd/MM/yyyy' }}
+                  <small>{{ booking.date | date: 'HH:mm' }}</small>
+                </td>
+                <td>{{ booking.groupSize }}</td>
+                <td class="booking-value">
+                  {{ booking.totalPrice | currency: 'BRL' : 'symbol' : '1.2-2' }}
+                </td>
+                <td>
+                  <app-booking-status-badge [status]="booking.status" />
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <div class="mobile-list">
+        @for (booking of bookings(); track booking.id) {
+          <article class="booking-card">
+            <header>
+              <div>
+                <strong>{{ booking.clientName }}</strong>
+                <span>#{{ booking.id }} · {{ booking.tourName }}</span>
+              </div>
+              <app-booking-status-badge [status]="booking.status" />
+            </header>
+            <dl>
+              <div>
+                <dt>Data</dt>
+                <dd>{{ booking.date | date: 'dd/MM/yyyy, HH:mm' }}</dd>
+              </div>
+              <div>
+                <dt>Pessoas</dt>
+                <dd>{{ booking.groupSize }}</dd>
+              </div>
+              <div>
+                <dt>Valor</dt>
+                <dd>{{ booking.totalPrice | currency: 'BRL' : 'symbol' : '1.2-2' }}</dd>
+              </div>
+            </dl>
+          </article>
+        }
+      </div>
+    } @else {
+      <div class="empty-state">
+        <strong>Nenhuma reserva encontrada</strong>
+        <span>As reservas mais recentes aparecerão aqui.</span>
+      </div>
+    }
+  </section>
+</app-card>

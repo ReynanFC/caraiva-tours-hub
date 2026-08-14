@@ -1,0 +1,54 @@
+@reference '../../../../../styles.css';
+
+:host,
+app-card {
+  @apply block h-full;
+}
+
+section > p {
+  @apply mb-4 font-ui text-xs text-muted;
+}
+
+.ranking-list {
+  @apply m-0 flex list-none flex-col gap-2 p-0;
+}
+
+.ranking-list li {
+  @apply grid grid-cols-[2.5rem_minmax(0,1fr)_auto] items-center gap-3 rounded-xl border border-border px-3 py-2.5;
+}
+
+.position {
+  @apply grid size-9 place-items-center rounded-full bg-gray-100 font-ui text-xs font-bold text-muted;
+}
+
+.position.podium {
+  @apply bg-amber-100 text-amber-800;
+}
+
+.ranking-list div {
+  @apply flex min-w-0 flex-col;
+}
+
+.ranking-list strong {
+  @apply truncate font-ui text-sm font-semibold text-foreground;
+}
+
+.ranking-list small {
+  @apply truncate font-ui text-[0.6875rem] text-muted;
+}
+
+.ranking-list b {
+  @apply font-ui text-sm font-bold text-primary;
+}
+
+.empty-state {
+  @apply flex min-h-52 flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-border bg-gray-50 p-6 text-center;
+}
+
+.empty-state strong {
+  @apply font-ui text-sm font-semibold text-foreground;
+}
+
+.empty-state span {
+  @apply font-ui text-xs text-muted;
+}

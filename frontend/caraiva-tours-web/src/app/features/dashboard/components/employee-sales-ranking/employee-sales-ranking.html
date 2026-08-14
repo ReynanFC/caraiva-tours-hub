@@ -1,0 +1,30 @@
+<app-card header="Ranking de vendas" icon="trophy">
+  <section aria-labelledby="employee-ranking-description">
+    <p id="employee-ranking-description">Funcionários com maior faturamento confirmado no mês.</p>
+    @if (employees().length) {
+      <ol class="ranking-list">
+        @for (employee of employees(); track employee.employeeId) {
+          <li>
+            <span class="position" [class.podium]="employee.rankingPosition <= 3">
+              {{ employee.rankingPosition }}º
+            </span>
+            <div>
+              <strong>{{ employee.employeeName }}</strong>
+              <small>
+                {{ employee.bookingCount }}
+                {{ employee.bookingCount === 1 ? 'reserva' : 'reservas' }} · Comissão
+                {{ employee.totalCommission | currency: 'BRL' : 'symbol' : '1.2-2' }}
+              </small>
+            </div>
+            <b>{{ employee.totalSales | currency: 'BRL' : 'symbol' : '1.2-2' }}</b>
+          </li>
+        }
+      </ol>
+    } @else {
+      <div class="empty-state">
+        <strong>Nenhuma venda confirmada</strong>
+        <span>O ranking aparecerá quando houver vendas no mês.</span>
+      </div>
+    }
+  </section>
+</app-card>

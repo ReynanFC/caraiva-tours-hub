@@ -1,0 +1,29 @@
+<app-card header="Passeios mais procurados" icon="chart-bar">
+  <section class="chart-content" aria-labelledby="tours-chart-description">
+    <p id="tours-chart-description">Comparativo de reservas no período atual.</p>
+    @if (orderedTours().length) {
+      <div class="chart-wrapper">
+        <p-chart
+          type="bar"
+          height="18rem"
+          [data]="chartData()"
+          [options]="chartOptions"
+          ariaLabel="Gráfico dos passeios mais procurados"
+        />
+      </div>
+      <ul class="sr-only">
+        @for (tour of orderedTours(); track tour.tourId) {
+          <li>
+            {{ tour.tourName }}: {{ tour.bookingCount }} reservas,
+            {{ formatPercentage(tour.percentage) }} do total.
+          </li>
+        }
+      </ul>
+    } @else {
+      <div class="empty-state">
+        <strong>Nenhum passeio reservado</strong>
+        <span>A procura pelos passeios aparecerá aqui.</span>
+      </div>
+    }
+  </section>
+</app-card>

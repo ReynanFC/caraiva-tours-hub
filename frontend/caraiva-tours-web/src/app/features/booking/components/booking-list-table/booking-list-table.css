@@ -46,28 +46,6 @@
 .cancel-button {
   @apply text-danger!;
 }
-.status-badge {
-  @apply inline-flex max-w-44 items-center gap-1.5 rounded-full border px-2.5 py-1 font-ui text-xs text-center font-semibold leading-tight;
-}
-.status-badge i {
-  @apply size-1.5 shrink-0 rounded-full bg-current;
-}
-.status-draft {
-  @apply border-amber-200 bg-amber-50 text-amber-700;
-}
-.status-confirmed {
-  @apply border-blue-200 bg-blue-50 text-blue-700;
-}
-.status-completed {
-  @apply border-emerald-200 bg-emerald-50 text-emerald-700;
-}
-.status-cancel-request {
-  @apply border-red-200 bg-red-50 text-danger;
-}
-.status-cancelled {
-  @apply border-orange-200 bg-orange-50 text-orange-700;
-}
-
 @media (max-width: 767px) {
   .desktop-table {
     @apply hidden;
@@ -90,7 +68,7 @@
   .mobile-heading > div span {
     @apply mt-1 block truncate font-ui text-xs text-muted;
   }
-  .mobile-heading > .status-badge {
+  .mobile-heading > app-booking-status-badge {
     @apply shrink-0 mt-0.5;
   }
   .mobile-summary {

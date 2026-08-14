@@ -1,0 +1,20 @@
+<app-card header="Status das reservas" icon="check-circle">
+  <section aria-label="Distribuição das comissões por status">
+    <p class="section-description">Valores de comissão agrupados pela situação da reserva.</p>
+    @if (statuses().length) {
+      <ul class="status-list">
+        @for (item of statuses(); track item.status) {
+          <li>
+            <app-booking-status-badge [status]="item.status" />
+            <strong>{{ item.amount | currency: 'BRL' : 'symbol' : '1.2-2' }}</strong>
+          </li>
+        }
+      </ul>
+    } @else {
+      <div class="empty-state">
+        <strong>Nenhum status no período</strong>
+        <span>As reservas aparecerão aqui quando houver movimentação.</span>
+      </div>
+    }
+  </section>
+</app-card>

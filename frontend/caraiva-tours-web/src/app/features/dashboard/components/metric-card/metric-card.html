@@ -1,0 +1,22 @@
+<app-card class="metric-shell">
+  <article class="metric" [class]="'tone-' + metric().tone">
+    <span class="metric-icon" aria-hidden="true">
+      <svg pIcon [pIcon]="metric().icon"></svg>
+    </span>
+    <div>
+      <span class="metric-label">{{ metric().label }}</span>
+      @if (loading()) {
+        <p-skeleton width="8rem" height="1.75rem" aria-label="Carregando métrica" />
+      } @else {
+        <strong>
+          @if (metric().format === 'currency') {
+            {{ metric().value | currency: 'BRL' : 'symbol' : '1.2-2' }}
+          } @else {
+            {{ metric().value | number: '1.0-0' }}
+          }
+        </strong>
+      }
+      <small>{{ metric().description }}</small>
+    </div>
+  </article>
+</app-card>

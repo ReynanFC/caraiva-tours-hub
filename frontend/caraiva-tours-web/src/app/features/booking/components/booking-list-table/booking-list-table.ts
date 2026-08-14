@@ -4,11 +4,12 @@ import { PIcon } from '@primeicons/angular/p-icon';
 import { ButtonModule } from 'primeng/button';
 import { TableModule } from 'primeng/table';
 
-import { BookingStatus, BookingSummary } from '../../models/booking.model';
+import { BookingSummary } from '../../models/booking.model';
+import { BookingStatusBadge } from '../booking-status-badge/booking-status-badge';
 
 @Component({
   selector: 'app-booking-list-table',
-  imports: [ButtonModule, CurrencyPipe, DatePipe, PIcon, TableModule],
+  imports: [BookingStatusBadge, ButtonModule, CurrencyPipe, DatePipe, PIcon, TableModule],
   templateUrl: './booking-list-table.html',
   styleUrl: './booking-list-table.css',
 })
@@ -23,22 +24,6 @@ export class BookingListTable {
   readonly receipt = output<BookingSummary>();
   readonly confirm = output<BookingSummary>();
   readonly cancel = output<BookingSummary>();
-
-  protected readonly statusLabels: Record<BookingStatus, string> = {
-    DRAFT: 'Aguard. comprovante',
-    CONFIRMED: 'Confirmado',
-    COMPLETED: 'Concluído',
-    CANCELLED: 'Cancelado',
-    CANCEL_REQUEST: 'Canc. em análise',
-  };
-
-  protected statusClass(status: BookingStatus): string {
-    return `status-${status.toLowerCase().replace('_', '-')}`;
-  }
-
-  protected statusLabel(status: BookingStatus): string {
-    return this.statusLabels[status];
-  }
 
   protected canEdit(booking: BookingSummary): boolean {
     return (

@@ -1,8 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/auth/guard/auth-guard';
 
-const emptyProtectedSections = ['dashboard'];
-
 export const routes: Routes = [
   {
     path: '',
@@ -32,6 +30,13 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadComponent: () => import('./core/layout/main-layout/main-layout').then((m) => m.MainLayout),
     children: [
+      {
+        path: 'dashboard',
+        loadComponent: () =>
+          import('./features/dashboard/pages/dashboard-page/dashboard-page').then(
+            (m) => m.DashboardPage,
+          ),
+      },
       {
         path: 'novo-agendamento',
         loadComponent: () =>
@@ -66,7 +71,6 @@ export const routes: Routes = [
             (m) => m.RefundPage,
           ),
       },
-      ...emptyProtectedSections.map((path) => ({ path, children: [] })),
     ],
   },
   {

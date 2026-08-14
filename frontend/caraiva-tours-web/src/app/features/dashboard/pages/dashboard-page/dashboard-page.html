@@ -1,0 +1,142 @@
+<section class="dashboard-page" aria-labelledby="dashboard-overview-title">
+  <header class="content-header">
+    <div>
+      <span>Desempenho atual</span>
+      <h2 id="dashboard-overview-title">Resumo do período</h2>
+      <p>Acompanhe reservas, passeios, faturamento e comissões em um só lugar.</p>
+    </div>
+    <button
+      pButton
+      type="button"
+      class="refresh-button"
+      [disabled]="refreshing()"
+      (click)="reload()"
+    >
+      <svg pIcon="refresh" [class.spinner]="refreshing()" aria-hidden="true"></svg>
+      {{ refreshing() ? 'Atualizando...' : 'Atualizar dados' }}
+    </button>
+  </header>
+
+  @if (isEmployee() && dashboardResource.error() && !dashboardResource.hasValue()) {
+    <section class="page-state error-state" role="alert" aria-labelledby="dashboard-error-title">
+      <span class="state-icon"><svg pIcon="exclamation-triangle" aria-hidden="true"></svg></span>
+      <strong id="dashboard-error-title">Não foi possível carregar o dashboard</strong>
+      <p>Verifique sua conexão e tente novamente.</p>
+      <button pButton type="button" (click)="reload()">Tentar novamente</button>
+    </section>
+  } @else {
+    @if (isEmployee()) {
+      <section aria-labelledby="personal-metrics-title">
+        <header class="section-header">
+          <div>
+            <span>Seu desempenho</span>
+            <h3 id="personal-metrics-title">Indicadores pessoais</h3>
+          </div>
+          <small>Mês atual</small>
+        </header>
+        <div class="metrics-grid" [attr.aria-busy]="dashboardResource.isLoading()">
+          @for (metric of personalMetrics(); track metric.label) {
+            <app-dashboard-metric-card
+              [metric]="metric"
+              [loading]="dashboardResource.isLoading() && !dashboardResource.hasValue()"
+            />
+          }
+        </div>
+      </section>
+
+      <section class="commission-report" aria-labelledby="commission-report-title">
+        <div>
+          <span><svg pIcon="file-pdf" aria-hidden="true"></svg></span>
+          <div>
+            <h3 id="commission-report-title">Relatório de comissões</h3>
+            <p>Consulte suas comissões mensais em um documento PDF.</p>
+          </div>
+        </div>
+        <div class="report-actions">
+          <label for="commission-report-month">Mês do relatório</label>
+          <input
+            id="commission-report-month"
+            type="month"
+            [value]="reportMonth()"
+            [max]="currentMonth"
+            [disabled]="reportLoading()"
+            (input)="changeReportMonth($event)"
+          />
+          <button
+            pButton
+            type="button"
+            [disabled]="reportLoading() || !reportMonth()"
+            (click)="openCommissionReport()"
+          >
+            <svg pIcon="external-link" aria-hidden="true"></svg>
+            {{ reportLoading() ? 'Gerando...' : 'Visualizar PDF' }}
+          </button>
+        </div>
+      </section>
+
+      @if (dashboardResource.isLoading() && !dashboardResource.hasValue()) {
+        <section
+          class="loading-layout"
+          aria-label="Carregando detalhes do dashboard"
+          aria-live="polite"
+        >
+          <article><p-skeleton width="10rem" height="1rem" /><p-skeleton height="18rem" /></article>
+          <article><p-skeleton width="12rem" height="1rem" /><p-skeleton height="18rem" /></article>
+          <article class="wide-skeleton"><p-skeleton height="14rem" /></article>
+        </section>
+      } @else if (dashboardResource.hasValue()) {
+        <section class="charts-grid" aria-label="Análises pessoais">
+          <app-weekly-revenue-chart [revenue]="dashboardResource.value()!.weeklyRevenue" />
+          <app-most-requested-tours-chart [tours]="dashboardResource.value()!.mostRequestedTours" />
+        </section>
+
+        <section class="operational-grid" aria-label="Situação recente das reservas">
+          <app-latest-bookings [bookings]="dashboardResource.value()!.latestBookings" />
+          <app-confirmation-status [statuses]="dashboardResource.value()!.confirmationStatus" />
+        </section>
+      }
+    }
+
+    @if (isAdmin()) {
+      <section class="admin-section" aria-labelledby="admin-metrics-title">
+        <header class="section-header">
+          <div>
+            <span>Administração</span>
+            <h3 id="admin-metrics-title">Visão geral da operação</h3>
+          </div>
+          <small>Dados globais do mês</small>
+        </header>
+
+        @if (adminDashboardResource.error() && !adminDashboardResource.hasValue()) {
+          <div class="section-warning" role="status">
+            <svg pIcon="exclamation-circle" aria-hidden="true"></svg>
+            <span>As métricas administrativas não puderam ser atualizadas.</span>
+            <button type="button" (click)="adminDashboardResource.reload()">
+              Tentar novamente
+            </button>
+          </div>
+        } @else {
+          <div class="admin-metrics-grid" [attr.aria-busy]="adminDashboardResource.isLoading()">
+            @for (metric of adminMetrics(); track metric.label) {
+              <app-dashboard-metric-card
+                [metric]="metric"
+                [loading]="adminDashboardResource.isLoading()"
+              />
+            }
+          </div>
+        }
+      </section>
+
+      @if (adminDashboardResource.hasValue() && adminDashboardResource.value()) {
+        <section class="charts-grid" aria-label="Desempenho global da equipe">
+          <app-most-requested-tours-chart
+            [tours]="adminDashboardResource.value()!.mostRequestedTours ?? []"
+          />
+          <app-employee-sales-ranking
+            [employees]="adminDashboardResource.value()!.employeeRanking ?? []"
+          />
+        </section>
+      }
+    }
+  }
+</section>

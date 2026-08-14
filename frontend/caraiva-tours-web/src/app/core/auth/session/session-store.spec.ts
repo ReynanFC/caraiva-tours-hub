@@ -55,6 +55,16 @@ describe('SessionStore', () => {
     await vi.waitFor(() => expect(store.isAdmin()).toBe(true));
   });
 
+  it('should read the authenticated user ID from the access token', () => {
+    const payload = btoa(JSON.stringify({ userId: 17, role: 'EMPLOYEE' }));
+    TestBed.inject(TokenStore).setAccessToken(`header.${payload}.signature`);
+
+    const store = TestBed.inject(SessionStore);
+
+    expect(store.userId()).toBe(17);
+    expect(store.isEmployee()).toBe(true);
+  });
+
   it('should request the header once per access token', async () => {
     const tokenStore = TestBed.inject(TokenStore);
     tokenStore.setAccessToken('access-token');
