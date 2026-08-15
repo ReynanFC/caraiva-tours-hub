@@ -6,6 +6,8 @@ import com.caraivatours.hub.booking.dto.response.BookingDetailDTO;
 import com.caraivatours.hub.booking.dto.response.BookingSummaryDTO;
 import com.caraivatours.hub.booking.enums.BookingStatus;
 import com.caraivatours.hub.booking.event.BookingStatusChangedEvent;
+import com.caraivatours.hub.dashboard.event.DashboardChangedEvent;
+import com.caraivatours.hub.dashboard.event.enums.DashboardChangeReason;
 import com.caraivatours.hub.client.Client;
 import com.caraivatours.hub.client.ClientService;
 import com.caraivatours.hub.groupmember.GroupMember;
@@ -60,13 +62,15 @@ public class BookingService {
 
     @Cacheable(
             value = "bookings",
-            key = "'all:' + #search + ':' + #pageable.pageNumber + ':' + #pageable.pageSize + ':' + #pageable.sort",
+            key = "'all:' + #search + ':' + #status + ':' + #pageable.pageNumber + ':' + #pageable.pageSize + ':' + #pageable.sort",
             condition = "#search == null || #search.isEmpty()"
     )
-    public PagedResult<BookingSummaryDTO> findAll(String search, Pageable pageable) {
-        log.info("Fetching all bookings with search filter: '{}'", search);
+    public PagedResult<BookingSummaryDTO> findAll(String search, BookingStatus status, Pageable pageable) {
+        log.info("Fetching bookings with search filter '{}' and status '{}'", search, status);
 
-        Page<BookingSummaryDTO> bookings = bookingRepository.findAll(search, pageable);
+        Page<BookingSummaryDTO> bookings = status == null
+                ? bookingRepository.findAll(search, pageable)
+                : bookingRepository.findAllByStatus(search, status, pageable);
 
         return PagedResult.from(bookings);
     }
@@ -187,6 +191,9 @@ public class BookingService {
         }
 
         log.info("Booking ID: {} updated successfully", bookingId);
+        eventPublisher.publishEvent(new DashboardChangedEvent(
+                entity.getId(), DashboardChangeReason.BOOKING_UPDATED
+        ));
         return bookingMapper.toSummary(entity);
     }
 

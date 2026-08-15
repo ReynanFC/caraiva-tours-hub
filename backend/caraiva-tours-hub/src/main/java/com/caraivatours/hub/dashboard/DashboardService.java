@@ -8,7 +8,6 @@ import com.caraivatours.hub.dashboard.dto.response.*;
 import com.caraivatours.hub.dashboard.projection.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,12 +27,11 @@ public class DashboardService {
     private final BookingRepository bookingRepository;
     private final BookingMapper bookingMapper;
 
-    @Cacheable(value = "dashboard-user", key = "#userId + ':' + #month + ':' + #all")
     public UserDashboardDTO getUserDashboard(Long userId, YearMonth month, boolean all) {
         Period period = resolvePeriod(month, all);
 
         log.info("Building user dashboard for user ID {} and period {}", userId, period.label());
-        log.debug("User dashboard cache miss: userId={}, start={}, end={}, all={}", userId, period.start(), period.end(), all);
+        log.debug("User dashboard query: userId={}, start={}, end={}, all={}", userId, period.start(), period.end(), all);
 
         EmployeeMetricsProjection metrics = bookingRepository.employeeMetrics(userId, period.start(), period.end(),
                 REVENUE_STATUSES, BookingStatus.CONFIRMED, BookingStatus.DRAFT);
@@ -48,8 +46,7 @@ public class DashboardService {
                 .map(StatusAmountDTO::amount).reduce(BigDecimal.ZERO, BigDecimal::add);
         log.debug("User dashboard commissions: userId={}, statuses={}, pending={}", userId, statusAmounts.size(), pendingCommissions);
 
-        List<TourDemandProjection> demand = bookingRepository.mostRequestedTours(
-                userId,
+        List<TourDemandProjection> demand = bookingRepository.mostRequestedToursGlobal(
                 period.start(),
                 period.end());
 
@@ -82,12 +79,11 @@ public class DashboardService {
         );
     }
 
-    @Cacheable(value = "dashboard-finance", key = "#month + ':' + #all")
     public FinanceDashboardDTO getFinanceDashboard(YearMonth month, boolean all) {
         Period period = resolvePeriod(month, all);
 
         log.info("Building finance dashboard for period {}", period.label());
-        log.debug("Finance dashboard cache miss: start={}, end={}, all={}", period.start(), period.end(), all);
+        log.debug("Finance dashboard query: start={}, end={}, all={}", period.start(), period.end(), all);
 
         FinanceMetricsProjection metrics = bookingRepository.financeMetrics(period.start(), period.end(), REVENUE_STATUSES,
                 BookingStatus.DRAFT, BookingStatus.CANCELLED);
@@ -97,6 +93,18 @@ public class DashboardService {
                 .map(item -> new TourRevenueDTO(
                         item.getTourId(), item.getTourName(), amount(item.getRevenue())))
                 .toList();
+        List<TourDemandProjection> demand = bookingRepository.mostRequestedToursGlobal(period.start(), period.end());
+        long totalDemand = demand.stream().mapToLong(TourDemandProjection::getBookingCount).sum();
+        List<TourDemandDTO> mostRequestedTours = demand.stream()
+                .map(item -> new TourDemandDTO(item.getTourId(), item.getTourName(), item.getBookingCount(),
+                        percentage(item.getBookingCount(), totalDemand)))
+                .toList();
+        List<EmployeeSalesRankingDTO> employeeRanking = bookingRepository.employeeSalesRanking(period.start(), period.end())
+                .stream()
+                .map(item -> new EmployeeSalesRankingDTO(
+                        count(item.getRankingPosition()), item.getEmployeeId(), item.getEmployeeName(),
+                        amount(item.getTotalSales()), amount(item.getTotalCommission()), count(item.getBookingCount())))
+                .toList();
         log.debug("Finance dashboard result: confirmedRevenue={}, receivable={}, cancelledOrders={}, tours={}",
                 amount(metrics.getConfirmedRevenue()), amount(metrics.getReceivable()), count(metrics.getCancelledOrders()), tourRevenue.size());
 
@@ -104,7 +112,7 @@ public class DashboardService {
                 amount(metrics.getConfirmedRevenue()),
                 amount(metrics.getReceivable()),
                 count(metrics.getCancelledOrders()),
-                amount(metrics.getGrossRevenue()), tourRevenue);
+                amount(metrics.getGrossRevenue()), tourRevenue, mostRequestedTours, employeeRanking);
     }
 
     private List<WeeklyRevenueDTO> weeklyRevenue(Long userId) {

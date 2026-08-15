@@ -19,9 +19,7 @@ public class CacheConfig {
     private static final Map<String, Duration> CUSTOM_TTL = Map.of(
             "category-options", Duration.ofMinutes(2),
             "bookings", Duration.ofMinutes(2),
-            "booking-details", Duration.ofMinutes(2),
-            "dashboard-user", Duration.ofMinutes(5),
-            "dashboard-finance", Duration.ofMinutes(5)
+            "booking-details", Duration.ofMinutes(2)
     );
 
     private static final Duration DEFAULT_TTL = Duration.ofMinutes(10);

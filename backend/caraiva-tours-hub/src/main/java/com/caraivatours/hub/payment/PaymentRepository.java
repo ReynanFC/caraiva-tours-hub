@@ -4,6 +4,7 @@ import com.caraivatours.hub.booking.enums.BookingStatus;
 import com.caraivatours.hub.booking.Booking;
 import com.caraivatours.hub.payment.projection.PaymentOverviewProjection;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -20,9 +21,9 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
             JOIN booking b ON b.payment_id = p.payment_id
             JOIN client c ON c.client_id = b.client_id
             WHERE (:idPayment IS NULL OR p.payment_id = :idPayment)
-              AND (:nameClient IS NULL OR :nameClient = ''
+              AND (:clientName IS NULL OR :clientName = ''
                    OR to_tsvector('portuguese', COALESCE(c.name, ''))
-                        @@ websearch_to_tsquery('portuguese', :nameClient))
+                        @@ websearch_to_tsquery('portuguese', :clientName))
             ORDER BY p.paid_at DESC
             """,
             countQuery = """
@@ -31,14 +32,22 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
             JOIN booking b ON b.payment_id = p.payment_id
             JOIN client c ON c.client_id = b.client_id
             WHERE (:idPayment IS NULL OR p.payment_id = :idPayment)
-              AND (:nameClient IS NULL OR :nameClient = ''
+              AND (:clientName IS NULL OR :clientName = ''
                    OR to_tsvector('portuguese', COALESCE(c.name, ''))
-                        @@ websearch_to_tsquery('portuguese', :nameClient))
+                        @@ websearch_to_tsquery('portuguese', :clientName))
             """,
             nativeQuery = true)
-    Page<Payment> findAllByFilters(@Param("idPayment") Long idPayment,
-                                   @Param("nameClient") String nameClient,
-                                   Pageable pageable);
+    Page<Payment> findAllByFiltersQuery(
+            @Param("idPayment") Long idPayment,
+            @Param("clientName") String clientName,
+            Pageable pageable
+    );
+
+    default Page<Payment> findAllByFilters(Long idPayment,
+                                           String clientName,
+                                           Pageable pageable) {
+        return findAllByFiltersQuery(idPayment, clientName, withoutSort(pageable));
+    }
 
     /** Returns payments linked to bookings in the requested workflow status. */
     @Query("""
@@ -88,7 +97,13 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
                                                      String search,
                                                      Pageable pageable) {
         String statusName = status == null ? null : status.name();
-        return findReservationsForPaymentQuery(statusName, search, pageable);
+        return findReservationsForPaymentQuery(statusName, search, withoutSort(pageable));
+    }
+
+    private static Pageable withoutSort(Pageable pageable) {
+        return pageable.isPaged()
+                ? PageRequest.of(pageable.getPageNumber(), pageable.getPageSize())
+                : pageable;
     }
 
     /** Aggregates received deposits, deposits awaiting proof and the 80% balance due. */

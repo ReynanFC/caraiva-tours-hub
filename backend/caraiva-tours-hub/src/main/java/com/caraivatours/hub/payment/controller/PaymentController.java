@@ -7,9 +7,9 @@ import com.caraivatours.hub.payment.dto.PaymentSummaryDTO;
 import com.caraivatours.hub.payment.dto.PaymentOverviewDTO;
 import com.caraivatours.hub.payment.dto.ReservationPaymentDTO;
 import com.caraivatours.hub.booking.enums.BookingStatus;
+import com.caraivatours.hub.shared.dto.PagedResult;
 import com.caraivatours.hub.shared.validation.IsAdmin;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -31,7 +31,7 @@ public class PaymentController implements PaymentControllerDocs {
 
     @IsAdmin
     @GetMapping("/reservations")
-    public ResponseEntity<Page<ReservationPaymentDTO>> searchReservations(
+    public ResponseEntity<PagedResult<ReservationPaymentDTO>> searchReservations(
             @RequestParam(required = false) BookingStatus status,
             @RequestParam(required = false, defaultValue = "") String search,
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
@@ -40,7 +40,7 @@ public class PaymentController implements PaymentControllerDocs {
 
     @IsAdmin
     @GetMapping
-    public ResponseEntity<Page<PaymentSummaryDTO>> findAllByFilters(
+    public ResponseEntity<PagedResult<PaymentSummaryDTO>> findAllByFilters(
             @RequestParam(required = false) Long idPayment,
             @RequestParam(required = false) String nameClient,
             @PageableDefault(size = 10, sort = "paidAt", direction = Sort.Direction.DESC) Pageable pageable) {
@@ -56,7 +56,7 @@ public class PaymentController implements PaymentControllerDocs {
 
     @IsAdmin
     @GetMapping("/status/{status}")
-    public ResponseEntity<Page<PaymentSummaryDTO>> findByBookingStatus(
+    public ResponseEntity<PagedResult<PaymentSummaryDTO>> findByBookingStatus(
             @PathVariable BookingStatus status,
             @PageableDefault(size = 10, sort = "paidAt", direction = Sort.Direction.DESC) Pageable pageable) {
 

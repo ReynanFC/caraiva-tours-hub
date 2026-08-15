@@ -521,6 +521,16 @@ class DashboardTest extends AbstractIntegrationTest {
                 assertThat(result.confirmedTourRevenue().getFirst().revenue()).isEqualByComparingTo("800.00");
                 assertThat(result.confirmedTourRevenue().get(1).tourId()).isEqualTo(espelho.getId());
                 assertThat(result.confirmedTourRevenue().get(1).revenue()).isEqualByComparingTo("600.00");
+                assertThat(result.mostRequestedTours()).hasSize(2);
+                assertThat(result.mostRequestedTours().getFirst().tourId()).isEqualTo(espelho.getId());
+                assertThat(result.mostRequestedTours().getFirst().bookingCount()).isEqualTo(4);
+                assertThat(result.employeeRanking()).singleElement().satisfies(employee -> {
+                    assertThat(employee.rankingPosition()).isEqualTo(1);
+                    assertThat(employee.employeeId()).isEqualTo(attendant.getId());
+                    assertThat(employee.totalSales()).isEqualByComparingTo("2100.00");
+                    assertThat(employee.totalCommission()).isEqualByComparingTo("210.00");
+                    assertThat(employee.bookingCount()).isEqualTo(4);
+                });
             }
 
             @Test
@@ -534,6 +544,8 @@ class DashboardTest extends AbstractIntegrationTest {
                 assertThat(result.cancelledOrders()).isZero();
                 assertThat(result.grossRevenue()).isEqualByComparingTo(BigDecimal.ZERO);
                 assertThat(result.confirmedTourRevenue()).isEmpty();
+                assertThat(result.mostRequestedTours()).isEmpty();
+                assertThat(result.employeeRanking()).isEmpty();
             }
 
             @Test

@@ -8,5 +8,7 @@ public record FinanceDashboardDTO(
         BigDecimal receivable,
         long cancelledOrders,
         BigDecimal grossRevenue,
-        List<TourRevenueDTO> confirmedTourRevenue
+        List<TourRevenueDTO> confirmedTourRevenue,
+        List<TourDemandDTO> mostRequestedTours,
+        List<EmployeeSalesRankingDTO> employeeRanking
 ) {}

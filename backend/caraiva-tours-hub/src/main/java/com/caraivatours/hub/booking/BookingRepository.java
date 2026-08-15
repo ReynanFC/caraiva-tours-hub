@@ -38,6 +38,31 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 """)
     Page<BookingSummaryDTO> findAll(@Param("search") String search, Pageable pageable);
 
+    /** Searches booking summaries by client phone or email within one workflow status. */
+    @Query("""
+    SELECT new com.caraivatours.hub.booking.dto.response.BookingSummaryDTO(
+        b.id,
+        b.client.name,
+        b.tour.name,
+        b.customSchedule,
+        (SIZE(b.groupMembers) + 1),
+        b.financialData.totalPrice,
+        b.currentStatus
+    )
+    FROM Booking b
+    WHERE b.currentStatus = :status
+      AND (
+          :search = ''
+          OR b.client.phone LIKE CONCAT('%', :search, '%')
+          OR LOWER(b.client.email) LIKE LOWER(CONCAT('%', :search, '%'))
+      )
+""")
+    Page<BookingSummaryDTO> findAllByStatus(
+            @Param("search") String search,
+            @Param("status") BookingStatus status,
+            Pageable pageable
+    );
+
     /** Returns booking summaries for one workflow status. */
     @Query("""
     SELECT new com.caraivatours.hub.booking.dto.response.BookingSummaryDTO(
@@ -90,6 +115,30 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             GROUP BY b.tour.id, b.tour.name ORDER BY COUNT(b) DESC
             """)
     List<TourDemandProjection> mostRequestedTours(@Param("userId") Long userId, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    @Query("""
+            SELECT b.tour.id AS tourId, b.tour.name AS tourName, COUNT(b) AS bookingCount
+            FROM Booking b WHERE b.createdAt >= :start AND b.createdAt < :end
+            GROUP BY b.tour.id, b.tour.name ORDER BY COUNT(b) DESC
+            """)
+    List<TourDemandProjection> mostRequestedToursGlobal(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    @Query(value = """
+            SELECT RANK() OVER (ORDER BY SUM(b.total_price_snapshot) DESC) AS rankingPosition,
+                   u.user_id AS employeeId,
+                   COALESCE(u.full_name, u.user_name) AS employeeName,
+                   COALESCE(SUM(b.total_price_snapshot), 0) AS totalSales,
+                   COALESCE(SUM(b.commission_snapshot), 0) AS totalCommission,
+                   COUNT(b.booking_id) AS bookingCount
+            FROM booking b
+            JOIN users u ON u.user_id = b.user_id
+            WHERE b.created_at >= :start AND b.created_at < :end
+              AND b.current_status IN ('CONFIRMED', 'COMPLETED')
+            GROUP BY u.user_id, u.full_name, u.user_name
+            ORDER BY totalSales DESC, employeeName ASC
+            """, nativeQuery = true)
+    List<EmployeeSalesRankingProjection> employeeSalesRanking(@Param("start") LocalDateTime start,
+                                                               @Param("end") LocalDateTime end);
 
     @Query("""
             SELECT b.tour.id AS tourId, b.tour.name AS tourName, COALESCE(SUM(b.financialData.totalPrice), 0) AS revenue

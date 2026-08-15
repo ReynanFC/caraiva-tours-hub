@@ -5,6 +5,7 @@ import com.caraivatours.hub.payment.dto.PaymentDetailDTO;
 import com.caraivatours.hub.payment.dto.PaymentSummaryDTO;
 import com.caraivatours.hub.payment.dto.PaymentOverviewDTO;
 import com.caraivatours.hub.payment.dto.ReservationPaymentDTO;
+import com.caraivatours.hub.shared.dto.PagedResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -12,7 +13,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springdoc.core.annotations.ParameterObject;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 
@@ -23,7 +23,7 @@ public interface PaymentControllerDocs {
     ResponseEntity<PaymentOverviewDTO> overview();
 
     @Operation(summary = "Search payment reservations", description = "Administrator-only reservation search by client name, phone or booking number. Filter by DRAFT for receipts awaiting proof or CANCELLED for rejected reservations.")
-    ResponseEntity<Page<ReservationPaymentDTO>> searchReservations(BookingStatus status, String search, @ParameterObject Pageable pageable);
+    ResponseEntity<PagedResult<ReservationPaymentDTO>> searchReservations(BookingStatus status, String search, @ParameterObject Pageable pageable);
 
     @Operation(
             summary = "List payments",
@@ -35,7 +35,7 @@ public interface PaymentControllerDocs {
                     @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
             }
     )
-    ResponseEntity<Page<PaymentSummaryDTO>> findAllByFilters(
+    ResponseEntity<PagedResult<PaymentSummaryDTO>> findAllByFilters(
             @Parameter(description = "Optional payment identifier") Long idPayment,
             @Parameter(description = "Optional fragment of the client's name") String nameClient,
             @ParameterObject Pageable pageable
@@ -66,7 +66,7 @@ public interface PaymentControllerDocs {
                     @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
             }
     )
-    ResponseEntity<Page<PaymentSummaryDTO>> findByBookingStatus(
+    ResponseEntity<PagedResult<PaymentSummaryDTO>> findByBookingStatus(
             @Parameter(description = "Current status of the related booking", required = true) BookingStatus status,
             @ParameterObject Pageable pageable
     );

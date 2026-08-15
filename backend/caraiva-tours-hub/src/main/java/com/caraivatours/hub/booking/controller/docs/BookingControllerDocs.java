@@ -28,7 +28,11 @@ public interface BookingControllerDocs {
     @Operation(summary = "List bookings", responses = {
             @ApiResponse(responseCode = "200", description = "Bookings retrieved", content = @Content(schema = @Schema(implementation = BookingSummaryDTO.class)))
     })
-    ResponseEntity<PagedResult<BookingSummaryDTO>> findAll(String search, @ParameterObject Pageable pageable);
+    ResponseEntity<PagedResult<BookingSummaryDTO>> findAll(
+            String search,
+            BookingStatus status,
+            @ParameterObject Pageable pageable
+    );
 
     @Operation(summary = "List bookings by status", responses = {
             @ApiResponse(responseCode = "200", description = "Bookings retrieved", content = @Content(schema = @Schema(implementation = BookingSummaryDTO.class)))

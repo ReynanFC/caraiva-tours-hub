@@ -51,8 +51,9 @@ public class BookingController implements BookingControllerDocs {
     @GetMapping
     public ResponseEntity<PagedResult<BookingSummaryDTO>> findAll(
             @RequestParam(defaultValue = "") String search,
+            @RequestParam(required = false) BookingStatus status,
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-        return ResponseEntity.ok(bookingService.findAll(search.trim(), pageable));
+        return ResponseEntity.ok(bookingService.findAll(search.trim(), status, pageable));
     }
 
     @GetMapping("/status/{status}")

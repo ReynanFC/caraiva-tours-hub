@@ -119,7 +119,11 @@ public class JwtTokenProvider {
 
         List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role.name()));
 
-        return new UsernamePasswordAuthenticationToken(new AuthenticatedUser(uuid, id), "", authorities);
+        return new UsernamePasswordAuthenticationToken(
+                new AuthenticatedUser(uuid, id, role, decodedJWT.getExpiresAtAsInstant()),
+                "",
+                authorities
+        );
     }
 
     public Optional<String> resolveToken(HttpServletRequest request) {

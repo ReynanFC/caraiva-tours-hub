@@ -9,6 +9,7 @@ import com.caraivatours.hub.payment.dto.ReservationPaymentDTO;
 import com.caraivatours.hub.payment.mapper.PaymentMapper;
 import com.caraivatours.hub.payment.mapper.ReservationPaymentMapper;
 import com.caraivatours.hub.payment.projection.PaymentOverviewProjection;
+import com.caraivatours.hub.shared.dto.PagedResult;
 import com.caraivatours.hub.shared.exceptions.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,32 +39,32 @@ public class PaymentService {
         return new PaymentOverviewDTO(amount(overview.getReceivedDepositAmount()), amount(overview.getAwaitingReceiptAmount()), amount(overview.getRemainingAmount()));
     }
 
-    public Page<ReservationPaymentDTO> searchReservations(BookingStatus status, String search, Pageable pageable) {
+    public PagedResult<ReservationPaymentDTO> searchReservations(BookingStatus status, String search, Pageable pageable) {
         String normalizedSearch = search == null ? "" : search.trim();
         log.info("Searching payment reservations with status={}, search={}", status, normalizedSearch);
-        return paymentRepository.findReservationsForPayment(status, normalizedSearch, pageable)
-                .map(reservationPaymentMapper::toReservationPayment);
+        return PagedResult.from(paymentRepository.findReservationsForPayment(status, normalizedSearch, pageable)
+                .map(reservationPaymentMapper::toReservationPayment));
     }
 
-    @Cacheable(value = "payments", key = "'search:' + #idPayment + ':' + #nameClient + ':' + #pageable.pageNumber + ':' + #pageable.pageSize + ':' + #pageable.sort")
-    public Page<PaymentSummaryDTO> findAllByNameClientOrId(Long idPayment, String nameClient, Pageable pageable) {
+    @Cacheable(value = "payment-pages", key = "'search:' + #idPayment + ':' + #nameClient + ':' + #pageable.pageNumber + ':' + #pageable.pageSize + ':' + #pageable.sort")
+    public PagedResult<PaymentSummaryDTO> findAllByNameClientOrId(Long idPayment, String nameClient, Pageable pageable) {
         log.debug("Searching payments by idPayment={}, nameClient={}, page={}", idPayment, nameClient, pageable);
 
         Page<Payment> payments = paymentRepository.findAllByFilters(idPayment, nameClient, pageable);
         log.info("Found {} payments matching filters (idPayment={}, nameClient={})",
                 payments.getTotalElements(), idPayment, nameClient);
 
-        return payments.map(paymentMapper::toSummary);
+        return PagedResult.from(payments.map(paymentMapper::toSummary));
     }
 
-    @Cacheable(value = "payments", key = "'status:' + #status + ':' + #pageable.pageNumber + ':' + #pageable.pageSize + ':' + #pageable.sort")
-    public Page<PaymentSummaryDTO> findByStatusBooking(BookingStatus status, Pageable pageable) {
+    @Cacheable(value = "payment-pages", key = "'status:' + #status + ':' + #pageable.pageNumber + ':' + #pageable.pageSize + ':' + #pageable.sort")
+    public PagedResult<PaymentSummaryDTO> findByStatusBooking(BookingStatus status, Pageable pageable) {
         log.debug("Searching payments by booking status={}", status);
 
         Page<Payment> payments = paymentRepository.findByStatusBooking(status, pageable);
         log.info("Found {} payments with booking status={}", payments.getTotalElements(), status);
 
-        return payments.map(paymentMapper::toSummary);
+        return PagedResult.from(payments.map(paymentMapper::toSummary));
     }
 
     @Cacheable(value = "payment-details", key = "#id")
@@ -80,7 +81,7 @@ public class PaymentService {
     }
 
     @Transactional
-    @CacheEvict(value = {"payments", "payment-details"}, allEntries = true)
+    @CacheEvict(value = {"payments", "payment-pages", "payment-details"}, allEntries = true)
     /**
      * Creates the 20% reservation deposit after a payment receipt is supplied.
      * The amount is derived from the booking total so discounts and pickup fees are honored.
@@ -99,7 +100,7 @@ public class PaymentService {
      * A booking without a receipt/payment has no deposit to update.
      */
     @Transactional
-    @CacheEvict(value = {"payments", "payment-details"}, allEntries = true)
+    @CacheEvict(value = {"payments", "payment-pages", "payment-details"}, allEntries = true)
     public void updateExpectedAmount(Booking booking) {
         if (booking.getPayment() == null) {
             log.debug("Skipping expected payment update for booking ID {} because no payment exists", booking.getId());

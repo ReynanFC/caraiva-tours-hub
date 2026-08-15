@@ -234,6 +234,44 @@ class BookingTest extends AbstractIntegrationTest {
                 assertThat(bookingRepository.findAll("cliente inexistente", PageRequest.of(0, 10)))
                         .isEmpty();
             }
+
+            @Test
+            @DisplayName("should combine client search and status filters")
+            void shouldCombineSearchAndStatusFilters() {
+                Booking matching = saveBooking(
+                        BookingStatus.CONFIRMED,
+                        SCHEDULE,
+                        "Passeio confirmado",
+                        "Ana",
+                        "+55 73 98888-1001",
+                        "ana@example.com"
+                );
+                saveBooking(
+                        BookingStatus.DRAFT,
+                        SCHEDULE.plusDays(1),
+                        "Passeio rascunho",
+                        "Outra Ana",
+                        "+55 73 98888-1002",
+                        "outra-ana@example.com"
+                );
+                saveBooking(
+                        BookingStatus.CONFIRMED,
+                        SCHEDULE.plusDays(2),
+                        "Outro confirmado",
+                        "Bruno",
+                        "+55 73 97777-2002",
+                        "bruno@example.com"
+                );
+
+                Page<BookingSummaryDTO> result = bookingRepository.findAllByStatus(
+                        "98888",
+                        BookingStatus.CONFIRMED,
+                        PageRequest.of(0, 10)
+                );
+
+                assertThat(result.getContent()).extracting(BookingSummaryDTO::id)
+                        .containsExactly(matching.getId());
+            }
         }
 
         @Nested
@@ -424,7 +462,7 @@ class BookingTest extends AbstractIntegrationTest {
                 );
 
                 PagedResult<BookingSummaryDTO> result =
-                        bookingService.findAll("98888", PageRequest.of(0, 10));
+                        bookingService.findAll("98888", null, PageRequest.of(0, 10));
 
                 assertThat(result.totalElements()).isEqualTo(1);
                 assertThat(result.content()).extracting(BookingSummaryDTO::id).containsExactly(booking.getId());
@@ -437,7 +475,7 @@ class BookingTest extends AbstractIntegrationTest {
                 saveBooking(BookingStatus.DRAFT, SCHEDULE.plusDays(1), "Passeio rascunho");
 
                 PagedResult<BookingSummaryDTO> result =
-                        bookingService.findByStatus(BookingStatus.CONFIRMED, PageRequest.of(0, 10));
+                        bookingService.findAll("", BookingStatus.CONFIRMED, PageRequest.of(0, 10));
 
                 assertThat(result.totalElements()).isEqualTo(1);
                 assertThat(result.content()).extracting(BookingSummaryDTO::id).containsExactly(confirmed.getId());

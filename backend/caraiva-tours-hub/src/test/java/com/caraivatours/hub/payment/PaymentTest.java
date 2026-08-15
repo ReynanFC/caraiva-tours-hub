@@ -18,6 +18,7 @@ import com.caraivatours.hub.payment.dto.ReservationPaymentDTO;
 import com.caraivatours.hub.payment.projection.PaymentOverviewProjection;
 import com.caraivatours.hub.pickuplocation.PickupLocation;
 import com.caraivatours.hub.pickuplocation.PickupLocationRepository;
+import com.caraivatours.hub.shared.dto.PagedResult;
 import com.caraivatours.hub.shared.exceptions.ResourceNotFoundException;
 import com.caraivatours.hub.tour.TourRepository;
 import com.caraivatours.hub.tour.entity.Tour;
@@ -237,6 +238,24 @@ class PaymentTest extends AbstractIntegrationTest {
                 assertThat(result.getTotalPages()).isEqualTo(2);
                 assertThat(result.getContent()).hasSize(1);
             }
+
+            @Test
+            @DisplayName("should accept the entity sort sent by the payments endpoint")
+            void shouldAcceptEndpointSort() {
+                Payment payment = attachPayment(
+                        saveBooking(BookingStatus.CONFIRMED, "Ana"),
+                        new BigDecimal("100.00"),
+                        "receipt-ana"
+                );
+
+                Page<Payment> result = paymentRepository.findAllByFilters(
+                        null,
+                        null,
+                        PageRequest.of(0, 10, Sort.by("paidAt").descending())
+                );
+
+                assertThat(result.getContent()).containsExactly(payment);
+            }
         }
 
         @Nested
@@ -354,6 +373,20 @@ class PaymentTest extends AbstractIntegrationTest {
                         PageRequest.of(0, 10)
                 )).isEmpty();
             }
+
+            @Test
+            @DisplayName("should accept the entity sort sent by the reservations endpoint")
+            void shouldAcceptEndpointSort() {
+                Booking booking = saveBooking(BookingStatus.DRAFT, "Ana");
+
+                Page<Booking> result = paymentRepository.findReservationsForPayment(
+                        BookingStatus.DRAFT,
+                        "",
+                        PageRequest.of(0, 10, Sort.by("createdAt").descending())
+                );
+
+                assertThat(result.getContent()).containsExactly(booking);
+            }
         }
 
         @Nested
@@ -439,13 +472,13 @@ class PaymentTest extends AbstractIntegrationTest {
             void shouldNormalizeNullSearchAndMapReservations() {
                 Booking booking = saveBooking(BookingStatus.DRAFT, "Ana");
 
-                Page<ReservationPaymentDTO> result = paymentService.searchReservations(
+                PagedResult<ReservationPaymentDTO> result = paymentService.searchReservations(
                         BookingStatus.DRAFT,
                         null,
                         PageRequest.of(0, 10)
                 );
 
-                assertThat(result.getContent())
+                assertThat(result.content())
                         .singleElement()
                         .satisfies(reservation -> {
                             assertThat(reservation.bookingId()).isEqualTo(booking.getId());
@@ -461,13 +494,13 @@ class PaymentTest extends AbstractIntegrationTest {
             void shouldTrimReservationSearch() {
                 Booking booking = saveBooking(BookingStatus.CONFIRMED, "Maria da Silva");
 
-                Page<ReservationPaymentDTO> result = paymentService.searchReservations(
+                PagedResult<ReservationPaymentDTO> result = paymentService.searchReservations(
                         null,
                         "  maria  ",
                         PageRequest.of(0, 10)
                 );
 
-                assertThat(result.getContent())
+                assertThat(result.content())
                         .extracting(ReservationPaymentDTO::bookingId)
                         .containsExactly(booking.getId());
             }
@@ -478,13 +511,13 @@ class PaymentTest extends AbstractIntegrationTest {
                 Booking booking = saveBooking(BookingStatus.CONFIRMED, "Maria da Silva");
                 Payment payment = attachPayment(booking, new BigDecimal("106.00"), "receipt-maria");
 
-                Page<PaymentSummaryDTO> result = paymentService.findAllByNameClientOrId(
+                PagedResult<PaymentSummaryDTO> result = paymentService.findAllByNameClientOrId(
                         null,
                         "maria",
                         PageRequest.of(0, 10)
                 );
 
-                assertThat(result.getContent())
+                assertThat(result.content())
                         .singleElement()
                         .satisfies(summary -> assertPaymentSummary(summary, payment, booking));
             }
@@ -501,12 +534,12 @@ class PaymentTest extends AbstractIntegrationTest {
                         "receipt-bruno"
                 );
 
-                Page<PaymentSummaryDTO> result = paymentService.findByStatusBooking(
+                PagedResult<PaymentSummaryDTO> result = paymentService.findByStatusBooking(
                         BookingStatus.CONFIRMED,
                         PageRequest.of(0, 10)
                 );
 
-                assertThat(result.getContent())
+                assertThat(result.content())
                         .singleElement()
                         .satisfies(summary -> assertPaymentSummary(
                                 summary,

@@ -11,6 +11,9 @@ app:
       token:
         secret-key: ${JWT_SECRET_KEY}
         expire-length: 3600000
+  dashboard:
+    sse:
+      heartbeat-interval: 60000
 
 spring-doc:
   paths-to-match: /**
