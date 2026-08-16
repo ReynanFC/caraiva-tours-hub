@@ -216,9 +216,7 @@ export class DashboardPage {
       if (refreshSequence === this.userRefreshSequence) {
         this.dashboardResource.set(dashboard);
       }
-    } catch {
-      // Mantém os dados atuais; o próximo evento ou refresh manual tentará novamente.
-    }
+    } catch {}
   }
 
   private async refreshAdminSilently(): Promise<void> {
@@ -229,9 +227,7 @@ export class DashboardPage {
       if (refreshSequence === this.adminRefreshSequence) {
         this.adminDashboardResource.set(dashboard);
       }
-    } catch {
-      // Mantém os dados atuais; o próximo evento ou refresh manual tentará novamente.
-    }
+    } catch {}
   }
 
   protected changeReportMonth(event: Event): void {

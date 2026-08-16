@@ -5,6 +5,7 @@ import com.caraivatours.hub.dashboard.dto.response.DashboardChangedDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.async.AsyncRequestNotUsableException;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
@@ -37,6 +38,8 @@ public class DashboardSseService {
             emitter.send(SseEmitter.event()
                     .name("connected")
                     .data(Map.of("connectedAt", Instant.now(), "role", role)));
+        } catch (AsyncRequestNotUsableException exception) {
+            remove(role, userId, emitter);
         } catch (IOException exception) {
             remove(role, userId, emitter);
             emitter.completeWithError(exception);
@@ -64,6 +67,9 @@ public class DashboardSseService {
                     .id(notification.occurredAt().toString())
                     .name("dashboard-changed")
                     .data(notification));
+        } catch (AsyncRequestNotUsableException exception) {
+            log.debug("Dashboard SSE connection already closed for user ID {}", userId);
+            remove(role, userId, emitter);
         } catch (IOException | IllegalStateException exception) {
             log.debug("Removing unavailable dashboard SSE connection for user ID {}", userId);
             remove(role, userId, emitter);
@@ -76,6 +82,9 @@ public class DashboardSseService {
             emitter.send(SseEmitter.event()
                     .name("heartbeat")
                     .data(Map.of("sentAt", Instant.now())));
+        } catch (AsyncRequestNotUsableException exception) {
+            log.debug("Dashboard SSE connection already closed for user ID {}", userId);
+            remove(role, userId, emitter);
         } catch (IOException | IllegalStateException exception) {
             log.debug("Heartbeat failed; removing dashboard SSE connection for user ID {}", userId);
             remove(role, userId, emitter);
