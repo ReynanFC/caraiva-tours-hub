@@ -69,6 +69,26 @@
   .booking-list-page {
     @apply gap-2;
   }
+
+  ::ng-deep .booking-edit-dialog {
+    height: calc(100dvh - 2rem);
+    max-height: calc(100dvh - 2rem);
+    display: flex;
+    flex-direction: column;
+  }
+
+  ::ng-deep .booking-edit-dialog .p-dialog-header {
+    flex: 0 0 auto;
+  }
+
+  ::ng-deep .booking-edit-dialog .p-dialog-content {
+    min-height: 0;
+    flex: 1 1 auto;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    overflow-anchor: none;
+    @apply p-4!;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

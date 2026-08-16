@@ -39,6 +39,8 @@
           <span class="pix-status-success status-success">Imagem enviada com sucesso</span>
         } @else if (uploadError()) {
           <span class="status-error">{{ uploadError() }}</span>
+        } @else {
+          <span class="status-ready">Pronta para enviar ao salvar</span>
         }
       </div>
     </div>

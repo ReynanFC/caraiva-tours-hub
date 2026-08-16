@@ -45,7 +45,7 @@ export class BookingService {
   }
 
   updateBooking(id: number, request: UpdateBookingRequest): Observable<BookingSummary> {
-    return this.http.put<BookingSummary>(`/api/bookings/${id}`, request);
+    return this.http.patch<BookingSummary>(`/api/bookings/${id}`, request);
   }
 
   confirmBooking(id: number): Observable<BookingSummary> {
@@ -60,23 +60,37 @@ export class BookingService {
     return this.http.get(`/api/bookings/${id}/receipt`, { responseType: 'blob' });
   }
 
+  getAvailableTours(): Observable<PagedResult<TourSummary>> {
+    return this.loadTours('', 100, true);
+  }
+
   searchTours(search: string): Observable<PagedResult<TourSummary>> {
+    return this.loadTours(search, 10, false);
+  }
+
+  private loadTours(
+    search: string,
+    size: number,
+    availableOnly: boolean,
+  ): Observable<PagedResult<TourSummary>> {
     const params = new HttpParams()
       .set('search', search.trim())
       .set('page', 0)
-      .set('size', 10)
+      .set('size', size)
       .set('sort', 'name,asc');
 
     return this.http.get<PagedResult<TourApiResponse>>('/api/tours', { params }).pipe(
       map((result) => ({
         ...result,
-        content: result.content.map((tour) => ({
-          ...tour,
-          effectivePrice:
-            tour.isPromotional && tour.promoPricePerPerson != null
-              ? tour.promoPricePerPerson
-              : tour.basePricePerPerson,
-        })),
+        content: result.content
+          .filter((tour) => !availableOnly || tour.available)
+          .map((tour) => ({
+            ...tour,
+            effectivePrice:
+              tour.isPromotional && tour.promoPricePerPerson != null
+                ? tour.promoPricePerPerson
+                : tour.basePricePerPerson,
+          })),
       })),
     );
   }

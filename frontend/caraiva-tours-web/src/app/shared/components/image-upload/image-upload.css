@@ -76,6 +76,10 @@
   @apply text-muted;
 }
 
+.status-ready {
+  @apply text-muted;
+}
+
 .status-success {
   @apply text-green-700;
 }
@@ -104,4 +108,23 @@
 
 .upload-error {
   @apply mt-2 block text-xs font-medium;
+}
+
+@media (max-width: 480px) {
+  .proof-preview {
+    @apply grid-cols-[4rem_minmax(0,1fr)] gap-2.5;
+  }
+
+  .proof-preview img {
+    @apply size-16;
+  }
+
+  .proof-actions {
+    @apply gap-2;
+  }
+
+  .change-button,
+  .remove-button {
+    @apply flex-1;
+  }
 }

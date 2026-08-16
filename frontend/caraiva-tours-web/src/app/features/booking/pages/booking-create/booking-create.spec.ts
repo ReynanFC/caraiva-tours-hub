@@ -76,7 +76,7 @@ describe('BookingCreate', () => {
     expect(phoneInput.placeholder).toBe('(00) 00000-0000');
   });
 
-  it('should store the ImgBB URL after uploading a Pix proof', () => {
+  it('should upload a Pix proof only when submitting the booking', async () => {
     const imageUrl = 'https://i.ibb.co/example/pix-proof.png';
     imgbbMock.uploadImage.mockReturnValue(
       of({ success: true, data: { url: imageUrl } } as ImgBbResponse),
@@ -88,12 +88,29 @@ describe('BookingCreate', () => {
     input.dispatchEvent(new Event('change'));
     fixture.detectChanges();
 
+    expect(imgbbMock.uploadImage).not.toHaveBeenCalled();
+    expect(fixture.componentInstance.bookingForm.controls.pixPaymentUrl.value).toBeNull();
+    expect(fixture.nativeElement.querySelector('.status-ready')).toBeTruthy();
+
+    const component = fixture.componentInstance;
+    component.bookingForm.patchValue({
+      client: { name: 'Maria Souza', phone: '73999999999' },
+      tourId: 1,
+      scheduleDate: new Date(Date.now() + 86_400_000),
+      pickup: { locationName: 'Pousada Caraíva', referencePoint: 'Próximo à praça' },
+    });
+    bookingServiceMock.createBooking.mockReturnValue(of({} as BookingSummary));
+
+    await (component as unknown as { onSubmit(): Promise<void> }).onSubmit();
+
     expect(imgbbMock.uploadImage).toHaveBeenCalledWith(file);
-    expect(fixture.componentInstance.bookingForm.controls.pixPaymentUrl.value).toBe(imageUrl);
-    expect(fixture.nativeElement.querySelector('.pix-status-success')).toBeTruthy();
+    expect(component.bookingForm.controls.pixPaymentUrl.value).toBe(imageUrl);
+    expect(bookingServiceMock.createBooking).toHaveBeenCalledWith(
+      expect.objectContaining({ pixPaymentUrl: imageUrl }),
+    );
   });
 
-  it('should send the ImgBB URL to the bookings endpoint', () => {
+  it('should send the existing ImgBB URL to the bookings endpoint', async () => {
     const imageUrl = 'https://i.ibb.co/example/pix-proof.png';
     const component = fixture.componentInstance;
     component.bookingForm.patchValue({
@@ -111,7 +128,7 @@ describe('BookingCreate', () => {
     });
     bookingServiceMock.createBooking.mockReturnValue(of({} as BookingSummary));
 
-    (component as unknown as { onSubmit(): void }).onSubmit();
+    await (component as unknown as { onSubmit(): Promise<void> }).onSubmit();
 
     expect(bookingServiceMock.createBooking).toHaveBeenCalledWith(
       expect.objectContaining({ pixPaymentUrl: imageUrl }),
@@ -161,7 +178,7 @@ describe('BookingCreate', () => {
     expect(summary.total()).toBe(200.05);
   });
 
-  it('should display validation messages and trace ID returned by the backend', () => {
+  it('should display validation messages and trace ID returned by the backend', async () => {
     const component = fixture.componentInstance;
     const traceId = 'a3f0c8b2-5f84-4aa1-92cb-b6041433e74b';
     component.bookingForm.patchValue({
@@ -191,7 +208,7 @@ describe('BookingCreate', () => {
       ),
     );
 
-    (component as unknown as { onSubmit(): void }).onSubmit();
+    await (component as unknown as { onSubmit(): Promise<void> }).onSubmit();
     fixture.detectChanges();
 
     const alert: HTMLElement = fixture.nativeElement.querySelector('.booking-submit-error');

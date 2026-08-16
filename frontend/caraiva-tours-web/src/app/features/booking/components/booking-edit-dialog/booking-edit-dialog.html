@@ -23,6 +23,9 @@
       optionValue="id"
       appendTo="body"
       [options]="tours()"
+      [filter]="true"
+      filterBy="name"
+      placeholder="Selecione um passeio"
       [(ngModel)]="tourId"
     />
   </div>
@@ -92,6 +95,53 @@
     } @else {
       <p class="members-empty">Nenhum integrante adicional.</p>
     }
+  </section>
+
+  <section class="members-section">
+    <div class="members-heading">
+      <div>
+        <strong>Local de embarque</strong>
+        <span>Informe onde o grupo deverá ser buscado.</span>
+      </div>
+    </div>
+    <div class="field">
+      <label for="edit-pickup-cep">CEP</label>
+      <app-input
+        inputId="edit-pickup-cep"
+        name="pickupCep"
+        maxlength="9"
+        [(ngModel)]="pickup.cep"
+      />
+    </div>
+    <div class="field">
+      <label for="edit-pickup-location">Local</label>
+      <app-input
+        inputId="edit-pickup-location"
+        name="pickupLocation"
+        required
+        maxlength="150"
+        [(ngModel)]="pickup.locationName"
+      />
+    </div>
+    <div class="field">
+      <label for="edit-pickup-reference">Ponto de referência</label>
+      <app-input
+        inputId="edit-pickup-reference"
+        name="pickupReference"
+        maxlength="255"
+        [(ngModel)]="pickup.referencePoint"
+      />
+    </div>
+    <div class="field">
+      <label for="edit-pickup-fee">Taxa de embarque</label>
+      <app-input
+        inputId="edit-pickup-fee"
+        name="pickupFee"
+        format="currency"
+        [min]="0"
+        [(ngModel)]="pickup.appliedPickupFee"
+      />
+    </div>
   </section>
 
   <div class="field">

@@ -82,7 +82,10 @@ public interface BookingControllerDocs {
     @Operation(summary = "Update a booking", responses = {
             @ApiResponse(responseCode = "200", description = "Booking updated", content = @Content(schema = @Schema(implementation = BookingSummaryDTO.class))),
             @ApiResponse(responseCode = "400", description = "Invalid request", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Employee does not own the booking", content = @Content),
             @ApiResponse(responseCode = "404", description = "Booking or tour not found", content = @Content)
     })
-    ResponseEntity<BookingSummaryDTO> update(@Parameter(description = "Booking ID") Long id, UpdateBookingRequest request);
+    ResponseEntity<BookingSummaryDTO> update(@Parameter(description = "Booking ID") Long id,
+                                             @Parameter(hidden = true) AuthenticatedUser authenticatedUser,
+                                             UpdateBookingRequest request);
 }

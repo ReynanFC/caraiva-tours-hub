@@ -104,7 +104,8 @@ public class BookingController implements BookingControllerDocs {
     @PatchMapping("/{id}")
     public ResponseEntity<BookingSummaryDTO> update(
             @PathVariable Long id,
+            @AuthenticationPrincipal AuthenticatedUser authenticatedUser,
             @RequestBody @Valid UpdateBookingRequest request) {
-        return ResponseEntity.ok(bookingService.updateBooking(id, request));
+        return ResponseEntity.ok(bookingService.updateBooking(id, authenticatedUser.id(), request));
     }
 }

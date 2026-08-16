@@ -64,6 +64,10 @@
   @apply grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-3;
 }
 
+.pickup-summary {
+  @apply sm:grid-cols-2;
+}
+
 .details-summary > div {
   @apply flex min-h-20 flex-col justify-center gap-1.5 bg-surface px-4 py-3;
 }

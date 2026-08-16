@@ -7,6 +7,7 @@ import com.caraivatours.hub.booking.enums.BookingStatus;
 import com.caraivatours.hub.booking.event.BookingStatusChangedEvent;
 import com.caraivatours.hub.refundrequest.dto.request.CreateRefundRequestDTO;
 import com.caraivatours.hub.refundrequest.dto.request.ResolveRefundRequestDTO;
+import com.caraivatours.hub.refundrequest.dto.response.RefundBookingOptionDTO;
 import com.caraivatours.hub.refundrequest.dto.response.RefundRequestResponseDTO;
 import com.caraivatours.hub.refundrequest.enums.RefundStatus;
 import com.caraivatours.hub.shared.dto.PagedResult;
@@ -22,6 +23,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @Slf4j
@@ -50,6 +53,15 @@ public class RefundRequestService {
         return PagedResult.from(refundRequests);
     }
 
+    public List<RefundBookingOptionDTO> findMyBookingOptions(Long requesterId) {
+        userService.findById(requesterId);
+        return bookingRepository.findRefundOptionsByAttendantId(
+                requesterId,
+                List.of(BookingStatus.CANCELLED, BookingStatus.CANCEL_REQUEST),
+                RefundStatus.PENDING
+        );
+    }
+
     @Transactional
     @CacheEvict(value = {"bookings", "booking-details"}, allEntries = true)
     /**
@@ -64,6 +76,11 @@ public class RefundRequestService {
         }
 
         Booking booking = findBooking(request.bookingId());
+        if (!booking.getAttendant().getId().equals(requesterId)) {
+            log.warn("Refund request denied: booking ID {} does not belong to user ID {}",
+                    booking.getId(), requesterId);
+            throw new BadRequestException("You can only request refunds for your own bookings");
+        }
         if (booking.getCurrentStatus() == BookingStatus.CANCELLED
                 || booking.getCurrentStatus() == BookingStatus.CANCEL_REQUEST) {
             log.warn("Refund request denied for booking ID {} due to current status {}",

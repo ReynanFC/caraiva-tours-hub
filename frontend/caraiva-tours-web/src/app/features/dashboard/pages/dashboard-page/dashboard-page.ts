@@ -2,14 +2,16 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  DestroyRef,
   inject,
   resource,
   signal,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { PIcon } from '@primeicons/angular/p-icon';
 import { ButtonModule } from 'primeng/button';
 import { SkeletonModule } from 'primeng/skeleton';
-import { firstValueFrom } from 'rxjs';
+import { debounceTime, firstValueFrom } from 'rxjs';
 
 import { SessionStore } from '../../../../core/auth/session/session-store';
 import { getApiErrorMessage } from '../../../../core/http/api-error';
@@ -22,6 +24,7 @@ import { MetricCard } from '../../components/metric-card/metric-card';
 import { MostRequestedToursChart } from '../../components/most-requested-tours-chart/most-requested-tours-chart';
 import { WeeklyRevenueChart } from '../../components/weekly-revenue-chart/weekly-revenue-chart';
 import { DashboardMetric } from '../../models/dashboard.model';
+import { DashboardEventsService } from '../../services/dashboard-events.service';
 import { DashboardService } from '../../services/dashboard.service';
 
 @Component({
@@ -43,9 +46,13 @@ import { DashboardService } from '../../services/dashboard.service';
 })
 export class DashboardPage {
   private readonly dashboardService = inject(DashboardService);
+  private readonly dashboardEvents = inject(DashboardEventsService);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly session = inject(SessionStore);
   private readonly usersService = inject(UsersService);
   private readonly notifications = inject(ActionNotificationService);
+  private userRefreshSequence = 0;
+  private adminRefreshSequence = 0;
 
   protected readonly isAdmin = this.session.isAdmin;
   protected readonly isEmployee = this.session.isEmployee;
@@ -164,12 +171,66 @@ export class DashboardPage {
       (this.isAdmin() && this.adminDashboardResource.isLoading()),
   );
 
+  constructor() {
+    this.dashboardEvents
+      .connect()
+      .pipe(debounceTime(300), takeUntilDestroyed(this.destroyRef))
+      .subscribe((event) => {
+        if (event.type === 'reconnected') {
+          this.refreshSilently();
+          return;
+        }
+
+        if (event.data.view === 'USER' && this.isEmployee()) {
+          void this.refreshUserSilently();
+        }
+        if (event.data.view === 'FINANCE' && this.isAdmin()) {
+          void this.refreshAdminSilently();
+        }
+      });
+  }
+
   protected reload(): void {
     if (this.isEmployee()) {
       this.dashboardResource.reload();
     }
     if (this.isAdmin()) {
       this.adminDashboardResource.reload();
+    }
+  }
+
+  private refreshSilently(): void {
+    if (this.isEmployee()) {
+      void this.refreshUserSilently();
+    }
+    if (this.isAdmin()) {
+      void this.refreshAdminSilently();
+    }
+  }
+
+  private async refreshUserSilently(): Promise<void> {
+    const refreshSequence = ++this.userRefreshSequence;
+
+    try {
+      const dashboard = await firstValueFrom(this.dashboardService.getDashboard());
+      if (refreshSequence === this.userRefreshSequence) {
+        this.dashboardResource.set(dashboard);
+      }
+    } catch {
+      // Mantém os dados atuais; o próximo evento ou refresh manual tentará novamente.
+    }
+  }
+
+  private async refreshAdminSilently(): Promise<void> {
+    const refreshSequence = ++this.adminRefreshSequence;
+
+    try {
+      const dashboard = await firstValueFrom(this.dashboardService.getAdminDashboard());
+      if (refreshSequence === this.adminRefreshSequence) {
+        this.adminDashboardResource.set(dashboard);
+      }
+    } catch {
+      // Mantém os dados atuais; o próximo evento ou refresh manual tentará novamente.
     }
   }
 

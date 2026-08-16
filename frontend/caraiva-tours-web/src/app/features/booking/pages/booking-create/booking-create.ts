@@ -1,6 +1,6 @@
 import { CurrencyPipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal, viewChild } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -40,6 +40,7 @@ import { BookingFormService } from '../../services/booking-form';
 export class BookingCreate {
   private readonly bookingService = inject(BookingService);
   private readonly router = inject(Router);
+  private readonly pixUpload = viewChild.required(ImageUpload);
   protected readonly bookingFormService = inject(BookingFormService);
   readonly bookingForm = this.bookingFormService.form;
 
@@ -104,7 +105,7 @@ export class BookingCreate {
     this.selectedTour.set(null);
   }
 
-  protected onSubmit(): void {
+  protected async onSubmit(): Promise<void> {
     if (this.pixProofUploading() || this.bookingSubmitting()) {
       return;
     }
@@ -117,6 +118,14 @@ export class BookingCreate {
     this.bookingSubmitting.set(true);
     this.bookingSubmitErrors.set([]);
     this.bookingErrorTraceId.set(null);
+
+    try {
+      const pixPaymentUrl = await this.pixUpload().uploadPendingFile();
+      this.bookingForm.controls.pixPaymentUrl.setValue(pixPaymentUrl);
+    } catch {
+      this.bookingSubmitting.set(false);
+      return;
+    }
 
     this.bookingService
       .createBooking(this.bookingFormService.buildRequest())

@@ -347,6 +347,41 @@ class RefundRequestTest extends AbstractIntegrationTest {
         }
 
         @Nested
+        @DisplayName("findMyBookingOptions")
+        class FindMyBookingOptionsTests {
+
+            @Test
+            @DisplayName("should list only the requester's bookings available for refund")
+            void shouldListOnlyRequesterAvailableBookings() {
+                User requester = saveUser(UserRole.EMPLOYEE);
+                User anotherEmployee = saveUser(UserRole.EMPLOYEE);
+                Booking available = saveBooking(BookingStatus.CONFIRMED, requester);
+                saveBooking(BookingStatus.CANCELLED, requester);
+                saveBooking(BookingStatus.DRAFT, anotherEmployee);
+
+                var result = refundRequestService.findMyBookingOptions(requester.getId());
+
+                assertThat(result).singleElement().satisfies(option -> {
+                    assertThat(option.id()).isEqualTo(available.getId());
+                    assertThat(option.clientName()).isEqualTo(available.getClient().getName());
+                    assertThat(option.tourName()).isEqualTo(available.getTour().getName());
+                    assertThat(option.schedule()).isEqualTo(available.getCustomSchedule());
+                    assertThat(option.status()).isEqualTo(BookingStatus.CONFIRMED);
+                });
+            }
+
+            @Test
+            @DisplayName("should omit a booking with a pending refund request")
+            void shouldOmitBookingWithPendingRequest() {
+                User requester = saveUser(UserRole.EMPLOYEE);
+                Booking booking = saveBooking(BookingStatus.CONFIRMED, requester);
+                saveRefundRequest(booking, requester, RefundStatus.PENDING, "Pedido", null, null);
+
+                assertThat(refundRequestService.findMyBookingOptions(requester.getId())).isEmpty();
+            }
+        }
+
+        @Nested
         @DisplayName("create")
         class CreateTests {
 
@@ -422,6 +457,23 @@ class RefundRequestTest extends AbstractIntegrationTest {
                 ))
                         .isInstanceOf(ResourceNotFoundException.class)
                         .hasMessage("Booking not found with ID: " + NON_EXISTENT_ID);
+            }
+
+            @Test
+            @DisplayName("should reject a refund for another employee's booking")
+            void shouldRejectAnotherEmployeesBooking() {
+                User requester = saveUser(UserRole.EMPLOYEE);
+                User owner = saveUser(UserRole.EMPLOYEE);
+                Booking booking = saveBooking(BookingStatus.CONFIRMED, owner);
+
+                assertThatThrownBy(() -> refundRequestService.create(
+                        requester.getId(),
+                        new CreateRefundRequestDTO(booking.getId(), "Motivo")
+                ))
+                        .isInstanceOf(BadRequestException.class)
+                        .hasMessage("You can only request refunds for your own bookings");
+                assertThat(refundRequestRepository.count()).isZero();
+                assertThat(booking.getCurrentStatus()).isEqualTo(BookingStatus.CONFIRMED);
             }
 
             @ParameterizedTest(name = "should reject booking in {0}")

@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  DestroyRef,
   effect,
   ElementRef,
   input,
@@ -32,6 +33,7 @@ Chart.register(...registerables);
 export class WeeklyRevenueChart {
   private readonly canvas = viewChild<ElementRef<HTMLCanvasElement>>('chartCanvas');
   private chart: Chart<'line', number[], string> | undefined;
+  private readonly destroyRef = inject(DestroyRef);
   private readonly locale = inject(LOCALE_ID);
   private readonly currency = new Intl.NumberFormat(this.locale, {
     style: 'currency',
@@ -109,24 +111,22 @@ export class WeeklyRevenueChart {
   );
 
   constructor() {
-    effect((onCleanup) => {
+    effect(() => {
       const context = this.canvas()?.nativeElement.getContext('2d');
       const data = this.chartData();
 
       if (!context) return;
 
-      this.chart?.destroy();
-      this.chart = new Chart(context, {
-        type: 'line',
-        data,
-        options: this.chartOptions,
-      });
+      if (this.chart) {
+        this.chart.data = data;
+        this.chart.update();
+        return;
+      }
 
-      onCleanup(() => {
-        this.chart?.destroy();
-        this.chart = undefined;
-      });
+      this.chart = new Chart(context, { type: 'line', data, options: this.chartOptions });
     });
+
+    this.destroyRef.onDestroy(() => this.chart?.destroy());
   }
 
   private formatDay(day: string): string {

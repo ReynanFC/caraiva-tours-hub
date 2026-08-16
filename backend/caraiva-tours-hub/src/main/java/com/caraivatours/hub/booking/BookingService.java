@@ -6,6 +6,7 @@ import com.caraivatours.hub.booking.dto.response.BookingDetailDTO;
 import com.caraivatours.hub.booking.dto.response.BookingSummaryDTO;
 import com.caraivatours.hub.booking.enums.BookingStatus;
 import com.caraivatours.hub.booking.event.BookingStatusChangedEvent;
+import com.caraivatours.hub.auth.entity.enums.UserRole;
 import com.caraivatours.hub.dashboard.event.DashboardChangedEvent;
 import com.caraivatours.hub.dashboard.event.enums.DashboardChangeReason;
 import com.caraivatours.hub.client.Client;
@@ -16,6 +17,7 @@ import com.caraivatours.hub.groupmember.dto.GroupMemberDTO;
 import com.caraivatours.hub.payment.PaymentService;
 import com.caraivatours.hub.pickuplocation.PickupLocation;
 import com.caraivatours.hub.pickuplocation.PickupLocationService;
+import com.caraivatours.hub.pickuplocation.dto.PickupDTO;
 import com.caraivatours.hub.shared.dto.PagedResult;
 import com.caraivatours.hub.shared.exceptions.BadRequestException;
 import com.caraivatours.hub.shared.exceptions.ResourceNotFoundException;
@@ -28,6 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -158,7 +161,7 @@ public class BookingService {
         Booking entity = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new ResourceNotFoundException("Booking not found with ID: " + bookingId));
 
-        changeStatus(entity, BookingStatus.CONFIRMED, attendantId, "Booking confirmed");
+        changeStatus(entity, BookingStatus.COMPLETED, attendantId, "Tour completed");
 
         return bookingMapper.toSummary(entity);
     }
@@ -169,21 +172,24 @@ public class BookingService {
      * Updates mutable booking data only while its current status permits modification.
      * Tour, participant and discount changes recalculate both the financial snapshot and the 20% deposit.
      */
-    public BookingSummaryDTO updateBooking(Long bookingId, UpdateBookingRequest request) {
-        log.info("Starting update process for Booking ID: {}", bookingId);
+    public BookingSummaryDTO updateBooking(Long bookingId, Long requesterId, UpdateBookingRequest request) {
+        log.info("Starting update process for Booking ID: {} by user ID: {}", bookingId, requesterId);
         log.debug("Update request payload for Booking ID {}: {}", bookingId, request);
 
         Booking entity = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new ResourceNotFoundException("Booking not found with ID: " + bookingId));
 
+        validateUpdateAccess(entity, requesterId);
         entity.validateBookingStateForModification();
         clientService.updateClientData(entity.getClient(), request.clientName(), request.clientPhone());
 
         boolean tourChanged = applyTourChangeIfPresent(entity, request.tourId());
         applyScheduleChangeIfPresent(entity, request.scheduleDate());
         boolean membersChanged = applyMembersChangeIfPresent(entity, request.members());
+        boolean pickupFeeChanged = applyPickupChangeIfPresent(entity, request.pickup());
+        applyPaymentReceiptIfPresent(entity, requesterId, request.pixPaymentUrl());
 
-        boolean shouldRecalculate = tourChanged || membersChanged || request.manualDiscount() != null;
+        boolean shouldRecalculate = tourChanged || membersChanged || pickupFeeChanged || request.manualDiscount() != null;
         if (shouldRecalculate) {
             log.info("Financial recalculation triggered for Booking ID: {} (Tour Changed: {}, Members Changed: {}, Discount Updated: {})",
                     bookingId, tourChanged, membersChanged, request.manualDiscount() != null);
@@ -195,6 +201,21 @@ public class BookingService {
                 entity.getId(), DashboardChangeReason.BOOKING_UPDATED
         ));
         return bookingMapper.toSummary(entity);
+    }
+
+    private void validateUpdateAccess(Booking booking, Long requesterId) {
+        if (booking.getAttendant().getId().equals(requesterId)) {
+            return;
+        }
+
+        User requester = userService.findById(requesterId);
+        boolean isAdmin = requester.getPermission().stream()
+                .anyMatch(permission -> permission.getRole() == UserRole.ADMIN);
+
+        if (!isAdmin) {
+            log.warn("Booking update denied: user ID {} does not own booking ID {}", requesterId, booking.getId());
+            throw new AccessDeniedException("You do not have permission to update this booking");
+        }
     }
 
     private boolean applyTourChangeIfPresent(Booking booking, Long newTourId) {
@@ -232,6 +253,44 @@ public class BookingService {
         Set<GroupMember> members = groupMemberService.createForBooking(booking, newMembers);
         booking.replaceGroupMembers(members);
         return true;
+    }
+
+    private boolean applyPickupChangeIfPresent(Booking booking, PickupDTO pickup) {
+        if (pickup == null) {
+            return false;
+        }
+
+        PickupLocation current = booking.getPickupLocation();
+        BigDecimal previousFee = current.getAppliedPickupFee();
+        current.setCep(pickup.cep());
+        current.setLocationName(pickup.locationName());
+        current.setReferencePoint(pickup.referencePoint());
+        current.setAppliedPickupFee(
+                pickup.appliedPickupFee() != null ? pickup.appliedPickupFee() : BigDecimal.ZERO
+        );
+        return previousFee.compareTo(current.getAppliedPickupFee()) != 0;
+    }
+
+    private void applyPaymentReceiptIfPresent(Booking booking, Long requesterId, String receiptUrl) {
+        if (!StringUtils.hasText(receiptUrl)) {
+            return;
+        }
+
+        String normalizedReceiptUrl = receiptUrl.trim();
+        if (booking.getPayment() == null) {
+            paymentService.createReservationPayment(booking, normalizedReceiptUrl);
+        } else {
+            booking.getPayment().setReceiptUrl(normalizedReceiptUrl);
+        }
+
+        if (booking.getCurrentStatus() == BookingStatus.DRAFT) {
+            changeStatus(
+                    booking,
+                    BookingStatus.CONFIRMED,
+                    requesterId,
+                    "Payment receipt added"
+            );
+        }
     }
 
     private void recalculateFinancialsAndPayments(Booking booking, BigDecimal newManualDiscount) {

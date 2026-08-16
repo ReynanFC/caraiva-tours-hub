@@ -79,3 +79,21 @@ export interface DashboardMetric {
 }
 
 export type DashboardMetricTone = 'primary' | 'success' | 'warning' | 'info' | 'neutral';
+
+export type DashboardView = 'USER' | 'FINANCE';
+
+export type DashboardChangeReason =
+  | 'BOOKING_CREATED'
+  | 'BOOKING_UPDATED'
+  | 'BOOKING_STATUS_CHANGED';
+
+export interface DashboardChangedEvent {
+  bookingId: number;
+  reason: DashboardChangeReason;
+  view: DashboardView;
+  occurredAt: string;
+}
+
+export type DashboardStreamEvent =
+  | { type: 'dashboard-changed'; data: DashboardChangedEvent }
+  | { type: 'reconnected' };

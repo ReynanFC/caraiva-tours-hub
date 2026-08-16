@@ -3,17 +3,21 @@ package com.caraivatours.hub.refundrequest.controller.docs;
 import com.caraivatours.hub.auth.dto.AuthenticatedUser;
 import com.caraivatours.hub.refundrequest.dto.request.CreateRefundRequestDTO;
 import com.caraivatours.hub.refundrequest.dto.request.ResolveRefundRequestDTO;
+import com.caraivatours.hub.refundrequest.dto.response.RefundBookingOptionDTO;
 import com.caraivatours.hub.refundrequest.dto.response.RefundRequestResponseDTO;
 import com.caraivatours.hub.shared.dto.PagedResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 @Tag(name = "Refund requests", description = "Endpoints for requesting and resolving booking refunds")
 public interface RefundRequestControllerDocs {
@@ -40,6 +44,19 @@ public interface RefundRequestControllerDocs {
     ResponseEntity<PagedResult<RefundRequestResponseDTO>> findMine(
             @Parameter(hidden = true) AuthenticatedUser authenticatedUser,
             @ParameterObject Pageable pageable
+    );
+
+    @Operation(
+            summary = "List my bookings available for refund",
+            description = "Returns the authenticated user's bookings that do not have a cancellation in progress and can be selected when creating a refund request.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Booking options retrieved",
+                            content = @Content(array = @ArraySchema(schema = @Schema(implementation = RefundBookingOptionDTO.class)))),
+                    @ApiResponse(responseCode = "401", description = "Unauthenticated", content = @Content)
+            }
+    )
+    ResponseEntity<List<RefundBookingOptionDTO>> findMyBookingOptions(
+            @Parameter(hidden = true) AuthenticatedUser authenticatedUser
     );
 
     @Operation(

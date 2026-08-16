@@ -1,4 +1,4 @@
-import { Component, computed, debounced, inject, resource, signal } from '@angular/core';
+import { Component, computed, debounced, inject, resource, signal, viewChild } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { PIcon } from '@primeicons/angular/p-icon';
 import { ButtonModule } from 'primeng/button';
@@ -105,6 +105,7 @@ export class ToursList {
   private readonly categoryService = inject(CategoryService);
   private readonly sessionStore = inject(SessionStore);
   private readonly notifications = inject(ActionNotificationService);
+  private readonly imageUpload = viewChild.required(ImageUpload);
 
   protected readonly isAdmin = this.sessionStore.isAdmin;
   protected readonly search = signal('');
@@ -215,9 +216,14 @@ export class ToursList {
     this.saving.set(true);
     this.notifications.clear();
     try {
+      const imageUrl = await this.imageUpload().uploadPendingFile();
+      this.tourForm.controls.imageUrl.setValue(imageUrl ?? '');
+      const requestWithImage = tourFormToRequest(this.tourForm.getRawValue());
+      if (!requestWithImage) return;
+
       const tour = this.editingTour();
-      if (tour) await firstValueFrom(this.toursService.updateTour(tour.id, request));
-      else await firstValueFrom(this.toursService.createTour(request));
+      if (tour) await firstValueFrom(this.toursService.updateTour(tour.id, requestWithImage));
+      else await firstValueFrom(this.toursService.createTour(requestWithImage));
       this.editorOpen.set(false);
       this.notifications.success(
         tour ? `Passeio “${tour.name}” atualizado com sucesso.` : 'Passeio criado com sucesso.',

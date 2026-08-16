@@ -1,4 +1,4 @@
-import { Component, effect, inject, input } from '@angular/core';
+import { Component, effect, inject, input, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { PIcon } from '@primeicons/angular/p-icon';
 import { ButtonModule } from 'primeng/button';
@@ -24,6 +24,7 @@ import { TourSummary } from '../../models/tour.model';
 })
 export class BookingEditDialog {
   private readonly dialogRef = inject(DynamicDialogRef);
+  private readonly pixUpload = viewChild.required(ImageUpload);
 
   readonly booking = input.required<BookingSummary>();
   readonly details = input.required<BookingDetails>();
@@ -38,6 +39,12 @@ export class BookingEditDialog {
   protected manualDiscount: number | null = null;
   protected pixUrl: string | null = null;
   protected pixUploading = false;
+  protected pickup = {
+    cep: null as string | null,
+    locationName: '',
+    referencePoint: '',
+    appliedPickupFee: null as number | null,
+  };
 
   constructor() {
     effect(() => {
@@ -46,6 +53,7 @@ export class BookingEditDialog {
       this.tourId = this.tours().find((tour) => tour.name === booking.tourName)?.id ?? null;
       this.scheduleDate = booking.date.slice(0, 16);
       this.members = this.details().members.map((member) => ({ ...member }));
+      this.pickup = { ...this.details().pickup };
     });
   }
 
@@ -75,12 +83,22 @@ export class BookingEditDialog {
       this.members.every((member) => {
         const name = member.name.trim();
         return name.length > 0 && name.length <= 100;
-      })
+      }) &&
+      this.pickup.locationName.trim().length > 0 &&
+      this.pickup.locationName.length <= 150 &&
+      this.pickup.referencePoint.length <= 255 &&
+      (this.pickup.appliedPickupFee === null || this.pickup.appliedPickupFee >= 0)
     );
   }
 
-  protected save(): void {
+  protected async save(): Promise<void> {
     if (!this.canSave()) return;
+
+    try {
+      this.pixUrl = await this.pixUpload().uploadPendingFile();
+    } catch {
+      return;
+    }
 
     const request: UpdateBookingRequest = {
       clientName: this.clientName.trim() || null,
@@ -89,10 +107,16 @@ export class BookingEditDialog {
       scheduleDate: this.scheduleDate || null,
       members: this.members.map((member) => ({ ...member, name: member.name.trim() })),
       manualDiscount: this.manualDiscount,
-      pixUrl: this.pixUrl,
+      pixPaymentUrl: this.pixUrl,
+      pickup: {
+        cep: this.pickup.cep?.trim() || null,
+        locationName: this.pickup.locationName.trim(),
+        referencePoint: this.pickup.referencePoint.trim(),
+        appliedPickupFee: this.pickup.appliedPickupFee,
+      },
     };
 
-    this.onSave()(request);
+    await this.onSave()(request);
     this.dialogRef.close();
   }
 }

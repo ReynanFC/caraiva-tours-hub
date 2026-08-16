@@ -3,6 +3,8 @@ package com.caraivatours.hub.booking;
 import com.caraivatours.hub.booking.dto.response.BookingSummaryDTO;
 import com.caraivatours.hub.booking.enums.BookingStatus;
 import com.caraivatours.hub.dashboard.projection.*;
+import com.caraivatours.hub.refundrequest.dto.response.RefundBookingOptionDTO;
+import com.caraivatours.hub.refundrequest.enums.RefundStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -24,6 +26,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     @Query("""
     SELECT new com.caraivatours.hub.booking.dto.response.BookingSummaryDTO(
         b.id,
+        b.attendant.id,
         b.client.name,
         b.tour.name,
         b.customSchedule,
@@ -42,6 +45,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     @Query("""
     SELECT new com.caraivatours.hub.booking.dto.response.BookingSummaryDTO(
         b.id,
+        b.attendant.id,
         b.client.name,
         b.tour.name,
         b.customSchedule,
@@ -67,6 +71,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     @Query("""
     SELECT new com.caraivatours.hub.booking.dto.response.BookingSummaryDTO(
         b.id,
+        b.attendant.id,
         b.client.name,
         b.tour.name,
         b.customSchedule,
@@ -159,4 +164,23 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     long countByAttendantIdAndCreatedAtGreaterThanEqualAndCreatedAtLessThan(Long attendantId, LocalDateTime start, LocalDateTime end);
 
     List<Booking> findTop5ByAttendantIdOrderByCreatedAtDesc(Long attendantId);
+
+    @Query("""
+            SELECT new com.caraivatours.hub.refundrequest.dto.response.RefundBookingOptionDTO(
+                b.id, b.client.name, b.tour.name, b.customSchedule, b.currentStatus
+            )
+            FROM Booking b
+            WHERE b.attendant.id = :attendantId
+              AND b.currentStatus NOT IN :blockedStatuses
+              AND NOT EXISTS (
+                  SELECT rr.id FROM RefundRequest rr
+                  WHERE rr.booking = b AND rr.refundStatus = :pendingStatus
+              )
+            ORDER BY b.createdAt DESC
+            """)
+    List<RefundBookingOptionDTO> findRefundOptionsByAttendantId(
+            @Param("attendantId") Long attendantId,
+            @Param("blockedStatuses") List<BookingStatus> blockedStatuses,
+            @Param("pendingStatus") RefundStatus pendingStatus
+    );
 }

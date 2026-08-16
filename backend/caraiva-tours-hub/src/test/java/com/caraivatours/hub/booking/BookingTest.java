@@ -3,6 +3,7 @@ package com.caraivatours.hub.booking;
 import com.caraivatours.hub.AbstractIntegrationTest;
 import com.caraivatours.hub.auth.PermissionRepository;
 import com.caraivatours.hub.auth.entity.Permission;
+import com.caraivatours.hub.auth.entity.enums.UserRole;
 import com.caraivatours.hub.booking.dto.request.CreateBookingRequest;
 import com.caraivatours.hub.booking.dto.request.UpdateBookingRequest;
 import com.caraivatours.hub.booking.dto.response.BookingDetailDTO;
@@ -44,6 +45,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
@@ -495,6 +497,8 @@ class BookingTest extends AbstractIntegrationTest {
                 assertThat(result.summary().totalPrice()).isEqualByComparingTo("530.00");
                 assertThat(result.commissionEarned()).isEqualByComparingTo("50.00");
                 assertThat(result.members()).extracting(GroupMemberDTO::name).containsExactly("Pedro");
+                assertThat(result.pickup().locationName())
+                        .isEqualTo(booking.getPickupLocation().getLocationName());
             }
 
             @Test
@@ -661,25 +665,25 @@ class BookingTest extends AbstractIntegrationTest {
         class ConfirmBookingTests {
 
             @Test
-            @DisplayName("should change a draft to confirmed and register the transition")
-            void shouldConfirmDraftAndRegisterHistory() {
-                Booking booking = saveBooking(BookingStatus.DRAFT, SCHEDULE, "Passeio Corumbau");
+            @DisplayName("should change a confirmed booking to completed and register the transition")
+            void shouldCompleteConfirmedBookingAndRegisterHistory() {
+                Booking booking = saveBooking(BookingStatus.CONFIRMED, SCHEDULE, "Passeio Corumbau");
 
                 BookingSummaryDTO result =
                         bookingService.confirmBooking(booking.getId(), booking.getAttendant().getId());
                 bookingRepository.flush();
 
-                assertThat(result.status()).isEqualTo(BookingStatus.CONFIRMED);
+                assertThat(result.status()).isEqualTo(BookingStatus.COMPLETED);
                 assertThat(bookingRepository.findById(booking.getId()))
                         .get()
                         .extracting(Booking::getCurrentStatus)
-                        .isEqualTo(BookingStatus.CONFIRMED);
+                        .isEqualTo(BookingStatus.COMPLETED);
                 assertThat(statusHistoryRepository.findAll())
                         .singleElement()
                         .satisfies(history -> {
-                            assertThat(history.getPreviousStatus()).isEqualTo(BookingStatus.DRAFT);
-                            assertThat(history.getNewStatus()).isEqualTo(BookingStatus.CONFIRMED);
-                            assertThat(history.getChangeReason()).isEqualTo("Booking confirmed");
+                            assertThat(history.getPreviousStatus()).isEqualTo(BookingStatus.CONFIRMED);
+                            assertThat(history.getNewStatus()).isEqualTo(BookingStatus.COMPLETED);
+                            assertThat(history.getChangeReason()).isEqualTo("Tour completed");
                             assertThat(history.getUser().getId()).isEqualTo(booking.getAttendant().getId());
                         });
             }
@@ -712,6 +716,38 @@ class BookingTest extends AbstractIntegrationTest {
         class UpdateBookingTests {
 
             @Test
+            @DisplayName("should allow an administrator to update another user's booking")
+            void shouldAllowAdminToUpdateAnotherUsersBooking() {
+                Booking booking = saveBooking(BookingStatus.DRAFT, SCHEDULE, "Passeio Corumbau");
+                User admin = saveUser("admin@example.com", UserRole.ADMIN);
+
+                BookingSummaryDTO result = bookingService.updateBooking(
+                        booking.getId(),
+                        admin.getId(),
+                        updateRequest("Nome atualizado", null, null, null, null, null)
+                );
+
+                assertThat(result.clientName()).isEqualTo("Nome atualizado");
+            }
+
+            @Test
+            @DisplayName("should deny an employee updating another user's booking")
+            void shouldDenyEmployeeUpdatingAnotherUsersBooking() {
+                Booking booking = saveBooking(BookingStatus.DRAFT, SCHEDULE, "Passeio Corumbau");
+                User anotherEmployee = saveUser("other.employee@example.com");
+
+                assertThatThrownBy(() -> bookingService.updateBooking(
+                        booking.getId(),
+                        anotherEmployee.getId(),
+                        updateRequest("Nome não autorizado", null, null, null, null, null)
+                ))
+                        .isInstanceOf(AccessDeniedException.class)
+                        .hasMessage("You do not have permission to update this booking");
+
+                assertThat(booking.getClient().getName()).isEqualTo("João dos Santos");
+            }
+
+            @Test
             @DisplayName("should update client and schedule without recalculating financials")
             void shouldUpdateClientAndScheduleWithoutRecalculation() {
                 Booking booking = saveBooking(BookingStatus.DRAFT, SCHEDULE, "Passeio Corumbau");
@@ -719,6 +755,7 @@ class BookingTest extends AbstractIntegrationTest {
 
                 BookingSummaryDTO result = bookingService.updateBooking(
                         booking.getId(),
+                        booking.getAttendant().getId(),
                         updateRequest("Nome atualizado", "+55 73 96666-3003", null, newSchedule, null, null)
                 );
 
@@ -742,6 +779,7 @@ class BookingTest extends AbstractIntegrationTest {
 
                 bookingService.updateBooking(
                         booking.getId(),
+                        booking.getAttendant().getId(),
                         updateRequest(null, null, booking.getTour().getId(), null, null, null)
                 );
 
@@ -757,6 +795,7 @@ class BookingTest extends AbstractIntegrationTest {
 
                 BookingSummaryDTO result = bookingService.updateBooking(
                         booking.getId(),
+                        booking.getAttendant().getId(),
                         updateRequest(null, currentPhone, null, null, null, null)
                 );
 
@@ -779,6 +818,7 @@ class BookingTest extends AbstractIntegrationTest {
 
                 BookingSummaryDTO result = bookingService.updateBooking(
                         booking.getId(),
+                        booking.getAttendant().getId(),
                         updateRequest(null, null, newTour.getId(), null, null, null)
                 );
                 bookingRepository.flush();
@@ -806,6 +846,7 @@ class BookingTest extends AbstractIntegrationTest {
 
                 BookingSummaryDTO result = bookingService.updateBooking(
                         booking.getId(),
+                        booking.getAttendant().getId(),
                         updateRequest(
                                 null,
                                 null,
@@ -838,6 +879,7 @@ class BookingTest extends AbstractIntegrationTest {
 
                 BookingSummaryDTO result = bookingService.updateBooking(
                         booking.getId(),
+                        booking.getAttendant().getId(),
                         updateRequest(null, null, null, null, Set.of(), null)
                 );
                 bookingRepository.flush();
@@ -855,6 +897,7 @@ class BookingTest extends AbstractIntegrationTest {
 
                 BookingSummaryDTO result = bookingService.updateBooking(
                         booking.getId(),
+                        booking.getAttendant().getId(),
                         updateRequest(null, null, null, null, null, new BigDecimal("100.00"))
                 );
                 bookingRepository.flush();
@@ -871,12 +914,77 @@ class BookingTest extends AbstractIntegrationTest {
 
                 bookingService.updateBooking(
                         booking.getId(),
+                        booking.getAttendant().getId(),
                         updateRequest(null, null, null, null, null, new BigDecimal("25.00"))
                 );
 
                 assertThat(booking.getFinancialData().manualDiscount()).isEqualByComparingTo("25.00");
                 assertThat(booking.getPayment()).isNull();
                 assertThat(paymentRepository.count()).isZero();
+            }
+
+            @Test
+            @DisplayName("should update pickup data and recalculate the payment when its fee changes")
+            void shouldUpdatePickupAndRecalculatePayment() {
+                Booking booking = saveBooking(BookingStatus.CONFIRMED, SCHEDULE, "Passeio Corumbau");
+                attachPayment(booking, new BigDecimal("106.00"));
+                PickupDTO pickup = new PickupDTO(
+                        "45810-000",
+                        "Pousada Caraíva",
+                        "Em frente ao mercado",
+                        new BigDecimal("40.00")
+                );
+
+                bookingService.updateBooking(
+                        booking.getId(),
+                        booking.getAttendant().getId(),
+                        new UpdateBookingRequest(null, null, null, null, null, null, null, pickup)
+                );
+                bookingRepository.flush();
+
+                assertThat(booking.getPickupLocation()).satisfies(updated -> {
+                    assertThat(updated.getCep()).isEqualTo("45810-000");
+                    assertThat(updated.getLocationName()).isEqualTo("Pousada Caraíva");
+                    assertThat(updated.getReferencePoint()).isEqualTo("Em frente ao mercado");
+                    assertThat(updated.getAppliedPickupFee()).isEqualByComparingTo("40.00");
+                });
+                assertThat(booking.getPayment().getExpectedAmount()).isEqualByComparingTo("58.00");
+            }
+
+            @Test
+            @DisplayName("should create the payment and confirm a draft when a receipt is added")
+            void shouldCreatePaymentAndConfirmDraftWhenReceiptIsAdded() {
+                Booking booking = saveBooking(BookingStatus.DRAFT, SCHEDULE, "Passeio Corumbau");
+
+                BookingSummaryDTO result = bookingService.updateBooking(
+                        booking.getId(),
+                        booking.getAttendant().getId(),
+                        new UpdateBookingRequest(
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                "https://example.com/new-receipt",
+                                null
+                        )
+                );
+                bookingRepository.flush();
+
+                assertThat(result.status()).isEqualTo(BookingStatus.CONFIRMED);
+                assertThat(booking.getPayment()).isNotNull();
+                assertThat(booking.getPayment().getReceiptUrl())
+                        .isEqualTo("https://example.com/new-receipt");
+                assertThat(booking.getPayment().getExpectedAmount())
+                        .isEqualByComparingTo(booking.calculateRequiredDeposit());
+                assertThat(statusHistoryRepository.findAll())
+                        .singleElement()
+                        .satisfies(history -> {
+                            assertThat(history.getPreviousStatus()).isEqualTo(BookingStatus.DRAFT);
+                            assertThat(history.getNewStatus()).isEqualTo(BookingStatus.CONFIRMED);
+                            assertThat(history.getChangeReason()).isEqualTo("Payment receipt added");
+                        });
             }
 
             @Test
@@ -888,6 +996,7 @@ class BookingTest extends AbstractIntegrationTest {
 
                 assertThatThrownBy(() -> bookingService.updateBooking(
                         booking.getId(),
+                        booking.getAttendant().getId(),
                         updateRequest(null, "+55 73 95555-4004", null, null, null, null)
                 ))
                         .isInstanceOf(BadRequestException.class)
@@ -906,6 +1015,7 @@ class BookingTest extends AbstractIntegrationTest {
 
                 assertThatThrownBy(() -> bookingService.updateBooking(
                         booking.getId(),
+                        booking.getAttendant().getId(),
                         updateRequest("Novo nome", null, null, null, null, null)
                 ))
                         .isInstanceOf(BadRequestException.class)
@@ -921,6 +1031,7 @@ class BookingTest extends AbstractIntegrationTest {
 
                 BookingSummaryDTO result = bookingService.updateBooking(
                         booking.getId(),
+                        booking.getAttendant().getId(),
                         updateRequest("Nome atualizado", null, null, null, null, null)
                 );
 
@@ -932,6 +1043,7 @@ class BookingTest extends AbstractIntegrationTest {
             @DisplayName("should throw ResourceNotFoundException when updating a missing booking")
             void shouldThrowWhenUpdatingMissingBooking() {
                 assertThatThrownBy(() -> bookingService.updateBooking(
+                        NON_EXISTENT_ID,
                         NON_EXISTENT_ID,
                         updateRequest("Novo nome", null, null, null, null, null)
                 ))
@@ -946,6 +1058,7 @@ class BookingTest extends AbstractIntegrationTest {
 
                 assertThatThrownBy(() -> bookingService.updateBooking(
                         booking.getId(),
+                        booking.getAttendant().getId(),
                         updateRequest(null, null, NON_EXISTENT_ID, null, null, null)
                 ))
                         .isInstanceOf(ResourceNotFoundException.class)
@@ -1000,7 +1113,11 @@ class BookingTest extends AbstractIntegrationTest {
     }
 
     private User saveUser(String email) {
-        Permission permission = permissionRepository.save(aPermission().build());
+        return saveUser(email, UserRole.EMPLOYEE);
+    }
+
+    private User saveUser(String email, UserRole role) {
+        Permission permission = permissionRepository.save(aPermission().withRole(role).build());
         User user = aUser()
                 .withEmail(email)
                 .withPermission(permission)
@@ -1099,7 +1216,9 @@ class BookingTest extends AbstractIntegrationTest {
                 tourId,
                 schedule,
                 members,
-                discount
+                discount,
+                null,
+                null
         );
     }
 

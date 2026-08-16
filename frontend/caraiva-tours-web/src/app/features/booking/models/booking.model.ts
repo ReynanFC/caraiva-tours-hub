@@ -35,6 +35,7 @@ export interface BookingDetails {
   members: BookingMember[];
   commissionEarned: number;
   history: BookingStatusHistory[];
+  pickup: BookingPickup;
 }
 
 export interface UpdateBookingRequest {
@@ -44,7 +45,15 @@ export interface UpdateBookingRequest {
   scheduleDate: string | null;
   members: BookingMember[] | null;
   manualDiscount: number | null;
-  pixUrl: string | null;
+  pixPaymentUrl: string | null;
+  pickup: BookingPickup;
+}
+
+export interface BookingPickup {
+  cep: string | null;
+  locationName: string;
+  referencePoint: string;
+  appliedPickupFee: number | null;
 }
 
 export interface CancelBookingRequest {

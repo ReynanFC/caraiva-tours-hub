@@ -5,6 +5,7 @@ import com.caraivatours.hub.refundrequest.RefundRequestService;
 import com.caraivatours.hub.refundrequest.controller.docs.RefundRequestControllerDocs;
 import com.caraivatours.hub.refundrequest.dto.request.CreateRefundRequestDTO;
 import com.caraivatours.hub.refundrequest.dto.request.ResolveRefundRequestDTO;
+import com.caraivatours.hub.refundrequest.dto.response.RefundBookingOptionDTO;
 import com.caraivatours.hub.refundrequest.dto.response.RefundRequestResponseDTO;
 import com.caraivatours.hub.shared.dto.PagedResult;
 import com.caraivatours.hub.shared.validation.IsAdmin;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/refund-requests")
@@ -46,6 +48,12 @@ RefundRequestController implements RefundRequestControllerDocs {
             @AuthenticationPrincipal AuthenticatedUser authenticatedUser,
             @PageableDefault(size = 10, sort = "requestedAt", direction = Sort.Direction.DESC) Pageable pageable) {
         return ResponseEntity.ok(refundRequestService.findMine(authenticatedUser.id(), pageable));
+    }
+
+    @GetMapping("/booking-options")
+    public ResponseEntity<List<RefundBookingOptionDTO>> findMyBookingOptions(
+            @AuthenticationPrincipal AuthenticatedUser authenticatedUser) {
+        return ResponseEntity.ok(refundRequestService.findMyBookingOptions(authenticatedUser.id()));
     }
 
     @PostMapping

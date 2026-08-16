@@ -1,4 +1,4 @@
-import { Component, computed, debounced, inject, resource, signal } from '@angular/core';
+import { Component, debounced, inject, resource, signal } from '@angular/core';
 import { PIcon } from '@primeicons/angular/p-icon';
 import { ButtonModule } from 'primeng/button';
 import { DialogService } from 'primeng/dynamicdialog';
@@ -43,11 +43,7 @@ export class BookingList {
 
   protected readonly isAdmin = this.sessionStore.isAdmin;
 
-  protected readonly currentUserId = computed(() =>
-    this.sessionStore.profileResource.hasValue()
-      ? (this.sessionStore.profileResource.value()?.id ?? null)
-      : null,
-  );
+  protected readonly currentUserId = this.sessionStore.userId;
 
   protected readonly bookingsResource = resource({
     params: () => ({
@@ -114,13 +110,18 @@ export class BookingList {
   }
 
   protected async openEditDialog(booking: BookingSummary): Promise<void> {
+    if (!this.canEditBooking(booking)) {
+      this.notifications.error('Você só pode editar as reservas pelas quais é responsável.');
+      return;
+    }
+
     this.clearActionFeedback();
     this.actionLoadingId.set(booking.id);
 
     try {
       const [details, toursResult] = await Promise.all([
         firstValueFrom(this.bookingService.getBookingsDetails(booking.id)),
-        firstValueFrom(this.bookingService.searchTours(booking.tourName)),
+        firstValueFrom(this.bookingService.getAvailableTours()),
       ]);
 
       this.dialogService.open(BookingEditDialog, {
@@ -219,12 +220,29 @@ export class BookingList {
     booking: BookingSummary,
     payload: UpdateBookingRequest,
   ): Promise<void> {
+    if (!this.canEditBooking(booking)) {
+      this.notifications.error('Você não possui permissão para editar esta reserva.');
+      return;
+    }
+
     this.actionLoadingId.set(booking.id);
 
     try {
-      await firstValueFrom(this.bookingService.updateBooking(booking.id, payload));
+      const updatedBooking = await firstValueFrom(
+        this.bookingService.updateBooking(booking.id, payload),
+      );
+
+      this.bookingsResource.update((result) =>
+        result
+          ? {
+              ...result,
+              content: result.content.map((currentBooking) =>
+                currentBooking.id === updatedBooking.id ? updatedBooking : currentBooking,
+              ),
+            }
+          : result,
+      );
       this.notifications.success(`Reserva #${booking.id} atualizada com sucesso.`);
-      this.bookingsResource.reload();
     } catch (error: unknown) {
       this.notifications.error(
         await getApiErrorMessage(error, 'Não foi possível salvar as alterações da reserva.'),
@@ -236,5 +254,12 @@ export class BookingList {
 
   private clearActionFeedback(): void {
     this.notifications.clear();
+  }
+
+  private canEditBooking(booking: BookingSummary): boolean {
+    return (
+      (booking.status === 'DRAFT' || booking.status === 'CONFIRMED') &&
+      (this.isAdmin() || booking.attendantId === this.currentUserId())
+    );
   }
 }

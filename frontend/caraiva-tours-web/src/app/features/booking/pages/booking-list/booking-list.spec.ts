@@ -1,10 +1,12 @@
 import { HttpErrorResponse } from '@angular/common/http';
+import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 
 import { BookingService } from '../../services/booking';
 import { BookingList } from './booking-list';
 import { ActionNotificationService } from '../../../../shared/components/action-notification/action-notification.service';
+import { SessionStore } from '../../../../core/auth/session/session-store';
 
 describe('BookingList', () => {
   let fixture: ComponentFixture<BookingList>;
@@ -13,6 +15,7 @@ describe('BookingList', () => {
     getBookingsDetails: vi.fn(),
     confirmBooking: vi.fn(),
     cancelBooking: vi.fn(),
+    updateBooking: vi.fn(),
   };
 
   beforeEach(async () => {
@@ -39,7 +42,13 @@ describe('BookingList', () => {
 
     await TestBed.configureTestingModule({
       imports: [BookingList],
-      providers: [{ provide: BookingService, useValue: bookingServiceMock }],
+      providers: [
+        { provide: BookingService, useValue: bookingServiceMock },
+        {
+          provide: SessionStore,
+          useValue: { isAdmin: signal(true), userId: signal(7) },
+        },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(BookingList);
@@ -131,5 +140,25 @@ describe('BookingList', () => {
         closable: false,
       }),
     );
+  });
+
+  it('should immediately replace the edited booking with the PATCH response', async () => {
+    const booking = (fixture.componentInstance as any).bookingsResource.value().content[0];
+    const updatedBooking = {
+      ...booking,
+      clientName: 'Ana Souza',
+      tourName: 'Espelho',
+      groupSize: 4,
+      totalPrice: 600,
+    };
+    bookingServiceMock.updateBooking.mockReturnValue(of(updatedBooking));
+
+    await (fixture.componentInstance as any).updateBooking(booking, {});
+    fixture.detectChanges();
+
+    const tableText = (fixture.nativeElement as HTMLElement).querySelector('tbody')?.textContent;
+    expect(tableText).toContain('Ana Souza');
+    expect(tableText).toContain('Espelho');
+    expect(tableText).not.toContain('Ana Silva');
   });
 });

@@ -51,6 +51,33 @@
     }
   </section>
 
+  <section class="detail-section">
+    <div class="detail-section-heading">
+      <div>
+        <span class="section-eyebrow">Embarque</span>
+        <h2>Local de busca</h2>
+      </div>
+      <svg pIcon="map-marker" aria-hidden="true"></svg>
+    </div>
+    <div class="details-summary pickup-summary">
+      <div>
+        <span>Local</span><strong>{{ details().pickup.locationName }}</strong>
+      </div>
+      @if (details().pickup.cep) {
+        <div><span>CEP</span><strong>{{ details().pickup.cep }}</strong></div>
+      }
+      @if (details().pickup.referencePoint) {
+        <div>
+          <span>Referência</span><strong>{{ details().pickup.referencePoint }}</strong>
+        </div>
+      }
+      <div>
+        <span>Taxa</span>
+        <strong>{{ details().pickup.appliedPickupFee ?? 0 | currency: 'BRL' : 'symbol' : '1.2-2' }}</strong>
+      </div>
+    </div>
+  </section>
+
   <div class="commission-card">
     <div>
       <span>Comissão gerada</span

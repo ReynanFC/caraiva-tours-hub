@@ -1,6 +1,7 @@
 import { Component, forwardRef, inject, input, OnDestroy, output, signal } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
+import { firstValueFrom } from 'rxjs';
 
 import { FileSizePipe } from '../../pipes/file-size.pipe';
 import { Imgbb } from '../../services/imgbb';
@@ -85,33 +86,44 @@ export class ImageUpload implements ControlValueAccessor, OnDestroy {
       return;
     }
 
-    const uploadSequence = ++this.uploadSequence;
+    this.uploadSequence++;
     this.setFile(file);
     this.updateValue(null);
+    this.uploadError.set(null);
+  }
+
+  async uploadPendingFile(): Promise<string | null> {
+    const file = this.file();
+    const existingUrl = this.uploadedUrl();
+    if (!file || existingUrl) {
+      return existingUrl;
+    }
+
+    const uploadSequence = ++this.uploadSequence;
     this.setUploading(true);
     this.uploadError.set(null);
 
-    this.imgbb.uploadImage(file).subscribe({
-      next: (response) => {
-        if (uploadSequence !== this.uploadSequence) {
-          return;
-        }
+    try {
+      const response = await firstValueFrom(this.imgbb.uploadImage(file));
+      if (uploadSequence !== this.uploadSequence) {
+        return this.uploadedUrl();
+      }
 
-        const imageUrl = response.success ? response.data?.url : null;
-        if (!imageUrl) {
-          this.finishWithError('Não foi possível obter o link do comprovante.');
-          return;
-        }
+      const imageUrl = response.success ? response.data?.url : null;
+      if (!imageUrl) {
+        this.finishWithError('Não foi possível obter o link da imagem.');
+        throw new Error('Image upload did not return a URL.');
+      }
 
-        this.updateValue(imageUrl);
-        this.setUploading(false);
-      },
-      error: () => {
-        if (uploadSequence === this.uploadSequence) {
-          this.finishWithError('Falha ao enviar a imagem. Tente novamente.');
-        }
-      },
-    });
+      this.updateValue(imageUrl);
+      this.setUploading(false);
+      return imageUrl;
+    } catch (error: unknown) {
+      if (uploadSequence === this.uploadSequence && !this.uploadError()) {
+        this.finishWithError('Falha ao enviar a imagem. Tente novamente.');
+      }
+      throw error;
+    }
   }
 
   protected removeFile(input: HTMLInputElement): void {

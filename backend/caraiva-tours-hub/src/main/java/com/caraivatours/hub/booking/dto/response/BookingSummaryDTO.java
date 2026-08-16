@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 
 public record BookingSummaryDTO(
         Long id,
+        Long attendantId,
         String clientName,
         String tourName,
         LocalDateTime date,
