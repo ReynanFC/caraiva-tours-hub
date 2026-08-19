@@ -9,7 +9,7 @@ import jakarta.validation.constraints.Size;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Set;
+import java.util.List;
 
 public record UpdateBookingRequest(
         @Size(max = 100, message = "Client name must not exceed 100 characters.")
@@ -23,7 +23,7 @@ public record UpdateBookingRequest(
         @Future(message = "Schedule date must be in the future.")
         LocalDateTime scheduleDate,
 
-        Set<@Valid GroupMemberDTO> members,
+        List<@Valid GroupMemberDTO> members,
 
         @DecimalMin(value = "0.00", message = "Manual discount cannot be negative.")
         BigDecimal manualDiscount,

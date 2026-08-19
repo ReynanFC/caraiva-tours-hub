@@ -19,6 +19,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+
+/**
+ * Maintains tours and their category membership.
+ *
+ * <p>Tour names are unique. Category transitions update both sides of the relationship, and
+ * availability is toggled instead of deleting historical booking data. Catalog writes evict tour
+ * and category caches because both projections expose the relationship.</p>
+ */
 @Service
 @Transactional(readOnly = true)
 @Slf4j
@@ -35,14 +44,14 @@ public class TourService {
     }
 
     @Cacheable(value = "tours",
-            key = "#search + '-' + #pageable.pageNumber + '-' + #pageable.pageSize + '-' + #pageable.sort",
-            condition = "#search == null || #search.isEmpty()"
+            key = "#search + '-' + #categoryId + '-' + #pageable.pageNumber + '-' + #pageable.pageSize + '-' + #pageable.sort",
+            condition = "(#search == null || #search.isEmpty()) && #categoryId == null"
     )
-    public PagedResult<TourResponseDTO> findAll(String search, Pageable pageable) {
+    public PagedResult<TourResponseDTO> findAll(String search, Long categoryId, Pageable pageable) {
         log.info("Fetching paginated tours list");
         log.debug("Pagination details: {}", pageable);
 
-        Page<Tour> tours = tourRepository.findAll(search, pageable);
+        Page<Tour> tours = tourRepository.findAll(search, categoryId, pageable);
 
         log.debug("Database returned {} tours for the current page", tours.getNumberOfElements());
 
@@ -59,6 +68,8 @@ public class TourService {
             log.debug("Creation blocked: Tour with name '{}' already exists", createTourDTO.name());
             throw new BadRequestException("Tour already exists");
         }
+
+        validatePromoPrice(createTourDTO.basePricePerPerson(), createTourDTO.promoPricePerPerson());
 
         log.debug("Verifying category existence with ID: {}", createTourDTO.categoryTourId());
         CategoryTour category = categoryTourService.findEntityById(createTourDTO.categoryTourId());
@@ -98,6 +109,12 @@ public class TourService {
         log.info("Tour with ID: {} updated successfully", entity.getId());
 
         return mapper.toResponseDTO(entity);
+    }
+
+    private void validatePromoPrice(BigDecimal basePrice, BigDecimal promoPrice) {
+        if (basePrice.compareTo(promoPrice) < 0 || basePrice.compareTo(promoPrice) == 0) {
+            throw new BadRequestException("The promotional price is higher than the base price");
+        }
     }
 
     private boolean hasCategoryChanged(Tour entity, UpdateTourDTO dto) {

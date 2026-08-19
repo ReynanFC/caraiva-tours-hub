@@ -32,6 +32,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.security.SecureRandom;
 import java.util.Base64;
 
+/**
+ * Manages employee/admin accounts and supplies users to Spring Security.
+ *
+ * <p>New accounts never receive a known default password: an inaccessible random credential is
+ * persisted and the user gets a short-lived password-setup link. E-mail is unique, roles come
+ * from persisted permissions and profile/list caches are invalidated by mutations.</p>
+ */
 @Service
 @Transactional
 @Slf4j

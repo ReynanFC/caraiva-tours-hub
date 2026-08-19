@@ -22,23 +22,29 @@ public interface TourRepository extends JpaRepository<Tour, Long> {
     @Query(value = """
         SELECT t.*
         FROM tour t
-        WHERE :search = ''
+        WHERE (:search = ''
            OR to_tsvector(
                 'portuguese',
                 COALESCE(t.name, '')
-              ) @@ websearch_to_tsquery('portuguese', :search)
+              ) @@ websearch_to_tsquery('portuguese', :search))
+          AND (:categoryId IS NULL OR t.category_id = :categoryId)
         """,
         countQuery = """
         SELECT COUNT(*)
         FROM tour t
-        WHERE :search = ''
+        WHERE (:search = ''
            OR to_tsvector(
                 'portuguese',
                 COALESCE(t.name, '')
-              ) @@ websearch_to_tsquery('portuguese', :search)
+              ) @@ websearch_to_tsquery('portuguese', :search))
+          AND (:categoryId IS NULL OR t.category_id = :categoryId)
         """,
         nativeQuery = true)
-    Page<Tour> findAll(@Param("search") String search, Pageable pageable);
+    Page<Tour> findAll(
+            @Param("search") String search,
+            @Param("categoryId") Long categoryId,
+            Pageable pageable
+    );
 
     @Query("""
         SELECT new com.caraivatours.hub.tour.dto.response.TourResponseDTO(

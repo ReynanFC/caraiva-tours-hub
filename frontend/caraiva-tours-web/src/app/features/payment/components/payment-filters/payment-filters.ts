@@ -26,8 +26,6 @@ export class PaymentFilters {
   ];
 
   protected placeholder(): string {
-    return this.view() === 'PAYMENTS'
-      ? 'Buscar por cliente ou nº do pagamento'
-      : 'Buscar por cliente, telefone ou nº da reserva';
+    return 'Buscar por telefone ou número do pagamento';
   }
 }

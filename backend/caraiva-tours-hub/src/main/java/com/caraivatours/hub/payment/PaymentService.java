@@ -11,6 +11,7 @@ import com.caraivatours.hub.payment.mapper.ReservationPaymentMapper;
 import com.caraivatours.hub.payment.projection.PaymentOverviewProjection;
 import com.caraivatours.hub.shared.dto.PagedResult;
 import com.caraivatours.hub.shared.exceptions.ResourceNotFoundException;
+import com.caraivatours.hub.shared.utils.PhoneFormatter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
@@ -22,6 +23,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 
+/**
+ * Provides financial payment queries and maintains the reservation deposit.
+ *
+ * <p>A payment represents the expected 20% deposit and exists only after a receipt is supplied.
+ * Whenever booking totals change, the amount is derived again from the aggregate so discounts
+ * and pickup fees remain reflected in the expected deposit.</p>
+ */
 @Transactional(readOnly = true)
 @Slf4j
 @RequiredArgsConstructor
@@ -41,18 +49,23 @@ public class PaymentService {
 
     public PagedResult<ReservationPaymentDTO> searchReservations(BookingStatus status, String search, Pageable pageable) {
         String normalizedSearch = search == null ? "" : search.trim();
-        log.info("Searching payment reservations with status={}, search={}", status, normalizedSearch);
-        return PagedResult.from(paymentRepository.findReservationsForPayment(status, normalizedSearch, pageable)
+        Long paymentId = normalizedSearch.matches("\\d{1,7}") ? Long.valueOf(normalizedSearch) : null;
+        String phoneClient = paymentId == null ? PhoneFormatter.format(normalizedSearch) : "";
+        log.info("Searching payment reservations with status={}, paymentId={}, phoneClient={}",
+                status, paymentId, phoneClient);
+        return PagedResult.from(paymentRepository.findReservationsForPayment(
+                        status, paymentId, phoneClient, pageable)
                 .map(reservationPaymentMapper::toReservationPayment));
     }
 
-    @Cacheable(value = "payment-pages", key = "'search:' + #idPayment + ':' + #nameClient + ':' + #pageable.pageNumber + ':' + #pageable.pageSize + ':' + #pageable.sort")
-    public PagedResult<PaymentSummaryDTO> findAllByNameClientOrId(Long idPayment, String nameClient, Pageable pageable) {
-        log.debug("Searching payments by idPayment={}, nameClient={}, page={}", idPayment, nameClient, pageable);
+    @Cacheable(value = "payment-pages", key = "'search:' + #idPayment + ':' + #phoneClient + ':' + #pageable.pageNumber + ':' + #pageable.pageSize + ':' + #pageable.sort")
+    public PagedResult<PaymentSummaryDTO> findAllByPhoneClientOrId(Long idPayment, String phoneClient, Pageable pageable) {
+        String normalizedPhone = PhoneFormatter.format(phoneClient);
+        log.debug("Searching payments by idPayment={}, phoneClient={}, page={}", idPayment, normalizedPhone, pageable);
 
-        Page<Payment> payments = paymentRepository.findAllByFilters(idPayment, nameClient, pageable);
-        log.info("Found {} payments matching filters (idPayment={}, nameClient={})",
-                payments.getTotalElements(), idPayment, nameClient);
+        Page<Payment> payments = paymentRepository.findAllByFilters(idPayment, normalizedPhone, pageable);
+        log.info("Found {} payments matching filters (idPayment={}, phoneClient={})",
+                payments.getTotalElements(), idPayment, normalizedPhone);
 
         return PagedResult.from(payments.map(paymentMapper::toSummary));
     }

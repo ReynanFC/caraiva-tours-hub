@@ -17,6 +17,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
 
+/**
+ * Coordinates credential authentication and token renewal.
+ *
+ * <p>The service deliberately delegates password verification to Spring Security and token
+ * lifecycle rules to {@link JwtTokenProvider}. A user without an explicit permission receives
+ * the least-privileged employee role.</p>
+ */
 @Service
 @AllArgsConstructor
 public class AuthService {

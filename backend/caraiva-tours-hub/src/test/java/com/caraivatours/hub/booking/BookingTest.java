@@ -52,14 +52,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Set;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.caraivatours.hub.support.fixtures.BookingTestDataBuilder.aBooking;
 import static com.caraivatours.hub.support.fixtures.CategoryTourTestDataBuilder.aCategoryTour;
 import static com.caraivatours.hub.support.fixtures.ClientTestDataBuilder.aClient;
-import static com.caraivatours.hub.support.fixtures.PermissionTestDataBuilder.aPermission;
 import static com.caraivatours.hub.support.fixtures.PickupLocationTestDataBuilder.aPickupLocation;
 import static com.caraivatours.hub.support.fixtures.TourTestDataBuilder.aTour;
 import static com.caraivatours.hub.support.fixtures.UserTestDataBuilder.aUser;
@@ -238,6 +237,36 @@ class BookingTest extends AbstractIntegrationTest {
             }
 
             @Test
+            @DisplayName("should project the final price with discount and pickup fee")
+            void shouldProjectFinalPrice() {
+                Booking booking = saveBooking(BookingStatus.CONFIRMED, SCHEDULE, "Passeio com ajustes");
+                booking.setFinancialData(new FinancialSnapshot(
+                        new BigDecimal("250.00"),
+                        new BigDecimal("500.00"),
+                        new BigDecimal("50.00"),
+                        new BigDecimal("25.00")
+                ));
+                booking.getPickupLocation().setAppliedPickupFee(new BigDecimal("30.00"));
+                bookingRepository.flush();
+
+                BookingSummaryDTO fromAll = bookingRepository.findAll("", PageRequest.of(0, 10))
+                        .getContent().getFirst();
+                BookingSummaryDTO fromSearchAndStatus = bookingRepository.findAllByStatus(
+                        "",
+                        BookingStatus.CONFIRMED,
+                        PageRequest.of(0, 10)
+                ).getContent().getFirst();
+                BookingSummaryDTO fromStatus = bookingRepository.findByCurrentStatus(
+                        BookingStatus.CONFIRMED,
+                        PageRequest.of(0, 10)
+                ).getContent().getFirst();
+
+                assertThat(fromAll.totalPrice()).isEqualByComparingTo("505.00");
+                assertThat(fromSearchAndStatus.totalPrice()).isEqualByComparingTo("505.00");
+                assertThat(fromStatus.totalPrice()).isEqualByComparingTo("505.00");
+            }
+
+            @Test
             @DisplayName("should combine client search and status filters")
             void shouldCombineSearchAndStatusFilters() {
                 Booking matching = saveBooking(
@@ -338,8 +367,11 @@ class BookingTest extends AbstractIntegrationTest {
             @Test
             @DisplayName("should include the organizer in the participant count")
             void shouldIncludeOrganizerInParticipantCount() {
-                assertThat(Booking.calculateTotalParticipants(0)).isEqualTo(1);
-                assertThat(Booking.calculateTotalParticipants(4)).isEqualTo(5);
+                assertThat(Booking.calculateTotalParticipants(List.of())).isEqualTo(1);
+                assertThat(Booking.calculateTotalParticipants(List.of(
+                        new GroupMember("Adulto", false),
+                        new GroupMember("Criança de colo", true)
+                ))).isEqualTo(2);
             }
 
             @Test
@@ -347,7 +379,10 @@ class BookingTest extends AbstractIntegrationTest {
             void shouldCalculatePercentageCommission() {
                 Booking booking = aBooking().build();
 
-                booking.updateFinancials(new BigDecimal("250.00"), 3, new BigDecimal("25.00"));
+                booking.updateFinancials(new BigDecimal("250.00"), List.of(
+                        new GroupMember("Adulto 1", false),
+                        new GroupMember("Adulto 2", false)
+                ), new BigDecimal("25.00"));
 
                 assertThat(booking.getFinancialData().unitPrice()).isEqualByComparingTo("250.00");
                 assertThat(booking.getFinancialData().totalPrice()).isEqualByComparingTo("750.00");
@@ -362,7 +397,10 @@ class BookingTest extends AbstractIntegrationTest {
                 booking.getTour().setCommissionType(CommissionType.FIXED);
                 booking.getTour().setCommissionValue(new BigDecimal("35.00"));
 
-                booking.updateFinancials(new BigDecimal("250.00"), 3, BigDecimal.ZERO);
+                booking.updateFinancials(new BigDecimal("250.00"), List.of(
+                        new GroupMember("Adulto 1", false),
+                        new GroupMember("Adulto 2", false)
+                ), BigDecimal.ZERO);
 
                 assertThat(booking.getFinancialData().commissionValue()).isEqualByComparingTo("105.00");
             }
@@ -522,7 +560,7 @@ class BookingTest extends AbstractIntegrationTest {
 
                 BookingSummaryDTO result = bookingService.createBooking(
                         attendant.getId(),
-                        createRequest(tour.getId(), Set.of(), new BigDecimal("20.00"), null)
+                        createRequest(tour.getId(), List.of(), new BigDecimal("20.00"), null)
                 );
                 bookingRepository.flush();
 
@@ -548,7 +586,7 @@ class BookingTest extends AbstractIntegrationTest {
 
                 BookingSummaryDTO result = bookingService.createBooking(
                         attendant.getId(),
-                        createRequest(tour.getId(), Set.of(), BigDecimal.ZERO, "   ")
+                        createRequest(tour.getId(), List.of(), BigDecimal.ZERO, "   ")
                 );
                 bookingRepository.flush();
 
@@ -566,7 +604,7 @@ class BookingTest extends AbstractIntegrationTest {
                         attendant.getId(),
                         createRequest(
                                 tour.getId(),
-                                Set.of(new GroupMemberDTO("Pedro", false)),
+                                List.of(new GroupMemberDTO("Pedro", false)),
                                 new BigDecimal("50.00"),
                                 "https://example.com/pix/receipt"
                         )
@@ -601,7 +639,7 @@ class BookingTest extends AbstractIntegrationTest {
 
                 BookingSummaryDTO result = bookingService.createBooking(
                         attendant.getId(),
-                        createRequest(tour.getId(), Set.of(), BigDecimal.ZERO, null)
+                        createRequest(tour.getId(), List.of(), BigDecimal.ZERO, null)
                 );
 
                 assertThat(clientRepository.count()).isEqualTo(1);
@@ -617,7 +655,7 @@ class BookingTest extends AbstractIntegrationTest {
 
                 BookingSummaryDTO result = bookingService.createBooking(
                         attendant.getId(),
-                        createRequest(tour.getId(), Set.of(), BigDecimal.ZERO, null)
+                        createRequest(tour.getId(), List.of(), BigDecimal.ZERO, null)
                 );
 
                 assertThat(result.totalPrice()).isEqualByComparingTo("260.00");
@@ -632,7 +670,7 @@ class BookingTest extends AbstractIntegrationTest {
 
                 assertThatThrownBy(() -> bookingService.createBooking(
                         NON_EXISTENT_ID,
-                        createRequest(tour.getId(), Set.of(), BigDecimal.ZERO, null)
+                        createRequest(tour.getId(), List.of(), BigDecimal.ZERO, null)
                 ))
                         .isInstanceOf(ResourceNotFoundException.class)
                         .hasMessage("User not found with ID: " + NON_EXISTENT_ID);
@@ -649,7 +687,7 @@ class BookingTest extends AbstractIntegrationTest {
 
                 assertThatThrownBy(() -> bookingService.createBooking(
                         attendant.getId(),
-                        createRequest(NON_EXISTENT_ID, Set.of(), BigDecimal.ZERO, null)
+                        createRequest(NON_EXISTENT_ID, List.of(), BigDecimal.ZERO, null)
                 ))
                         .isInstanceOf(ResourceNotFoundException.class)
                         .hasMessage("Tour not found with ID: " + NON_EXISTENT_ID);
@@ -852,7 +890,7 @@ class BookingTest extends AbstractIntegrationTest {
                                 null,
                                 null,
                                 null,
-                                Set.of(new GroupMemberDTO("Membro novo", true)),
+                                List.of(new GroupMemberDTO("Membro novo", true)),
                                 null
                         )
                 );
@@ -860,9 +898,9 @@ class BookingTest extends AbstractIntegrationTest {
 
                 assertThat(result.groupSize()).isEqualTo(2);
                 assertThat(booking.getGroupMembers()).extracting(GroupMember::getName).containsExactly("Membro novo");
-                assertThat(booking.getFinancialData().totalPrice()).isEqualByComparingTo("500.00");
+                assertThat(booking.getFinancialData().totalPrice()).isEqualByComparingTo("250.00");
                 assertThat(booking.getFinancialData().manualDiscount()).isEqualByComparingTo("20.00");
-                assertThat(booking.getPayment().getExpectedAmount()).isEqualByComparingTo("102.00");
+                assertThat(booking.getPayment().getExpectedAmount()).isEqualByComparingTo("52.00");
             }
 
             @Test
@@ -880,7 +918,7 @@ class BookingTest extends AbstractIntegrationTest {
                 BookingSummaryDTO result = bookingService.updateBooking(
                         booking.getId(),
                         booking.getAttendant().getId(),
-                        updateRequest(null, null, null, null, Set.of(), null)
+                        updateRequest(null, null, null, null, List.of(), null)
                 );
                 bookingRepository.flush();
 
@@ -1117,7 +1155,8 @@ class BookingTest extends AbstractIntegrationTest {
     }
 
     private User saveUser(String email, UserRole role) {
-        Permission permission = permissionRepository.save(aPermission().withRole(role).build());
+        Permission permission = permissionRepository.findByRole(role)
+                .orElseThrow(() -> new AssertionError("Seeded permission not found: " + role));
         User user = aUser()
                 .withEmail(email)
                 .withPermission(permission)
@@ -1174,7 +1213,7 @@ class BookingTest extends AbstractIntegrationTest {
 
     private CreateBookingRequest createRequest(
             Long tourId,
-            Set<GroupMemberDTO> members,
+            List<GroupMemberDTO> members,
             BigDecimal discount,
             String pixUrl
     ) {
@@ -1207,7 +1246,7 @@ class BookingTest extends AbstractIntegrationTest {
             String clientPhone,
             Long tourId,
             LocalDateTime schedule,
-            Set<GroupMemberDTO> members,
+            List<GroupMemberDTO> members,
             BigDecimal discount
     ) {
         return new UpdateBookingRequest(

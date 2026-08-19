@@ -17,6 +17,13 @@ import java.time.*;
 import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 
+/**
+ * Builds read-only operational and financial dashboard snapshots from repository projections.
+ *
+ * <p>Missing aggregate values are normalized to zero, demand percentages use the selected
+ * period, and weekly series are padded to seven days. Snapshots are intentionally queried from
+ * PostgreSQL; SSE only tells clients when to fetch them again.</p>
+ */
 @Service
 @Slf4j
 @RequiredArgsConstructor

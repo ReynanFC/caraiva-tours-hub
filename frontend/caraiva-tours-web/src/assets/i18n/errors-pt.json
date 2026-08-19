@@ -73,5 +73,6 @@
   "must be a well-formed email address": "Informe um endereço de e-mail válido.",
   "Booking ID is required": "A reserva é obrigatória.",
   "Refund reason is required": "O motivo do reembolso é obrigatório.",
-  "Refund reason must have at most 255 characters": "O motivo do reembolso deve ter no máximo 255 caracteres."
+  "Refund reason must have at most 255 characters": "O motivo do reembolso deve ter no máximo 255 caracteres.",
+  "The promotional price is higher than the base price": "O preço promocional é maior ou igual ao preço base."
 }

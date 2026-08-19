@@ -37,20 +37,32 @@ describe('PaymentService', () => {
       (candidate) =>
         candidate.url === '/api/payments' &&
         candidate.params.get('idPayment') === '42' &&
-        !candidate.params.has('nameClient') &&
+        !candidate.params.has('phoneClient') &&
         candidate.params.get('page') === '1',
     );
     expect(request.request.method).toBe('GET');
     request.flush({ content: [], page: 1, size: 10, totalElements: 0, totalPages: 0 });
   });
 
-  it('searches payments by client name', () => {
-    service.getRows('PAYMENTS', ' Maria ', 0, 10).subscribe();
+  it('searches payments by client phone', () => {
+    service.getRows('PAYMENTS', ' (73) 99999-9999 ', 0, 10).subscribe();
 
     const request = http.expectOne(
       (candidate) =>
         candidate.url === '/api/payments' &&
-        candidate.params.get('nameClient') === 'Maria' &&
+        candidate.params.get('phoneClient') === '(73) 99999-9999' &&
+        !candidate.params.has('idPayment'),
+    );
+    request.flush({ content: [], page: 0, size: 10, totalElements: 0, totalPages: 0 });
+  });
+
+  it('recognizes an unformatted phone instead of treating it as a payment id', () => {
+    service.getRows('PAYMENTS', '73999999999', 0, 10).subscribe();
+
+    const request = http.expectOne(
+      (candidate) =>
+        candidate.url === '/api/payments' &&
+        candidate.params.get('phoneClient') === '73999999999' &&
         !candidate.params.has('idPayment'),
     );
     request.flush({ content: [], page: 0, size: 10, totalElements: 0, totalPages: 0 });

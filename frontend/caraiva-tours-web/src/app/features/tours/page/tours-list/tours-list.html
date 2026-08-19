@@ -118,6 +118,15 @@
             [min]="0"
             formControlName="promoPricePerPerson"
           />
+          @if (
+            tourForm.hasError('promotionalPriceGreaterThanBase') &&
+            (tourForm.controls.promoPricePerPerson.touched ||
+              tourForm.controls.basePricePerPerson.touched)
+          ) {
+            <small class="field-error"
+              >O preço promocional não pode ser maior que o preço base.</small
+            >
+          }
         </div>
         <div class="form-field">
           <label for="tour-commission-type">Tipo de comissão</label>

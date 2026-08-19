@@ -25,6 +25,7 @@ export interface PaymentSummary {
 
 export interface PaymentReservation {
   bookingId: number;
+  paymentId: number | null;
   clientName: string;
   tourName: string;
   scheduledAt: string;
@@ -56,7 +57,7 @@ export interface PaymentDetail {
 }
 
 export function isPaymentSummary(row: PaymentRow): row is PaymentSummary {
-  return 'paymentId' in row;
+  return !('bookingId' in row);
 }
 
 export const PAYMENT_STATUS_LABELS: Record<PaymentBookingStatus, string> = {

@@ -70,6 +70,7 @@
           [totalPages]="rowsResource.value()?.totalPages ?? 0"
           [totalElements]="rowsResource.value()?.totalElements ?? 0"
           (detailRequested)="openDetails($event)"
+          (reservationDetailRequested)="openReservationDetails($event)"
           (previousPage)="previousPage()"
           (nextPage)="nextPage()"
         />

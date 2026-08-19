@@ -12,7 +12,8 @@ import java.util.Set;
  *
  * <p>Each refresh token is stored as {@code refresh:{jti}} with a TTL.
  * A secondary set {@code user_tokens:{userId}} tracks all active JTIs per user,
- * enabling full session revocation on reuse detection.
+ * enabling full session revocation on reuse detection. The set's TTL is renewed whenever a
+ * token is saved so the index is removed after the user's most recently issued refresh expires.
  */
 @Service
 @RequiredArgsConstructor
@@ -24,15 +25,20 @@ public class RefreshTokenStore {
     private final StringRedisTemplate redisTemplate;
 
     /**
-     * Stores a refresh token JTI in Redis with TTL and registers it under the user's active token set.
+     * Stores a refresh token JTI in Redis and registers it under the user's active token set,
+     * applying the refresh TTL to both keys.
      *
      * @param jti    unique JWT ID of the refresh token
      * @param userId owner of the token
      * @param ttl    time-to-live matching the refresh token expiration
      */
     public void save(String jti, Long userId, Duration ttl) {
+
+        String userTokensKey = USER_TOKENS + userId;
+
         redisTemplate.opsForValue().set(REFRESH_TOKEN + jti, userId.toString(), ttl);
-        redisTemplate.opsForSet().add(USER_TOKENS + userId, jti);
+        redisTemplate.opsForSet().add(userTokensKey, jti);
+        redisTemplate.expire(userTokensKey, ttl);
     }
 
     /**

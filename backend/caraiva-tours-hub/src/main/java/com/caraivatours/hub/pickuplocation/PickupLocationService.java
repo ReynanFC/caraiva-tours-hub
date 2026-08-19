@@ -6,6 +6,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Creates the pickup snapshot attached to a booking.
+ *
+ * <p>The applied fee belongs to the reservation rather than to a global address catalog, which
+ * preserves the amount negotiated at sale time.</p>
+ */
 @Service
 @Slf4j
 @RequiredArgsConstructor

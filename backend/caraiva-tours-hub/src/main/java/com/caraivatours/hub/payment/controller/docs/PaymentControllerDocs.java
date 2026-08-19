@@ -22,12 +22,12 @@ public interface PaymentControllerDocs {
     @Operation(summary = "Get payment overview", description = "Administrator-only totals for received 20% deposits, deposits awaiting proof, and the remaining 80% due after proof approval.")
     ResponseEntity<PaymentOverviewDTO> overview();
 
-    @Operation(summary = "Search payment reservations", description = "Administrator-only reservation search by client name, phone or booking number. Filter by DRAFT for receipts awaiting proof or CANCELLED for rejected reservations.")
+    @Operation(summary = "Search payment reservations", description = "Administrator-only reservation search by client phone or payment number. Filter by DRAFT for receipts awaiting proof or CANCELLED for rejected reservations.")
     ResponseEntity<PagedResult<ReservationPaymentDTO>> searchReservations(BookingStatus status, String search, @ParameterObject Pageable pageable);
 
     @Operation(
             summary = "List payments",
-            description = "Returns a paginated payment list. Results can be filtered by payment ID and/or client name.",
+            description = "Returns a paginated payment list. Results can be filtered by payment ID and/or client phone.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Payments found",
                             content = @Content(schema = @Schema(implementation = PaymentSummaryDTO.class))),
@@ -37,7 +37,7 @@ public interface PaymentControllerDocs {
     )
     ResponseEntity<PagedResult<PaymentSummaryDTO>> findAllByFilters(
             @Parameter(description = "Optional payment identifier") Long idPayment,
-            @Parameter(description = "Optional fragment of the client's name") String nameClient,
+            @Parameter(description = "Optional client phone number") String phoneClient,
             @ParameterObject Pageable pageable
     );
 

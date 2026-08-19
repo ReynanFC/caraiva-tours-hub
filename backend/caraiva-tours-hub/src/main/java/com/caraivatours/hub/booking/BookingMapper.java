@@ -10,8 +10,7 @@ import com.caraivatours.hub.pickuplocation.PickupLocation;
 import com.caraivatours.hub.pickuplocation.dto.PickupDTO;
 import org.mapstruct.*;
 
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.List;
 
 @Mapper(
         componentModel = MappingConstants.ComponentModel.SPRING,
@@ -45,19 +44,19 @@ public interface BookingMapper {
     }
 
     @Named("mapGroupMembers")
-    default Set<GroupMemberDTO> mapGroupMembers(Set<GroupMember> groupMembers) {
+    default List<GroupMemberDTO> mapGroupMembers(List<GroupMember> groupMembers) {
         if (groupMembers == null) {
-            return Set.of();
+            return List.of();
         }
         return groupMembers.stream()
                 .map(m -> new GroupMemberDTO(m.getName(), m.isLapChild()))
-                .collect(Collectors.toSet());
+                .toList();
     }
 
     @Named("mapStatusHistory")
-    default Set<StatusHistoryDTO> mapStatusHistory(Set<StatusHistory> statusHistory) {
+    default List<StatusHistoryDTO> mapStatusHistory(List<StatusHistory> statusHistory) {
         if (statusHistory == null) {
-            return Set.of();
+            return List.of();
         }
         return statusHistory.stream()
                 .map(h -> new StatusHistoryDTO(
@@ -67,11 +66,11 @@ public interface BookingMapper {
                     h.getChangedAt(),
                     h.getUser().getUsername()
                 ))
-                .collect(Collectors.toSet());
+                .toList();
     }
 
     @Named("toGroupSize")
-    default int toGroupSize(Set<GroupMember> members) {
-        return Booking.calculateTotalParticipants(members.size());
+    default int toGroupSize(List<GroupMember> members) {
+        return members.size() + 1;
     }
 }

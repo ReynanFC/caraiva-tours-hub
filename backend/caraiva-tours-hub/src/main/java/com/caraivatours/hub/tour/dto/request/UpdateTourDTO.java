@@ -22,7 +22,7 @@ public record UpdateTourDTO(
         BigDecimal promoPricePerPerson,
 
         @ValueOfEnum(enumClass = CommissionType.class)
-        CommissionType commissionType,
+        String commissionType,
 
         @NotNull(message = "Commission value is required")
         @PositiveOrZero(message = "Commission value must be zero or a positive value")

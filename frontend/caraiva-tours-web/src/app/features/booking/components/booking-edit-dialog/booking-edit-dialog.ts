@@ -8,6 +8,7 @@ import { SelectModule } from 'primeng/select';
 
 import { ImageUpload } from '../../../../shared/components/image-upload/image-upload';
 import { Input } from '../../../../shared/components/input/input';
+import { formatBrazilianPhone } from '../../../../shared/utils/phone.utils';
 import {
   BookingDetails,
   BookingMember,
@@ -102,7 +103,9 @@ export class BookingEditDialog {
 
     const request: UpdateBookingRequest = {
       clientName: this.clientName.trim() || null,
-      clientPhone: this.clientPhone.trim() || null,
+      clientPhone: this.clientPhone.trim()
+        ? formatBrazilianPhone(this.clientPhone)
+        : null,
       tourId: this.tourId,
       scheduleDate: this.scheduleDate || null,
       members: this.members.map((member) => ({ ...member, name: member.name.trim() })),

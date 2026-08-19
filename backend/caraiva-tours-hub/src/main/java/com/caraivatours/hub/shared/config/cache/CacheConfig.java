@@ -12,6 +12,11 @@ import tools.jackson.databind.ObjectMapper;
 import java.time.Duration;
 import java.util.Map;
 
+/**
+ * Configures Redis-backed Spring caches with JSON values and bounded lifetimes.
+ * Nulls are excluded to allow later database results to become visible, while volatile booking
+ * and category-option views receive shorter TTLs than the ten-minute default.
+ */
 @Configuration
 @EnableCaching
 public class CacheConfig {

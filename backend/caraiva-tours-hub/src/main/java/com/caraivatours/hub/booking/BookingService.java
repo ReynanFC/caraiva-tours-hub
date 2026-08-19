@@ -1,6 +1,7 @@
 package com.caraivatours.hub.booking;
 
 import com.caraivatours.hub.booking.dto.request.CreateBookingRequest;
+import com.caraivatours.hub.booking.dto.request.CancelBookingRequest;
 import com.caraivatours.hub.booking.dto.request.UpdateBookingRequest;
 import com.caraivatours.hub.booking.dto.response.BookingDetailDTO;
 import com.caraivatours.hub.booking.dto.response.BookingSummaryDTO;
@@ -37,11 +38,20 @@ import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Set;
+import java.util.List;
 
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 
+/**
+ * Application service for the booking aggregate.
+ *
+ * <p>It coordinates attendant, client, tour, pickup, group members and payment in one
+ * transaction. A booking stores a financial snapshot instead of depending on future catalog
+ * prices. Relevant edits recalculate that snapshot and the expected 20% deposit together.
+ * Status changes are published as events so history and dashboard notification remain decoupled
+ * from the write flow.</p>
+ */
 @Slf4j
 @Transactional(readOnly = true)
 @Service
@@ -129,11 +139,11 @@ public class BookingService {
                 .currentStatus(status)
                 .build();
 
-        Set<GroupMember> members = groupMemberService.createForBooking(entity, req.members());
+        List<GroupMember> members = groupMemberService.createForBooking(entity, req.members());
         members.forEach(entity::addGroupMember);
 
-        int totalParticipants = Booking.calculateTotalParticipants(req.members().size());
-        entity.updateFinancials(tour.getEffectivePrice(), totalParticipants, req.manualDiscount());
+        entity.updateFinancials(tour.getEffectivePrice(), members, req.manualDiscount());
+        int totalParticipants = Booking.calculateTotalParticipants(members);
         log.debug("Booking financials updated. Total participants: {}, Manual discount: {}", totalParticipants, req.manualDiscount());
 
         Booking savedBooking = bookingRepository.save(entity);
@@ -162,6 +172,19 @@ public class BookingService {
                 .orElseThrow(() -> new ResourceNotFoundException("Booking not found with ID: " + bookingId));
 
         changeStatus(entity, BookingStatus.COMPLETED, attendantId, "Tour completed");
+
+        return bookingMapper.toSummary(entity);
+    }
+
+    @Transactional
+    @CacheEvict(value = {"bookings", "booking-details"}, allEntries = true)
+    public BookingSummaryDTO cancelBooking(Long bookingId, Long adminId, CancelBookingRequest request) {
+        Booking entity = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new ResourceNotFoundException("Booking not found with ID: " + bookingId));
+
+        entity.validateBookingStateForCancellation();
+        userService.findById(adminId);
+        changeStatus(entity, BookingStatus.CANCELLED, adminId, request.reason().trim());
 
         return bookingMapper.toSummary(entity);
     }
@@ -244,13 +267,13 @@ public class BookingService {
         }
     }
 
-    private boolean applyMembersChangeIfPresent(Booking booking, Set<GroupMemberDTO> newMembers) {
+    private boolean applyMembersChangeIfPresent(Booking booking, List<GroupMemberDTO> newMembers) {
         if (newMembers == null) {
             return false;
         }
 
         log.info("Updating group members for Booking ID: {}. New member count: {}", booking.getId(), newMembers.size());
-        Set<GroupMember> members = groupMemberService.createForBooking(booking, newMembers);
+        List<GroupMember> members = groupMemberService.createForBooking(booking, newMembers);
         booking.replaceGroupMembers(members);
         return true;
     }
@@ -298,11 +321,12 @@ public class BookingService {
                 ? newManualDiscount
                 : booking.getFinancialData().manualDiscount();
 
-        int totalParticipants = Booking.calculateTotalParticipants(booking.getGroupMembers().size());
+        List<GroupMember> members = booking.getGroupMembers();
+        int totalParticipants = Booking.calculateTotalParticipants(members);
 
         booking.updateFinancials(
                 booking.getTour().getEffectivePrice(),
-                totalParticipants,
+                members,
                 discount
         );
         log.debug("Financials recalculated for Booking ID: {}. Effective Price: {}, Total Participants: {}, Discount: {}",
@@ -313,7 +337,12 @@ public class BookingService {
     }
 
     private void changeStatus(Booking booking, BookingStatus newStatus, Long userId, String reason) {
-        var previousStatus = booking.getCurrentStatus();
+        BookingStatus previousStatus = booking.getCurrentStatus();
+
+        if (previousStatus == newStatus) {
+            throw new BadRequestException("The booking already has this status");
+        }
+
         booking.setCurrentStatus(newStatus);
         bookingRepository.save(booking);
 

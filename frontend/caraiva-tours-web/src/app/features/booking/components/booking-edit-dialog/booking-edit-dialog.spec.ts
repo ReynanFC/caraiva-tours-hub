@@ -99,6 +99,16 @@ describe('BookingEditDialog', () => {
     );
   });
 
+  it('should submit the client phone using the backend format', async () => {
+    (fixture.componentInstance as any).clientPhone = '73999999999';
+
+    await (fixture.componentInstance as any).save();
+
+    expect(onSave).toHaveBeenCalledWith(
+      expect.objectContaining({ clientPhone: '(73) 99999-9999' }),
+    );
+  });
+
   it('should upload a selected image only when saving', async () => {
     const imageUrl = 'https://i.ibb.co/example/pix-proof.png';
     imgbbMock.uploadImage.mockReturnValue(of({ success: true, data: { url: imageUrl } }));

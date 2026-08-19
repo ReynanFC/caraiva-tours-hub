@@ -14,7 +14,12 @@ app:
   dashboard:
     sse:
       heartbeat-interval: 60000
-
+      
+  bootstrap-admin:
+    enabled: ${BOOTSTRAP_ADMIN_ENABLED:false}
+    user-name: ${BOOTSTRAP_ADMIN_USERNAME:}
+    full-name: ${BOOTSTRAP_ADMIN_FULL_NAME:}
+    email: ${BOOTSTRAP_ADMIN_EMAIL:}
 spring-doc:
   paths-to-match: /**
   swagger-ui:

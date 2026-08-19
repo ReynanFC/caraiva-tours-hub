@@ -9,6 +9,7 @@ import org.springdoc.core.customizers.OpenApiCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/** Documents Bearer access and refresh-cookie authentication in the generated OpenAPI contract. */
 @Configuration
 public class OpenApiConfig {
 

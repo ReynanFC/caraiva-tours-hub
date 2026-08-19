@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 
 public record ReservationPaymentDTO(
         Long bookingId,
+        Long paymentId,
         String clientName,
         String tourName,
         LocalDateTime scheduledAt,

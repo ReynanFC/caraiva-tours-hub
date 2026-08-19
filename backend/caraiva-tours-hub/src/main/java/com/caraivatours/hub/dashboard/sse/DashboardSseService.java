@@ -15,6 +15,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Keeps in-memory SSE connections grouped by role and user.
+ *
+ * <p>Multiple emitters support several tabs/devices. Concurrent collections protect callbacks,
+ * scheduled heartbeats and event delivery running on different threads. Connection duration is
+ * capped by both 30 minutes and the remaining access-token lifetime.</p>
+ */
 @Slf4j
 @Service
 public class DashboardSseService {

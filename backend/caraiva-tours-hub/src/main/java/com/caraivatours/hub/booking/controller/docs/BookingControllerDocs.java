@@ -2,6 +2,7 @@ package com.caraivatours.hub.booking.controller.docs;
 
 import com.caraivatours.hub.auth.dto.AuthenticatedUser;
 import com.caraivatours.hub.booking.dto.request.CreateBookingRequest;
+import com.caraivatours.hub.booking.dto.request.CancelBookingRequest;
 import com.caraivatours.hub.booking.dto.request.UpdateBookingRequest;
 import com.caraivatours.hub.booking.dto.response.BookingDetailDTO;
 import com.caraivatours.hub.booking.dto.response.BookingSummaryDTO;
@@ -78,6 +79,22 @@ public interface BookingControllerDocs {
             @ApiResponse(responseCode = "404", description = "Booking or user not found", content = @Content)
     })
     ResponseEntity<BookingSummaryDTO> confirm(Long id, @Parameter(hidden = true) AuthenticatedUser authenticatedUser);
+
+    @Operation(
+            summary = "Cancel a booking",
+            description = "Immediately cancels a draft or confirmed booking. Administrator access is required.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Booking cancelled", content = @Content(schema = @Schema(implementation = BookingSummaryDTO.class))),
+                    @ApiResponse(responseCode = "400", description = "Booking status does not allow cancellation", content = @Content),
+                    @ApiResponse(responseCode = "403", description = "Administrator access required", content = @Content),
+                    @ApiResponse(responseCode = "404", description = "Booking or administrator not found", content = @Content)
+            }
+    )
+    ResponseEntity<BookingSummaryDTO> cancel(
+            @Parameter(description = "Booking ID") Long id,
+            @Parameter(hidden = true) AuthenticatedUser authenticatedUser,
+            CancelBookingRequest request
+    );
 
     @Operation(summary = "Update a booking", responses = {
             @ApiResponse(responseCode = "200", description = "Booking updated", content = @Content(schema = @Schema(implementation = BookingSummaryDTO.class))),

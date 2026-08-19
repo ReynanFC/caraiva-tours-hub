@@ -1,5 +1,6 @@
 package com.caraivatours.hub.user;
 
+import com.caraivatours.hub.auth.entity.enums.UserRole;
 import com.caraivatours.hub.user.dto.response.UserHeaderProjection;
 import com.caraivatours.hub.user.dto.response.UserSummaryDTO;
 import org.springframework.data.domain.Page;
@@ -41,5 +42,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT u.enabled FROM User u WHERE u.id = :id")
     Optional<Boolean> findEnabledStatusById(@Param("id") Long id);
 
-
+    boolean existsByPermissionRole(UserRole role);
 }

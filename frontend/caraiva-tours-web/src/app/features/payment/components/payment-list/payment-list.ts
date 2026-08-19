@@ -27,6 +27,7 @@ export class PaymentList {
   readonly totalElements = input(0);
 
   readonly detailRequested = output<number>();
+  readonly reservationDetailRequested = output<number>();
   readonly previousPage = output<void>();
   readonly nextPage = output<void>();
 

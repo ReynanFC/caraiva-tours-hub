@@ -125,7 +125,7 @@ event: connected
 data: {"connectedAt":"2026-08-15T12:50:00Z","role":"EMPLOYEE"}
 ```
 
-A cada 25 segundos, por padrão, o servidor envia:
+A cada 60 segundos, por padrão, o servidor envia:
 
 ```text
 event: heartbeat

@@ -173,8 +173,8 @@ class PaymentTest extends AbstractIntegrationTest {
             }
 
             @Test
-            @DisplayName("should filter by client name fragment ignoring case")
-            void shouldFilterByClientNameIgnoringCase() {
+            @DisplayName("should filter by client phone ignoring formatting")
+            void shouldFilterByClientPhoneIgnoringFormatting() {
                 Payment expected = attachPayment(
                         saveBooking(BookingStatus.CONFIRMED, "Maria da Silva"),
                         new BigDecimal("100.00"),
@@ -188,14 +188,14 @@ class PaymentTest extends AbstractIntegrationTest {
 
                 assertThat(paymentRepository.findAllByFilters(
                         null,
-                        "SILVA",
+                        expected.getBooking().getClient().getPhone(),
                         PageRequest.of(0, 10)
                 ).getContent()).containsExactly(expected);
             }
 
             @Test
-            @DisplayName("should require both filters when id and client name are supplied")
-            void shouldCombineIdAndClientNameFilters() {
+            @DisplayName("should require both filters when id and client phone are supplied")
+            void shouldCombineIdAndClientPhoneFilters() {
                 Payment payment = attachPayment(
                         saveBooking(BookingStatus.CONFIRMED, "Maria da Silva"),
                         new BigDecimal("100.00"),
@@ -204,12 +204,12 @@ class PaymentTest extends AbstractIntegrationTest {
 
                 Page<Payment> matching = paymentRepository.findAllByFilters(
                         payment.getId(),
-                        "maria",
+                        payment.getBooking().getClient().getPhone(),
                         PageRequest.of(0, 10)
                 );
                 Page<Payment> conflicting = paymentRepository.findAllByFilters(
                         payment.getId(),
-                        "joão",
+                        "00000000",
                         PageRequest.of(0, 10)
                 );
 
@@ -313,6 +313,7 @@ class PaymentTest extends AbstractIntegrationTest {
 
                 Page<Booking> result = paymentRepository.findReservationsForPayment(
                         null,
+                        null,
                         "",
                         PageRequest.of(0, 10)
                 );
@@ -330,46 +331,43 @@ class PaymentTest extends AbstractIntegrationTest {
 
                 assertThat(paymentRepository.findReservationsForPayment(
                         BookingStatus.DRAFT,
+                        null,
                         "",
                         PageRequest.of(0, 10)
                 ).getContent()).containsExactly(draft);
             }
 
             @Test
-            @DisplayName("should search reservations by booking id, client name or phone")
+            @DisplayName("should search reservations by payment id or client phone")
             void shouldSearchReservationsBySupportedFields() {
-                Booking booking = saveBooking(BookingStatus.DRAFT, "Maria da Silva");
-                String phone = booking.getClient().getPhone();
+                Booking booking = saveBooking(BookingStatus.CONFIRMED, "Maria da Silva");
+                Payment payment = attachPayment(booking, new BigDecimal("106.00"), "receipt-maria");
 
-                Page<Booking> byId = paymentRepository.findReservationsForPayment(
+                Page<Booking> byPaymentId = paymentRepository.findReservationsForPayment(
                         null,
-                        booking.getId().toString(),
-                        PageRequest.of(0, 10)
-                );
-                Page<Booking> byName = paymentRepository.findReservationsForPayment(
-                        null,
-                        "SILVA",
+                        payment.getId(),
+                        "",
                         PageRequest.of(0, 10)
                 );
                 Page<Booking> byPhone = paymentRepository.findReservationsForPayment(
                         null,
-                        phone.substring(phone.length() - 4),
+                        null,
+                        booking.getClient().getPhone(),
                         PageRequest.of(0, 10)
                 );
-
-                assertThat(byId.getContent()).containsExactly(booking);
-                assertThat(byName.getContent()).containsExactly(booking);
+                assertThat(byPaymentId.getContent()).containsExactly(booking);
                 assertThat(byPhone.getContent()).containsExactly(booking);
             }
 
             @Test
             @DisplayName("should require status and search to match when both are supplied")
             void shouldCombineStatusAndSearch() {
-                saveBooking(BookingStatus.DRAFT, "Maria da Silva");
+                Booking booking = saveBooking(BookingStatus.DRAFT, "Maria da Silva");
 
                 assertThat(paymentRepository.findReservationsForPayment(
                         BookingStatus.CONFIRMED,
-                        "Maria",
+                        null,
+                        booking.getClient().getPhone(),
                         PageRequest.of(0, 10)
                 )).isEmpty();
             }
@@ -381,6 +379,7 @@ class PaymentTest extends AbstractIntegrationTest {
 
                 Page<Booking> result = paymentRepository.findReservationsForPayment(
                         BookingStatus.DRAFT,
+                        null,
                         "",
                         PageRequest.of(0, 10, Sort.by("createdAt").descending())
                 );
@@ -482,6 +481,7 @@ class PaymentTest extends AbstractIntegrationTest {
                         .singleElement()
                         .satisfies(reservation -> {
                             assertThat(reservation.bookingId()).isEqualTo(booking.getId());
+                            assertThat(reservation.paymentId()).isNull();
                             assertThat(reservation.clientName()).isEqualTo("Ana");
                             assertThat(reservation.status()).isEqualTo(BookingStatus.DRAFT);
                             assertThat(reservation.signalAmount()).isEqualByComparingTo("106.00");
@@ -490,13 +490,34 @@ class PaymentTest extends AbstractIntegrationTest {
             }
 
             @Test
-            @DisplayName("should trim search before searching reservations")
+            @DisplayName("should search reservations by payment identifier instead of phone")
+            void shouldSearchReservationsByPaymentIdentifier() {
+                Booking booking = saveBooking(BookingStatus.CANCELLED, "Maria da Silva");
+                Payment payment = attachPayment(booking, new BigDecimal("106.00"), "receipt-maria");
+
+                PagedResult<ReservationPaymentDTO> result = paymentService.searchReservations(
+                        BookingStatus.CANCELLED,
+                        payment.getId().toString(),
+                        PageRequest.of(0, 10)
+                );
+
+                assertThat(result.content())
+                        .singleElement()
+                        .satisfies(reservation -> {
+                            assertThat(reservation.bookingId()).isEqualTo(booking.getId());
+                            assertThat(reservation.paymentId()).isEqualTo(payment.getId());
+                        });
+            }
+
+            @Test
+            @DisplayName("should trim phone search before searching reservations")
             void shouldTrimReservationSearch() {
                 Booking booking = saveBooking(BookingStatus.CONFIRMED, "Maria da Silva");
+                String phone = booking.getClient().getPhone();
 
                 PagedResult<ReservationPaymentDTO> result = paymentService.searchReservations(
                         null,
-                        "  maria  ",
+                        "  " + phone + "  ",
                         PageRequest.of(0, 10)
                 );
 
@@ -506,14 +527,14 @@ class PaymentTest extends AbstractIntegrationTest {
             }
 
             @Test
-            @DisplayName("should map paged payments filtered by client")
-            void shouldMapPaymentsFilteredByClient() {
+            @DisplayName("should map paged payments filtered by client phone")
+            void shouldMapPaymentsFilteredByClientPhone() {
                 Booking booking = saveBooking(BookingStatus.CONFIRMED, "Maria da Silva");
                 Payment payment = attachPayment(booking, new BigDecimal("106.00"), "receipt-maria");
 
-                PagedResult<PaymentSummaryDTO> result = paymentService.findAllByNameClientOrId(
+                PagedResult<PaymentSummaryDTO> result = paymentService.findAllByPhoneClientOrId(
                         null,
-                        "maria",
+                        booking.getClient().getPhone().replaceAll("[^0-9]", ""),
                         PageRequest.of(0, 10)
                 );
 
@@ -679,7 +700,7 @@ class PaymentTest extends AbstractIntegrationTest {
 
         Client client = aClient()
                 .withName(clientName)
-                .withPhone(String.format("+55 73 9%08d", sequence))
+                .withPhone(String.format("(73) 9%04d-%04d", sequence / 10_000, sequence % 10_000))
                 .withEmail("client-" + suffix + "@example.com")
                 .build();
         client.setId(null);

@@ -22,8 +22,8 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name="booking")
@@ -85,7 +85,8 @@ public class Booking implements Serializable {
     @Setter(AccessLevel.NONE)
     @Builder.Default
     @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<GroupMember> groupMembers = new HashSet<>();
+    @OrderBy("id ASC")
+    private List<GroupMember> groupMembers = new ArrayList<>();
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "payment_id")
@@ -94,7 +95,8 @@ public class Booking implements Serializable {
     @Setter(AccessLevel.NONE)
     @Builder.Default
     @OneToMany(mappedBy = "booking", cascade = CascadeType.PERSIST)
-    private Set<StatusHistory> statusHistory = new HashSet<>();
+    @OrderBy("changedAt ASC, id ASC")
+    private List<StatusHistory> statusHistory = new ArrayList<>();
 
 
     /**
@@ -130,10 +132,11 @@ public class Booking implements Serializable {
      * a new immutable {@link FinancialSnapshot}.
      *
      * @param unitPrice    the price per individual participant.
-     * @param participants the total number of participants in the booking.
+     * @param members      the group members; lap children do not pay.
      * @param discount     the manual discount amount to be applied.
      */
-    public void updateFinancials(BigDecimal unitPrice, int participants, BigDecimal discount) {
+    public void updateFinancials(BigDecimal unitPrice, List<GroupMember> members, BigDecimal discount) {
+        int participants = calculateTotalParticipants(members);
         BigDecimal total = unitPrice.multiply(BigDecimal.valueOf(participants));
         BigDecimal commissionPerPerson = tour.calculateCommissionPerPerson(unitPrice);
 
@@ -147,11 +150,14 @@ public class Booking implements Serializable {
      * Calculates the total number of participants by adding the group members count
      * to the mandatory organizer count.
      *
-     * @param membersCount the number of registered group members.
+     * @param members the registered group members.
      * @return the total headcount for the booking.
      */
-    public static int calculateTotalParticipants(int membersCount) {
-        return membersCount + ORGANIZER_COUNT;
+    public static int calculateTotalParticipants(List<GroupMember> members) {
+        long payingMembers = members.stream()
+                .filter(member -> !member.isLapChild())
+                .count();
+        return Math.toIntExact(payingMembers) + ORGANIZER_COUNT;
     }
 
     public void validateBookingStateForModification() {
@@ -162,12 +168,18 @@ public class Booking implements Serializable {
         }
     }
 
+    public void validateBookingStateForCancellation() {
+        if (currentStatus != BookingStatus.DRAFT && currentStatus != BookingStatus.CONFIRMED) {
+            throw new BadRequestException("Only a draft or confirmed booking can be cancelled");
+        }
+    }
+// corrigir a duplicação de passeios confirmados
     public void addGroupMember(GroupMember member) {
         groupMembers.add(member);
         member.setBooking(this);
     }
 
-    public void replaceGroupMembers(Set<GroupMember> members) {
+    public void replaceGroupMembers(List<GroupMember> members) {
         groupMembers.clear();
         members.forEach(this::addGroupMember);
     }

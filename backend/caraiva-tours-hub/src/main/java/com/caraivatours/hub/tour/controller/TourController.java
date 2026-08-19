@@ -30,9 +30,10 @@ public class TourController implements TourControllerDocs {
     @GetMapping
     public ResponseEntity<PagedResult<TourResponseDTO>> findAllTours(
             @RequestParam(value = "search", required = false, defaultValue = "") String search,
+            @RequestParam(value = "categoryId", required = false) Long categoryId,
             @PageableDefault(size = 10, sort = "name", direction = Sort.Direction.DESC) Pageable pageable) {
 
-       return ResponseEntity.ok(tourService.findAll(search.trim(), pageable));
+       return ResponseEntity.ok(tourService.findAll(search.trim(), categoryId, pageable));
     }
 
     @IsAdmin

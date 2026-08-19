@@ -22,6 +22,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Defines the stateless security boundary of the API.
+ *
+ * <p>Rate limiting runs before JWT authentication, public authentication/documentation routes are
+ * explicitly allowlisted, and all {@code /api/**} routes require an authenticated principal.
+ * Method security supplies the finer administrator authorization.</p>
+ */
 @EnableWebSecurity
 @EnableMethodSecurity
 @Configuration

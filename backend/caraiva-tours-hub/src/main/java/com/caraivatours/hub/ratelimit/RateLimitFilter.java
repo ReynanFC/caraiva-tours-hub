@@ -19,6 +19,10 @@ import java.time.Instant;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Applies stricter per-IP limits to public authentication endpoints before JWT processing.
+ * Rejected requests receive HTTP 429 and a rounded-up {@code Retry-After} value.
+ */
 @Component
 @RequiredArgsConstructor
 public class RateLimitFilter extends OncePerRequestFilter {

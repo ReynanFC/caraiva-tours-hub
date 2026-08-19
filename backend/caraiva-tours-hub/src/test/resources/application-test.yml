@@ -10,4 +10,5 @@ app:
   security:
     jwt:
       token:
-        secret-key: integration-test-secret-key
+        # Base64 for "integration-test-secret-key"; JwtTokenProvider decodes configured keys.
+        secret-key: aW50ZWdyYXRpb24tdGVzdC1zZWNyZXQta2V5

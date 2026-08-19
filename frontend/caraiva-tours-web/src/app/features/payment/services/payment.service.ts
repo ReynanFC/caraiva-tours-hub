@@ -43,12 +43,13 @@ export class PaymentService {
     size: number,
   ): Observable<PagedResult<PaymentSummary>> {
     const normalizedSearch = search.trim();
+    const searchDigits = normalizedSearch.replace(/\D/g, '');
     let params = new HttpParams().set('page', page).set('size', size).set('sort', 'paidAt,desc');
 
-    if (/^\d+$/.test(normalizedSearch)) {
+    if (/^\d+$/.test(normalizedSearch) && searchDigits.length < 8) {
       params = params.set('idPayment', normalizedSearch);
     } else if (normalizedSearch) {
-      params = params.set('nameClient', normalizedSearch);
+      params = params.set('phoneClient', normalizedSearch);
     }
 
     return this.http.get<PagedResult<PaymentSummary>>('/api/payments', { params });

@@ -30,6 +30,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Issues and validates the two JWT types used by the API.
+ *
+ * <p>Access tokens are stateless credentials accepted by protected endpoints. Refresh tokens
+ * are additionally registered in Redis, rotated on every use and revoked as a group when reuse
+ * is detected. The {@code type} claim prevents one token type from being accepted as the other.</p>
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -40,7 +47,7 @@ public class JwtTokenProvider {
     private static final String CLAIM_TYPE = "type";
     private static final String TYPE_ACCESS = "access";
     private static final String TYPE_REFRESH = "refresh";
-    private static final int TEMP_REFRESH = 3;
+    private static final int REFRESH_TOKEN_MULTIPLIER = 3;
     private static final String BEARER_PREFIX = "Bearer ";
 
     @Value("${app.security.jwt.token.secret-key}")
@@ -58,8 +65,8 @@ public class JwtTokenProvider {
 
     @PostConstruct
     protected void init() {
-        byte[] encodedKey = Base64.getEncoder().encode(secretKey.getBytes());
-        this.algorithm = Algorithm.HMAC256(encodedKey);
+        byte[] decodedKey = Base64.getDecoder().decode(secretKey);
+        this.algorithm = Algorithm.HMAC256(decodedKey);
         this.verifier = JWT.require(algorithm).build();
 
         log.debug("JwtTokenProvider initialized. Access token validity: {} ms", validityInMilliseconds);
@@ -68,7 +75,7 @@ public class JwtTokenProvider {
     public TokenDTO createAccessToken(UserRole role, UUID uuid, Long id) {
         Instant now = Instant.now();
         Instant accessValidity = now.plusMillis(validityInMilliseconds);
-        Instant refreshValidity = now.plusMillis(validityInMilliseconds * TEMP_REFRESH);
+        Instant refreshValidity = now.plusMillis(validityInMilliseconds * REFRESH_TOKEN_MULTIPLIER);
         Duration ttl = Duration.between(now, refreshValidity);
 
         String accessToken = generateAccessToken(role, now, accessValidity, uuid, id);
@@ -79,6 +86,10 @@ public class JwtTokenProvider {
         return new TokenDTO(true, now, accessValidity, accessToken, refreshToken);
     }
 
+    /**
+     * Rotates a refresh token after verifying its signature, type, owner status and one-time JTI.
+     * Consuming the JTI before issuing the next pair prevents concurrent replay.
+     */
     public TokenDTO createRefreshToken(String refreshToken) {
         if (!StringUtils.hasText(refreshToken)) {
             log.warn("Refresh token request rejected: missing or malformed token");

@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Set;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/bookings")
@@ -17,7 +17,7 @@ public class GroupMemberController implements GroupMemberDocs {
     private final GroupMemberService groupMemberService;
 
     @GetMapping("/{bookingId}/group-members")
-    public ResponseEntity<Set<GroupMemberDTO>> findGroupMembers(@PathVariable("bookingId") Long bookingId) {
+    public ResponseEntity<List<GroupMemberDTO>> findGroupMembers(@PathVariable("bookingId") Long bookingId) {
         return ResponseEntity.ok(groupMemberService.findGroupMembers(bookingId));
     }
 }

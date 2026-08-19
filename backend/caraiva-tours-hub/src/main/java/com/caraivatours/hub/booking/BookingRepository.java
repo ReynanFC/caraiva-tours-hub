@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface BookingRepository extends JpaRepository<Booking, Long> {
@@ -31,7 +32,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
         b.tour.name,
         b.customSchedule,
         (SIZE(b.groupMembers) + 1),
-        b.financialData.totalPrice,
+        (b.financialData.totalPrice - b.financialData.manualDiscount + b.pickupLocation.appliedPickupFee),
         b.currentStatus
     )
     FROM Booking b
@@ -50,7 +51,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
         b.tour.name,
         b.customSchedule,
         (SIZE(b.groupMembers) + 1),
-        b.financialData.totalPrice,
+        (b.financialData.totalPrice - b.financialData.manualDiscount + b.pickupLocation.appliedPickupFee),
         b.currentStatus
     )
     FROM Booking b
@@ -76,7 +77,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
         b.tour.name,
         b.customSchedule,
         (SIZE(b.groupMembers) + 1),
-        b.financialData.totalPrice,
+        (b.financialData.totalPrice - b.financialData.manualDiscount + b.pickupLocation.appliedPickupFee),
         b.currentStatus
     )
     FROM Booking b

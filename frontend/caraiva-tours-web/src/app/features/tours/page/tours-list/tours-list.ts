@@ -1,5 +1,12 @@
 import { Component, computed, debounced, inject, resource, signal, viewChild } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  ValidationErrors,
+  Validators,
+} from '@angular/forms';
 import { PIcon } from '@primeicons/angular/p-icon';
 import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
@@ -20,6 +27,17 @@ import { CategoryDialog } from '../../components/category-dialog/category-dialog
 import { ActionNotificationService } from '../../../../shared/components/action-notification/action-notification.service';
 import { getApiErrorMessage } from '../../../../core/http/api-error';
 
+function promotionalPriceNotGreaterThanBase(control: AbstractControl): ValidationErrors | null {
+  const basePrice = control.get('basePricePerPerson')?.value;
+  const promotionalPrice = control.get('promoPricePerPerson')?.value;
+
+  return typeof basePrice === 'number' &&
+    typeof promotionalPrice === 'number' &&
+    promotionalPrice > basePrice
+    ? { promotionalPriceGreaterThanBase: true }
+    : null;
+}
+
 function createTourForm(): FormGroup<{
   name: FormControl<string>;
   description: FormControl<string>;
@@ -34,52 +52,55 @@ function createTourForm(): FormGroup<{
   categoryTourId: FormControl<number>;
 }> {
   const value = emptyTourForm();
-  return new FormGroup({
-    name: new FormControl(value.name, {
-      nonNullable: true,
-      validators: [Validators.required, Validators.maxLength(150)],
-    }),
-    description: new FormControl(value.description, {
-      nonNullable: true,
-      validators: [Validators.required, Validators.maxLength(1000)],
-    }),
-    basePricePerPerson: new FormControl(value.basePricePerPerson, {
-      nonNullable: true,
-      validators: [Validators.required, Validators.min(0)],
-    }),
-    promoPricePerPerson: new FormControl(value.promoPricePerPerson, {
-      nonNullable: true,
-      validators: [Validators.min(0)],
-    }),
-    commissionType: new FormControl(value.commissionType, {
-      nonNullable: true,
-      validators: [Validators.required],
-    }),
-    commissionValue: new FormControl(value.commissionValue, {
-      nonNullable: true,
-      validators: [Validators.required, Validators.min(0)],
-    }),
-    duration: new FormGroup({
-      hours: new FormControl(value.duration.hours, {
+  return new FormGroup(
+    {
+      name: new FormControl(value.name, {
         nonNullable: true,
-        validators: [Validators.min(0), Validators.max(999)],
+        validators: [Validators.required, Validators.maxLength(150)],
       }),
-      minutes: new FormControl(value.duration.minutes, {
+      description: new FormControl(value.description, {
         nonNullable: true,
-        validators: [Validators.min(0), Validators.max(59)],
+        validators: [Validators.required, Validators.maxLength(1000)],
       }),
-    }),
-    available: new FormControl(value.available, { nonNullable: true }),
-    imageUrl: new FormControl(value.imageUrl, {
-      nonNullable: true,
-      validators: [Validators.maxLength(255)],
-    }),
-    isPromotional: new FormControl(value.isPromotional, { nonNullable: true }),
-    categoryTourId: new FormControl(value.categoryTourId, {
-      nonNullable: true,
-      validators: [Validators.required, Validators.min(1)],
-    }),
-  });
+      basePricePerPerson: new FormControl(value.basePricePerPerson, {
+        nonNullable: true,
+        validators: [Validators.required, Validators.min(0)],
+      }),
+      promoPricePerPerson: new FormControl(value.promoPricePerPerson, {
+        nonNullable: true,
+        validators: [Validators.min(0)],
+      }),
+      commissionType: new FormControl(value.commissionType, {
+        nonNullable: true,
+        validators: [Validators.required],
+      }),
+      commissionValue: new FormControl(value.commissionValue, {
+        nonNullable: true,
+        validators: [Validators.required, Validators.min(0)],
+      }),
+      duration: new FormGroup({
+        hours: new FormControl(value.duration.hours, {
+          nonNullable: true,
+          validators: [Validators.min(0), Validators.max(999)],
+        }),
+        minutes: new FormControl(value.duration.minutes, {
+          nonNullable: true,
+          validators: [Validators.min(0), Validators.max(59)],
+        }),
+      }),
+      available: new FormControl(value.available, { nonNullable: true }),
+      imageUrl: new FormControl(value.imageUrl, {
+        nonNullable: true,
+        validators: [Validators.maxLength(255)],
+      }),
+      isPromotional: new FormControl(value.isPromotional, { nonNullable: true }),
+      categoryTourId: new FormControl(value.categoryTourId, {
+        nonNullable: true,
+        validators: [Validators.required, Validators.min(1)],
+      }),
+    },
+    { validators: promotionalPriceNotGreaterThanBase },
+  );
 }
 
 @Component({

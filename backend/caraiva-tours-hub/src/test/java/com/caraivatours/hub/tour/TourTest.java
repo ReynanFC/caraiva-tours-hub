@@ -145,6 +145,7 @@ class TourTest extends AbstractIntegrationTest {
 
                 Page<Tour> result = tourRepository.findAll(
                         "ESPELHO",
+                        null,
                         PageRequest.of(0, 10, Sort.by("name"))
                 );
 
@@ -164,6 +165,7 @@ class TourTest extends AbstractIntegrationTest {
 
                 Page<Tour> result = tourRepository.findAll(
                         "",
+                        null,
                         PageRequest.of(1, 1, Sort.by("name"))
                 );
 
@@ -183,11 +185,32 @@ class TourTest extends AbstractIntegrationTest {
 
                 Page<Tour> result = tourRepository.findAll(
                         "mergulho",
+                        null,
                         PageRequest.of(0, 10)
                 );
 
                 assertThat(result).isEmpty();
                 assertThat(result.getTotalElements()).isZero();
+            }
+
+            @Test
+            @DisplayName("should filter tours by category")
+            void shouldFilterToursByCategory() {
+                CategoryTour boatTours = saveCategory("Passeios de barco");
+                CategoryTour trails = saveCategory("Trilhas");
+                saveTour("Passeio para Corumbau", boatTours);
+                saveTour("Trilha do Descobrimento", trails);
+
+                Page<Tour> result = tourRepository.findAll(
+                        "",
+                        trails.getId(),
+                        PageRequest.of(0, 10, Sort.by("name"))
+                );
+
+                assertThat(result.getTotalElements()).isEqualTo(1);
+                assertThat(result.getContent())
+                        .extracting(Tour::getName)
+                        .containsExactly("Trilha do Descobrimento");
             }
         }
 
@@ -273,6 +296,7 @@ class TourTest extends AbstractIntegrationTest {
 
                 PagedResult<TourResponseDTO> result = tourService.findAll(
                         "espelho",
+                        null,
                         PageRequest.of(0, 10, Sort.by("name"))
                 );
 
@@ -522,7 +546,7 @@ class TourTest extends AbstractIntegrationTest {
                 "Descrição atualizada",
                 new BigDecimal("300.00"),
                 new BigDecimal("250.00"),
-                CommissionType.FIXED,
+                CommissionType.FIXED.name(),
                 new BigDecimal("35.00"),
                 Duration.ofHours(6),
                 false,

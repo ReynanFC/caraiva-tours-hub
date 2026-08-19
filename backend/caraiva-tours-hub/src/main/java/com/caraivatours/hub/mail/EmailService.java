@@ -5,6 +5,11 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+/**
+ * Sends transactional plain-text messages for first password setup and password recovery.
+ * Tokens are placed only in the reset link; their validity and one-time use are enforced by the
+ * password-reset service rather than by e-mail delivery.
+ */
 @Service
 @RequiredArgsConstructor
 public class EmailService {

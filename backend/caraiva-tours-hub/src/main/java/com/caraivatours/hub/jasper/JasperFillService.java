@@ -12,6 +12,12 @@ import java.io.InputStream;
 import java.sql.Connection;
 import java.util.Map;
 
+/**
+ * Loads a compiled Jasper template and fills it against the application data source.
+ *
+ * <p>Both classpath stream and JDBC connection are scoped with try-with-resources; infrastructure
+ * failures are translated to a domain-specific report exception.</p>
+ */
 @Service
 @Slf4j
 @RequiredArgsConstructor

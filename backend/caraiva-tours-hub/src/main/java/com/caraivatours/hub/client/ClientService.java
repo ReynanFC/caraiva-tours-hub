@@ -7,6 +7,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+/**
+ * Resolves the customer associated with a booking.
+ *
+ * <p>Phone is the operational identity used to reuse an existing customer. E-mail and phone
+ * collisions are rejected so two customer records are not accidentally merged during booking
+ * creation or editing.</p>
+ */
 @RequiredArgsConstructor
 @Slf4j
 @Service
@@ -17,7 +24,7 @@ public class ClientService {
     public Client findOrCreate(ClientDTO clientDTO) {
         log.debug("Looking up client by phone: {}", clientDTO.phone());
 
-        if (clientRepository.existsClientByEmail(clientDTO.email())) {
+        if (clientDTO.email() != null && clientRepository.existsClientByEmail(clientDTO.email())) {
             throw new EmailAlreadyExistsException("The email " + clientDTO.email() + " already exists");
         }
 

@@ -40,6 +40,17 @@
             >
               <svg pIcon="eye" aria-hidden="true"></svg>
             </button>
+          } @else if (view() === 'CANCELLED') {
+            <button
+              pButton
+              type="button"
+              class="detail-button"
+              title="Ver detalhes da reserva"
+              aria-label="Ver detalhes da reserva"
+              (click)="reservationDetailRequested.emit(row.bookingId)"
+            >
+              <svg pIcon="eye" aria-hidden="true"></svg>
+            </button>
           } @else {
             <span class="no-action" aria-label="Sem comprovante disponível">—</span>
           }
@@ -82,6 +93,15 @@
           type="button"
           class="mobile-detail"
           (click)="detailRequested.emit(row.paymentId)"
+        >
+          Ver detalhes <svg pIcon="arrow-right" aria-hidden="true"></svg>
+        </button>
+      } @else if (view() === 'CANCELLED') {
+        <button
+          pButton
+          type="button"
+          class="mobile-detail"
+          (click)="reservationDetailRequested.emit(row.bookingId)"
         >
           Ver detalhes <svg pIcon="arrow-right" aria-hidden="true"></svg>
         </button>

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayOutputStream;
 
 
+/** Exports a filled Jasper report to an in-memory PDF resource suitable for an HTTP response. */
 @Service
 @Slf4j
 public class JasperService {

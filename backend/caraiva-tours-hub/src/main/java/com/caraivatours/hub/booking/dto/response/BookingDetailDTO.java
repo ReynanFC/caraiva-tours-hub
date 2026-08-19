@@ -5,12 +5,12 @@ import com.caraivatours.hub.booking.statushistory.dto.StatusHistoryDTO;
 import com.caraivatours.hub.pickuplocation.dto.PickupDTO;
 
 import java.math.BigDecimal;
-import java.util.Set;
+import java.util.List;
 
 public record BookingDetailDTO(
         BookingSummaryDTO summary,
-        Set<GroupMemberDTO> members,
+        List<GroupMemberDTO> members,
         BigDecimal commissionEarned,
-        Set<StatusHistoryDTO> history,
+        List<StatusHistoryDTO> history,
         PickupDTO pickup
 ) {}

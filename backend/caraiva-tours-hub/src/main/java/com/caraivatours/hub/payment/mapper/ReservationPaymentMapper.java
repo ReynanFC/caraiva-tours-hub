@@ -10,6 +10,7 @@ import org.mapstruct.ReportingPolicy;
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING, unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface ReservationPaymentMapper {
     @Mapping(target = "bookingId", source = "id")
+    @Mapping(target = "paymentId", source = "payment.id")
     @Mapping(target = "clientName", source = "client.name")
     @Mapping(target = "tourName", source = "tour.name")
     @Mapping(target = "scheduledAt", source = "customSchedule")

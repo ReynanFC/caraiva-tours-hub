@@ -21,7 +21,7 @@ public interface TourControllerDocs {
 
     @Operation(
             summary = "Find all tours with pagination",
-            description = "Retrieves a paginated list of all tours. Can be filtered optionally by a name search fragment.",
+            description = "Retrieves a paginated list of all tours. Can be filtered optionally by name and category.",
             responses = {
                     @ApiResponse(
                             description = "Success",
@@ -33,6 +33,7 @@ public interface TourControllerDocs {
     )
     ResponseEntity<PagedResult<TourResponseDTO>> findAllTours(
             @Parameter(description = "Optional search term to filter tours by name") String search,
+            @Parameter(description = "Optional category ID to filter tours") Long categoryId,
             @ParameterObject Pageable pageable
     );
 

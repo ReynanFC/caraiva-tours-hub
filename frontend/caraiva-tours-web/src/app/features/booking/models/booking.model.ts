@@ -32,6 +32,7 @@ export interface BookingSummary {
 }
 
 export interface BookingDetails {
+  summary?: BookingSummary;
   members: BookingMember[];
   commissionEarned: number;
   history: BookingStatusHistory[];

@@ -4,6 +4,7 @@ import com.caraivatours.hub.auth.dto.AuthenticatedUser;
 import com.caraivatours.hub.booking.BookingService;
 import com.caraivatours.hub.booking.controller.docs.BookingControllerDocs;
 import com.caraivatours.hub.booking.dto.request.CreateBookingRequest;
+import com.caraivatours.hub.booking.dto.request.CancelBookingRequest;
 import com.caraivatours.hub.booking.dto.request.UpdateBookingRequest;
 import com.caraivatours.hub.booking.dto.response.BookingDetailDTO;
 import com.caraivatours.hub.booking.dto.response.BookingSummaryDTO;
@@ -12,6 +13,7 @@ import com.caraivatours.hub.groupmember.dto.GroupMemberDTO;
 import com.caraivatours.hub.jasper.JasperFillService;
 import com.caraivatours.hub.jasper.JasperService;
 import com.caraivatours.hub.shared.dto.PagedResult;
+import com.caraivatours.hub.shared.validation.IsAdmin;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import net.sf.jasperreports.engine.JasperPrint;
@@ -99,6 +101,15 @@ public class BookingController implements BookingControllerDocs {
             @PathVariable Long id,
             @AuthenticationPrincipal AuthenticatedUser authenticatedUser) {
         return ResponseEntity.ok(bookingService.confirmBooking(id, authenticatedUser.id()));
+    }
+
+    @PatchMapping("/{id}/cancel")
+    @IsAdmin
+    public ResponseEntity<BookingSummaryDTO> cancel(
+            @PathVariable Long id,
+            @AuthenticationPrincipal AuthenticatedUser authenticatedUser,
+            @RequestBody @Valid CancelBookingRequest request) {
+        return ResponseEntity.ok(bookingService.cancelBooking(id, authenticatedUser.id(), request));
     }
 
     @PatchMapping("/{id}")

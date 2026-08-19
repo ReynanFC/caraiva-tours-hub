@@ -10,14 +10,14 @@ import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Set;
+import java.util.List;
 
 public record CreateBookingRequest(
         @Valid
         @NotNull(message = "Client is required")
         ClientDTO client,
 
-        Set<@Valid GroupMemberDTO> members,
+        List<@Valid GroupMemberDTO> members,
 
         @NotNull(message = "Tour ID is required")
         Long tourId,
@@ -37,7 +37,7 @@ public record CreateBookingRequest(
 ) {
         public CreateBookingRequest {
                 if (members == null) {
-                        members = Set.of();
+                        members = List.of();
                 }
                 if (manualDiscount == null) {
                         manualDiscount = BigDecimal.ZERO;

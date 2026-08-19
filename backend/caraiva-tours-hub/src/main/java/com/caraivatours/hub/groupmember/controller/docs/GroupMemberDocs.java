@@ -9,7 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 
-import java.util.Set;
+import java.util.List;
 
 @Tag(name = "GroupMembers", description = "Endpoints for found members")
 public interface GroupMemberDocs {
@@ -18,5 +18,5 @@ public interface GroupMemberDocs {
             @ApiResponse(responseCode = "200", description = "Group members retrieved", content = @Content(schema = @Schema(implementation = GroupMemberDTO.class))),
             @ApiResponse(responseCode = "404", description = "Booking not found", content = @Content)
     })
-    ResponseEntity<Set<GroupMemberDTO>> findGroupMembers(@Parameter(description = "Booking ID") Long bookingId);
+    ResponseEntity<List<GroupMemberDTO>> findGroupMembers(@Parameter(description = "Booking ID") Long bookingId);
 }

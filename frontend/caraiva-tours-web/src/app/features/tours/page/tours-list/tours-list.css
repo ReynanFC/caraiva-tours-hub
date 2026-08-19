@@ -241,6 +241,10 @@
   @apply text-danger;
 }
 
+.field-error {
+  @apply text-xs font-medium text-danger;
+}
+
 .form-grid textarea {
   @apply min-h-24 w-full resize-y;
 }

@@ -17,6 +17,12 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 
 
+/**
+ * Creates distributed Bucket4j buckets backed by Redis.
+ *
+ * <p>Using Redis makes counters consistent across application instances. Bucket keys expire after
+ * enough idle time to refill fully, avoiding permanent storage of IP-based counters.</p>
+ */
 @Service
 @RequiredArgsConstructor
 public class RateLimiterService {

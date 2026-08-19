@@ -23,6 +23,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+/**
+ * Maintains the tour catalog categories.
+ *
+ * <p>Names must be unique and a category linked to active tours cannot be removed. Read models
+ * are cached, while every catalog mutation invalidates category lists/options to keep selectors
+ * consistent.</p>
+ */
 @Service
 @Transactional(readOnly = true)
 @Slf4j

@@ -2,6 +2,7 @@ import { Service } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 
 import { formatLocalDateTime } from '../../../shared/utils/date.utils';
+import { formatBrazilianPhone } from '../../../shared/utils/phone.utils';
 import { CreateBookingRequest } from '../models/booking.model';
 
 type MemberForm = FormGroup<{
@@ -64,6 +65,10 @@ export class BookingFormService {
 
     return {
       ...formValue,
+      client: {
+        ...formValue.client,
+        phone: formatBrazilianPhone(formValue.client.phone),
+      },
       tourId: tourId!,
       scheduleDate: formatLocalDateTime(scheduleDate!),
     };

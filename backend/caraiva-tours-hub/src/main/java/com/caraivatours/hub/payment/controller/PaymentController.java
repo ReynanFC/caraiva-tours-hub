@@ -42,10 +42,10 @@ public class PaymentController implements PaymentControllerDocs {
     @GetMapping
     public ResponseEntity<PagedResult<PaymentSummaryDTO>> findAllByFilters(
             @RequestParam(required = false) Long idPayment,
-            @RequestParam(required = false) String nameClient,
+            @RequestParam(required = false) String phoneClient,
             @PageableDefault(size = 10, sort = "paidAt", direction = Sort.Direction.DESC) Pageable pageable) {
 
-        return ResponseEntity.ok(paymentService.findAllByNameClientOrId(idPayment, nameClient, pageable));
+        return ResponseEntity.ok(paymentService.findAllByPhoneClientOrId(idPayment, phoneClient, pageable));
     }
 
     @IsAdmin

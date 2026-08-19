@@ -26,6 +26,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+/**
+ * Coordinates the cancellation/refund review workflow.
+ *
+ * <p>An employee may request cancellation only for their own booking and only one request may be
+ * pending. Creation moves the booking to {@code CANCEL_REQUEST}; only an administrator can decide
+ * it, and approval moves the booking to {@code CANCELLED}. Rejection currently keeps the booking
+ * in review status by explicit domain behavior.</p>
+ */
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -70,6 +78,7 @@ public class RefundRequestService {
     public RefundRequestResponseDTO create(Long requesterId, CreateRefundRequestDTO request) {
         log.info("Creating refund request for booking ID: {} by user ID: {}", request.bookingId(), requesterId);
         User requester = userService.findById(requesterId);
+
         if (isAdmin(requester)) {
             log.warn("Refund request denied: administrator user ID {} attempted to create one", requesterId);
             throw new BadRequestException("Administrators cannot request refunds");

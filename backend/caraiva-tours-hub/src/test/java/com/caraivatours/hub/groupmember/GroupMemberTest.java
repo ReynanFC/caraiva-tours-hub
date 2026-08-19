@@ -32,14 +32,13 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Set;
+import java.util.List;
 import java.util.UUID;
 
 import static com.caraivatours.hub.support.fixtures.BookingTestDataBuilder.aBooking;
 import static com.caraivatours.hub.support.fixtures.CategoryTourTestDataBuilder.aCategoryTour;
 import static com.caraivatours.hub.support.fixtures.ClientTestDataBuilder.aClient;
 import static com.caraivatours.hub.support.fixtures.GroupMemberTestDataBuilder.aGroupMember;
-import static com.caraivatours.hub.support.fixtures.PermissionTestDataBuilder.aPermission;
 import static com.caraivatours.hub.support.fixtures.PickupLocationTestDataBuilder.aPickupLocation;
 import static com.caraivatours.hub.support.fixtures.TourTestDataBuilder.aTour;
 import static com.caraivatours.hub.support.fixtures.UserTestDataBuilder.aUser;
@@ -126,7 +125,7 @@ class GroupMemberTest extends AbstractIntegrationTest {
                 saveMember(aGroupMember().withName("Bruno").withBooking(firstBooking).lapChild(true).build());
                 saveMember(aGroupMember().withName("Carla").withBooking(secondBooking).build());
 
-                assertThat(groupMemberRepository.findByBookingId(firstBooking.getId()))
+                assertThat(groupMemberRepository.findByBookingIdOrderByIdAsc(firstBooking.getId()))
                         .extracting(GroupMember::getName)
                         .containsExactlyInAnyOrder("Ana", "Bruno");
             }
@@ -136,13 +135,13 @@ class GroupMemberTest extends AbstractIntegrationTest {
             void shouldReturnEmptySetWhenBookingHasNoMembers() {
                 Booking booking = saveBooking(BookingStatus.DRAFT);
 
-                assertThat(groupMemberRepository.findByBookingId(booking.getId())).isEmpty();
+                assertThat(groupMemberRepository.findByBookingIdOrderByIdAsc(booking.getId())).isEmpty();
             }
 
             @Test
             @DisplayName("should return an empty set when booking does not exist")
             void shouldReturnEmptySetWhenBookingDoesNotExist() {
-                assertThat(groupMemberRepository.findByBookingId(NON_EXISTENT_ID)).isEmpty();
+                assertThat(groupMemberRepository.findByBookingIdOrderByIdAsc(NON_EXISTENT_ID)).isEmpty();
             }
         }
     }
@@ -162,9 +161,9 @@ class GroupMemberTest extends AbstractIntegrationTest {
                 saveMember(aGroupMember().withName("Ana").withBooking(booking).build());
                 saveMember(aGroupMember().withName("Bruno").withBooking(booking).lapChild(true).build());
 
-                Set<GroupMemberDTO> result = groupMemberService.findGroupMembers(booking.getId());
+                List<GroupMemberDTO> result = groupMemberService.findGroupMembers(booking.getId());
 
-                assertThat(result).containsExactlyInAnyOrder(
+                assertThat(result).containsExactly(
                         new GroupMemberDTO("Ana", false),
                         new GroupMemberDTO("Bruno", true)
                 );
@@ -216,11 +215,11 @@ class GroupMemberTest extends AbstractIntegrationTest {
         class CreateForBookingTests {
 
             @Test
-            @DisplayName("should return an empty immutable set when members are null")
+            @DisplayName("should return an empty immutable list when members are null")
             void shouldReturnEmptySetWhenMembersAreNull() {
                 Booking booking = aBooking().build();
 
-                Set<GroupMember> result = groupMemberService.createForBooking(booking, null);
+                List<GroupMember> result = groupMemberService.createForBooking(booking, null);
 
                 assertThat(result).isEmpty();
                 assertThatThrownBy(() -> result.add(new GroupMember()))
@@ -228,11 +227,11 @@ class GroupMemberTest extends AbstractIntegrationTest {
             }
 
             @Test
-            @DisplayName("should return an empty immutable set when members are empty")
+            @DisplayName("should return an empty immutable list when members are empty")
             void shouldReturnEmptySetWhenMembersAreEmpty() {
                 Booking booking = aBooking().build();
 
-                Set<GroupMember> result = groupMemberService.createForBooking(booking, Set.of());
+                List<GroupMember> result = groupMemberService.createForBooking(booking, List.of());
 
                 assertThat(result).isEmpty();
                 assertThatThrownBy(() -> result.add(new GroupMember()))
@@ -244,9 +243,9 @@ class GroupMemberTest extends AbstractIntegrationTest {
             void shouldMapAndAssociateMemberWithoutPersisting() {
                 Booking booking = aBooking().build();
 
-                Set<GroupMember> result = groupMemberService.createForBooking(
+                List<GroupMember> result = groupMemberService.createForBooking(
                         booking,
-                        Set.of(new GroupMemberDTO("Ana", true))
+                        List.of(new GroupMemberDTO("Ana", true))
                 );
 
                 assertThat(result)
@@ -265,9 +264,9 @@ class GroupMemberTest extends AbstractIntegrationTest {
             void shouldCreateEveryDistinctMember() {
                 Booking booking = aBooking().build();
 
-                Set<GroupMember> result = groupMemberService.createForBooking(
+                List<GroupMember> result = groupMemberService.createForBooking(
                         booking,
-                        Set.of(
+                        List.of(
                                 new GroupMemberDTO("Ana", false),
                                 new GroupMemberDTO("Bruno", true)
                         )
@@ -276,7 +275,7 @@ class GroupMemberTest extends AbstractIntegrationTest {
                 assertThat(result)
                         .hasSize(2)
                         .extracting(GroupMember::getName)
-                        .containsExactlyInAnyOrder("Ana", "Bruno");
+                        .containsExactly("Ana", "Bruno");
                 assertThat(result).allMatch(member -> member.getBooking() == booking);
             }
         }
@@ -285,7 +284,8 @@ class GroupMemberTest extends AbstractIntegrationTest {
     private Booking saveBooking(BookingStatus status) {
         String suffix = UUID.randomUUID().toString();
 
-        Permission permission = permissionRepository.save(aPermission().build());
+        Permission permission = permissionRepository.findByRole(com.caraivatours.hub.auth.entity.enums.UserRole.EMPLOYEE)
+                .orElseThrow(() -> new AssertionError("Seeded EMPLOYEE permission not found"));
         User attendant = aUser()
                 .withEmail("attendant-" + suffix + "@example.com")
                 .withPermission(permission)

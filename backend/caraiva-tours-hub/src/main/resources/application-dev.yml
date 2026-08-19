@@ -3,7 +3,7 @@ server:
 
 #Angular
 cors:
-  originPatterns: http://localhost:4200
+  originPatterns: http://localhost:4600
 
 app:
   security:

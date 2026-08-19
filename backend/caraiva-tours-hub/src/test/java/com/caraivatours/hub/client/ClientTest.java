@@ -121,6 +121,28 @@ class ClientTest extends AbstractIntegrationTest {
         }
 
         @Nested
+        @DisplayName("existsClientByEmail")
+        class ExistsClientByEmailTests {
+
+            @Test
+            @DisplayName("should return true only for an existing email")
+            void shouldIdentifyExistingEmail() {
+                saveClient(aClient().build());
+
+                assertThat(clientRepository.existsClientByEmail("joao.santos@example.com")).isTrue();
+                assertThat(clientRepository.existsClientByEmail("disponivel@example.com")).isFalse();
+            }
+
+            @Test
+            @DisplayName("should return false for a null email")
+            void shouldReturnFalseForNullEmail() {
+                saveClient(aClient().build());
+
+                assertThat(clientRepository.existsClientByEmail(null)).isFalse();
+            }
+        }
+
+        @Nested
         @DisplayName("existsByPhoneAndIdNot")
         class ExistsByPhoneAndIdNotTests {
 

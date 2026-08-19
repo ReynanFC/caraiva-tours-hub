@@ -12,8 +12,8 @@ import com.caraivatours.hub.tour.entity.Tour;
 import com.caraivatours.hub.user.User;
 
 import java.time.LocalDateTime;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.caraivatours.hub.support.fixtures.ClientTestDataBuilder.aClient;
 import static com.caraivatours.hub.support.fixtures.FinancialSnapshotTestDataBuilder.aFinancialSnapshot;
@@ -33,9 +33,9 @@ public final class BookingTestDataBuilder {
     private Client client = aClient().build();
     private User attendant = aUser().build();
     private PickupLocation pickupLocation = aPickupLocation().build();
-    private final Set<GroupMember> groupMembers = new LinkedHashSet<>();
+    private final List<GroupMember> groupMembers = new ArrayList<>();
     private Payment payment;
-    private final Set<StatusHistory> statusHistory = new LinkedHashSet<>();
+    private final List<StatusHistory> statusHistory = new ArrayList<>();
 
     private BookingTestDataBuilder() {
     }

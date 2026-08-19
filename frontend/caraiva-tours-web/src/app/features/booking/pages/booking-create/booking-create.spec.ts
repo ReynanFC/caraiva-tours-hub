@@ -106,7 +106,10 @@ describe('BookingCreate', () => {
     expect(imgbbMock.uploadImage).toHaveBeenCalledWith(file);
     expect(component.bookingForm.controls.pixPaymentUrl.value).toBe(imageUrl);
     expect(bookingServiceMock.createBooking).toHaveBeenCalledWith(
-      expect.objectContaining({ pixPaymentUrl: imageUrl }),
+      expect.objectContaining({
+        client: expect.objectContaining({ phone: '(73) 99999-9999' }),
+        pixPaymentUrl: imageUrl,
+      }),
     );
   });
 

@@ -9,6 +9,9 @@ import { getApiErrorMessage } from '../../../../core/http/api-error';
 import { ActionNotificationService } from '../../../../shared/components/action-notification/action-notification.service';
 import { PagedResult } from '../../../../shared/models/paged-result.model';
 import { PaymentDetailsDialog } from '../../../../shared/components/payment-details-dialog/payment-details-dialog';
+import { BookingDetailsDialog } from '../../../booking/components/booking-details-dialog/booking-details-dialog';
+import { BookingSummary } from '../../../booking/models/booking.model';
+import { BookingService } from '../../../booking/services/booking';
 import { PaymentFilters } from '../../components/payment-filters/payment-filters';
 import { PaymentList } from '../../components/payment-list/payment-list';
 import { PaymentOverview } from '../../components/payment-overview/payment-overview';
@@ -32,6 +35,7 @@ const EMPTY_PAGE: PagedResult<PaymentRow> = {
 })
 export class PaymentPage {
   private readonly payments = inject(PaymentService);
+  private readonly bookings = inject(BookingService);
   private readonly dialogs = inject(DialogService);
   private readonly notifications = inject(ActionNotificationService);
   private readonly session = inject(SessionStore);
@@ -113,6 +117,47 @@ export class PaymentPage {
     } catch (error: unknown) {
       this.notifications.error(
         await getApiErrorMessage(error, 'Não foi possível carregar os detalhes do pagamento.'),
+      );
+    } finally {
+      this.detailLoadingId.set(null);
+    }
+  }
+
+  protected async openReservationDetails(bookingId: number): Promise<void> {
+    this.notifications.clear();
+    this.detailLoadingId.set(bookingId);
+
+    try {
+      const details = await firstValueFrom(this.bookings.getBookingsDetails(bookingId));
+      const row = this.rowsResource
+        .value()
+        ?.content.find((candidate) => 'bookingId' in candidate && candidate.bookingId === bookingId);
+      const booking: BookingSummary = details.summary ?? {
+        id: bookingId,
+        attendantId: 0,
+        clientName: row?.clientName ?? '',
+        tourName: row?.tourName ?? '',
+        date: row?.scheduledAt ?? '',
+        groupSize: details.members.length + 1,
+        totalPrice: row?.totalPrice ?? 0,
+        status: row?.status ?? 'CANCELLED',
+      };
+
+      this.dialogs.open(BookingDetailsDialog, {
+        header: `Detalhes da reserva #${bookingId}`,
+        width: '44rem',
+        modal: true,
+        dismissableMask: true,
+        closeOnEscape: true,
+        closable: true,
+        closeAriaLabel: 'Fechar detalhes da reserva',
+        styleClass: 'booking-details-dialog',
+        breakpoints: { '767px': 'calc(100vw - 2rem)' },
+        inputValues: { booking, details },
+      });
+    } catch (error: unknown) {
+      this.notifications.error(
+        await getApiErrorMessage(error, 'Não foi possível carregar os detalhes da reserva.'),
       );
     } finally {
       this.detailLoadingId.set(null);

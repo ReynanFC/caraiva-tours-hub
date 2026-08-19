@@ -14,16 +14,15 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
-    /** Searches persisted payments by payment identifier and/or terms from the client name. */
+    /** Searches persisted payments by payment identifier and/or client phone. */
     @Query(value = """
             SELECT p.*
             FROM payment p
             JOIN booking b ON b.payment_id = p.payment_id
             JOIN client c ON c.client_id = b.client_id
             WHERE (:idPayment IS NULL OR p.payment_id = :idPayment)
-              AND (:clientName IS NULL OR :clientName = ''
-                   OR to_tsvector('portuguese', COALESCE(c.name, ''))
-                        @@ websearch_to_tsquery('portuguese', :clientName))
+              AND (:phoneClient IS NULL OR :phoneClient = ''
+                   OR c.phone LIKE CONCAT('%', :phoneClient, '%'))
             ORDER BY p.paid_at DESC
             """,
             countQuery = """
@@ -32,21 +31,20 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
             JOIN booking b ON b.payment_id = p.payment_id
             JOIN client c ON c.client_id = b.client_id
             WHERE (:idPayment IS NULL OR p.payment_id = :idPayment)
-              AND (:clientName IS NULL OR :clientName = ''
-                   OR to_tsvector('portuguese', COALESCE(c.name, ''))
-                        @@ websearch_to_tsquery('portuguese', :clientName))
+              AND (:phoneClient IS NULL OR :phoneClient = ''
+                   OR c.phone LIKE CONCAT('%', :phoneClient, '%'))
             """,
             nativeQuery = true)
     Page<Payment> findAllByFiltersQuery(
             @Param("idPayment") Long idPayment,
-            @Param("clientName") String clientName,
+            @Param("phoneClient") String phoneClient,
             Pageable pageable
     );
 
     default Page<Payment> findAllByFilters(Long idPayment,
-                                           String clientName,
+                                           String phoneClient,
                                            Pageable pageable) {
-        return findAllByFiltersQuery(idPayment, clientName, withoutSort(pageable));
+        return findAllByFiltersQuery(idPayment, phoneClient, withoutSort(pageable));
     }
 
     /** Returns payments linked to bookings in the requested workflow status. */
@@ -64,14 +62,9 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
             FROM booking b
             JOIN client c ON c.client_id = b.client_id
             WHERE b.current_status = COALESCE(CAST(:status AS booking_status_enum), b.current_status)
-              AND (:search = ''
-                   OR b.booking_id = CASE
-                        WHEN :search ~ '^[0-9]+$' THEN CAST(:search AS BIGINT)
-                        ELSE NULL
-                      END
-                   OR to_tsvector('portuguese', COALESCE(c.name, ''))
-                        @@ websearch_to_tsquery('portuguese', :search)
-                   OR c.phone LIKE CONCAT('%', :search, '%'))
+              AND (:paymentId IS NULL AND (:phoneClient IS NULL OR :phoneClient = '')
+                   OR b.payment_id = :paymentId
+                   OR c.phone LIKE CONCAT('%', :phoneClient, '%'))
             ORDER BY b.created_at DESC
             """,
             countQuery = """
@@ -79,25 +72,27 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
             FROM booking b
             JOIN client c ON c.client_id = b.client_id
             WHERE b.current_status = COALESCE(CAST(:status AS booking_status_enum), b.current_status)
-              AND (:search = ''
-                   OR b.booking_id = CASE
-                        WHEN :search ~ '^[0-9]+$' THEN CAST(:search AS BIGINT)
-                        ELSE NULL
-                      END
-                   OR to_tsvector('portuguese', COALESCE(c.name, ''))
-                        @@ websearch_to_tsquery('portuguese', :search)
-                   OR c.phone LIKE CONCAT('%', :search, '%'))
+              AND (:paymentId IS NULL AND (:phoneClient IS NULL OR :phoneClient = '')
+                   OR b.payment_id = :paymentId
+                   OR c.phone LIKE CONCAT('%', :phoneClient, '%'))
             """,
             nativeQuery = true)
     Page<Booking> findReservationsForPaymentQuery(@Param("status") String status,
-                                                  @Param("search") String search,
+                                                  @Param("paymentId") Long paymentId,
+                                                  @Param("phoneClient") String phoneClient,
                                                   Pageable pageable);
 
     default Page<Booking> findReservationsForPayment(BookingStatus status,
-                                                     String search,
+                                                     Long paymentId,
+                                                     String phoneClient,
                                                      Pageable pageable) {
         String statusName = status == null ? null : status.name();
-        return findReservationsForPaymentQuery(statusName, search, withoutSort(pageable));
+        return findReservationsForPaymentQuery(
+                statusName,
+                paymentId,
+                phoneClient,
+                withoutSort(pageable)
+        );
     }
 
     private static Pageable withoutSort(Pageable pageable) {

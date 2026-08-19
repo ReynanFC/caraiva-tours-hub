@@ -19,6 +19,14 @@ import java.util.Base64;
 import java.util.HexFormat;
 import java.util.Optional;
 
+/**
+ * Implements password setup and password recovery with short-lived, one-use credentials.
+ *
+ * <p>The raw random token is delivered by e-mail, while Redis stores only its SHA-256 hash for
+ * 15 minutes. Reset consumes the key atomically with {@code GETDEL}; consequently a token cannot
+ * be replayed, even by two concurrent requests. Unknown e-mails are silently ignored to avoid
+ * account enumeration.</p>
+ */
 @Service
 @RequiredArgsConstructor
 public class PasswordResetService {
@@ -62,6 +70,11 @@ public class PasswordResetService {
         emailService.sendResetEmail(user.getEmail(), token);
     }
 
+    /**
+     * Consumes a reset token before persisting the new encoded password.
+     * A missing user is reported as the same invalid-token error so internal account state is
+     * not exposed.
+     */
     public void resetPassword(ResetPasswordRequest request) {
 
         String tokenHash = hashToken(request.token());
