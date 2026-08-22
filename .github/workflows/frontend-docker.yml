@@ -28,6 +28,25 @@ jobs:
       - name: Prepare Docker Compose
         run: touch .env
 
+      - name: Create frontend environment
+        env:
+          IMGBB_API_KEY: ${{ secrets.IMGBB_API_KEY }}
+        run: |
+          if [ "${GITHUB_EVENT_NAME}" = "push" ] && [ -z "${IMGBB_API_KEY}" ]; then
+            echo "::error::Configure the IMGBB_API_KEY repository secret"
+            exit 1
+          fi
+
+          node -e '
+            const fs = require("fs");
+            const apiKey = process.env.IMGBB_API_KEY || "ci-placeholder";
+            fs.mkdirSync("frontend/caraiva-tours-web/src/environment", { recursive: true });
+            fs.writeFileSync(
+              "frontend/caraiva-tours-web/src/environment/environment.ts",
+              `export const environment = { imgbbApiKey: ${JSON.stringify(apiKey)} };\n`,
+            );
+          '
+
       - name: Set up Node.js 22
         uses: actions/setup-node@v7
         with:
