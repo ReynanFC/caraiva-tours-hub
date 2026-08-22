@@ -23,18 +23,16 @@
     />
   } @else if (format() === 'phone') {
     <input
-      [pInputMask]="'(99) 99999-9999'"
+      pInputText
       [id]="inputId()"
-      [ngModel]="value"
+      [value]="value ?? ''"
       [placeholder]="placeholder()"
       [autocomplete]="autocomplete()"
-      [maxlength]="maxlength() ?? 20"
-      [slotChar]="'0'"
+      [maxLength]="maxlength() ?? 20"
       [disabled]="disabled"
       [required]="required()"
       [class]="inputClass()"
-      (ngModelChange)="change($event)"
-      (onUnmaskedChange)="maskedChange($event)"
+      (input)="phoneChange($event)"
       (blur)="blur()"
     />
   } @else if (isNumeric) {

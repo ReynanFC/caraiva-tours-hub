@@ -1,3 +1,6 @@
+// Keep this expression aligned with ClientDTO's @Pattern in the backend.
+export const BRAZILIAN_PHONE_PATTERN = /^(\(?[1-9]{2}\)?\s?)?(9?[0-9]{4})-?([0-9]{4})$/;
+
 export function formatBrazilianPhone(value: string): string {
   const digits = value.replace(/\D/g, '').slice(0, 11);
 

@@ -215,10 +215,6 @@
   @apply my-2 list-disc space-y-1 pl-5 text-xs;
 }
 
-.booking-submit-error small {
-  @apply block break-all text-xs text-red-700;
-}
-
 .confirm-button {
   @apply mt-5 flex h-11 w-full items-center justify-center rounded-control border-0 bg-primary px-4 font-ui text-sm font-semibold text-on-primary;
   box-shadow: var(--shadow-button);

@@ -576,17 +576,18 @@ class RefundRequestTest extends AbstractIntegrationTest {
             }
 
             @Test
-            @DisplayName("should reject pending request without changing booking status")
-            void shouldRejectRequestWithoutChangingBookingStatus() {
+            @DisplayName("should reject pending request and restore previous booking status")
+            void shouldRejectRequestAndRestorePreviousBookingStatus() {
                 User requester = saveUser(UserRole.EMPLOYEE);
                 User admin = saveUser(UserRole.ADMIN);
-                Booking booking = saveBooking(BookingStatus.CANCEL_REQUEST, requester);
-                RefundRequest refund = saveRefundRequest(
-                        booking, requester, RefundStatus.PENDING, "Pedido", null, null
+                Booking booking = saveBooking(BookingStatus.CONFIRMED, requester);
+                RefundRequestResponseDTO createdRefund = refundRequestService.create(
+                        requester.getId(),
+                        new CreateRefundRequestDTO(booking.getId(), "Pedido")
                 );
 
                 RefundRequestResponseDTO result = refundRequestService.resolve(
-                        refund.getId(),
+                        createdRefund.id(),
                         admin.getId(),
                         new ResolveRefundRequestDTO(RefundStatus.REJECTED, null)
                 );
@@ -596,10 +597,17 @@ class RefundRequestTest extends AbstractIntegrationTest {
                 assertThat(result.adminObservation()).isNull();
                 assertThat(result.resolvedAt()).isNotNull();
                 assertThat(result.resolvedByUserId()).isEqualTo(admin.getId());
-                assertThat(booking.getCurrentStatus()).isEqualTo(BookingStatus.CANCEL_REQUEST);
+                assertThat(booking.getCurrentStatus()).isEqualTo(BookingStatus.CONFIRMED);
                 assertThat(statusHistoryRepository.findAll())
                         .filteredOn(history -> history.getBooking().getId().equals(booking.getId()))
-                        .isEmpty();
+                        .filteredOn(history -> history.getNewStatus() == BookingStatus.CONFIRMED)
+                        .singleElement()
+                        .satisfies(history -> {
+                            assertThat(history.getPreviousStatus()).isEqualTo(BookingStatus.CANCEL_REQUEST);
+                            assertThat(history.getUser().getId()).isEqualTo(admin.getId());
+                            assertThat(history.getChangeReason()).isEqualTo("Refund request rejected");
+                            assertThat(history.getChangedAt()).isNotNull();
+                        });
             }
 
             @Test

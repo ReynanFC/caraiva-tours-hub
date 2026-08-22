@@ -92,6 +92,13 @@ export class ImageUpload implements ControlValueAccessor, OnDestroy {
     this.uploadError.set(null);
   }
 
+  protected openFilePicker(input: HTMLInputElement): void {
+    if (this.disabled()) return;
+
+    input.value = '';
+    input.click();
+  }
+
   async uploadPendingFile(): Promise<string | null> {
     const file = this.file();
     const existingUrl = this.uploadedUrl();

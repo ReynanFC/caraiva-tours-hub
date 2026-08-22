@@ -124,20 +124,23 @@ export class BookingList {
         firstValueFrom(this.bookingService.getAvailableTours()),
       ]);
 
-      this.dialogService.open(BookingEditDialog, {
+      const dialogRef = this.dialogService.open(BookingEditDialog, {
         header: `Editar reserva #${booking.id}`,
         width: '38rem',
         modal: true,
         dismissableMask: true,
         closeOnEscape: true,
         styleClass: 'booking-edit-dialog',
-        breakpoints: { '480px': 'calc(100vw - 2rem)' },
+        breakpoints: { '767px': 'calc(100vw - 2rem)' },
         inputValues: {
           booking,
           details,
           tours: toursResult.content,
-          onSave: (payload: UpdateBookingRequest) => this.updateBooking(booking, payload),
         },
+      });
+
+      dialogRef?.onClose.subscribe((payload: UpdateBookingRequest | undefined) => {
+        if (payload) void this.updateBooking(booking, payload);
       });
     } catch (error: unknown) {
       this.notifications.error(

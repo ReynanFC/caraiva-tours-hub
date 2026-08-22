@@ -12,18 +12,23 @@
   type="file"
   accept="image/jpeg,image/png,image/webp"
   [disabled]="disabled()"
-  (click)="fileInput.value = ''"
   (change)="selectFile($event)"
 />
 
 @if (!file()) {
-  <label [for]="inputId()" class="upload-dropzone" [class.upload-dropzone-disabled]="disabled()">
+  <button
+    type="button"
+    class="upload-dropzone"
+    [disabled]="disabled()"
+    [class.upload-dropzone-disabled]="disabled()"
+    (click)="openFilePicker(fileInput)"
+  >
     <span class="upload-symbol" aria-hidden="true">+</span>
     <span>
       <strong>{{ selectLabel() }}</strong>
       <small>JPG, PNG ou WEBP, até 32 MB</small>
     </span>
-  </label>
+  </button>
 } @else {
   <div class="proof-preview">
     <img [src]="previewUrl()" [alt]="previewAlt()" />
@@ -40,13 +45,20 @@
         } @else if (uploadError()) {
           <span class="status-error">{{ uploadError() }}</span>
         } @else {
-          <span class="status-ready">Pronta para enviar ao salvar</span>
+          <span class="status-ready">Pronta para enviar</span>
         }
       </div>
     </div>
 
     <div class="proof-actions">
-      <label [for]="inputId()" class="change-button">Trocar imagem</label>
+      <button
+        type="button"
+        class="change-button"
+        [disabled]="disabled()"
+        (click)="openFilePicker(fileInput)"
+      >
+        Trocar imagem
+      </button>
       <button pButton type="button" class="remove-button" (click)="removeFile(fileInput)">
         Remover
       </button>

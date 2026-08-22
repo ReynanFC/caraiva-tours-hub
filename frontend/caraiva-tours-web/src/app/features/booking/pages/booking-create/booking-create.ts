@@ -50,7 +50,6 @@ export class BookingCreate {
   protected readonly pixProofUploading = signal(false);
   protected readonly bookingSubmitting = signal(false);
   protected readonly bookingSubmitErrors = signal<string[]>([]);
-  protected readonly bookingErrorTraceId = signal<string | null>(null);
 
   private readonly members = toSignal(this.bookingForm.controls.members.valueChanges, {
     initialValue: this.bookingForm.controls.members.getRawValue(),
@@ -117,7 +116,6 @@ export class BookingCreate {
 
     this.bookingSubmitting.set(true);
     this.bookingSubmitErrors.set([]);
-    this.bookingErrorTraceId.set(null);
 
     try {
       const pixPaymentUrl = await this.pixUpload().uploadPendingFile();
@@ -140,16 +138,21 @@ export class BookingCreate {
     const fallbackMessage = 'Não foi possível criar a reserva. Tente novamente.';
 
     if (!(error instanceof HttpErrorResponse)) {
+      console.error('[BookingCreate] Erro não HTTP ao criar reserva.', {
+        identification: 'UNEXPECTED_ERROR',
+        error,
+      });
       this.bookingSubmitErrors.set([fallbackMessage]);
       return;
     }
 
     const payload: unknown = error.error;
+    this.logBookingError(error, payload);
+
     if (this.isValidationError(payload)) {
       const messages = [...new Set(Object.values(payload.errors).filter(Boolean))];
 
       this.bookingSubmitErrors.set(messages.length ? messages : [fallbackMessage]);
-      this.bookingErrorTraceId.set(payload.traceId);
       return;
     }
 
@@ -167,11 +170,28 @@ export class BookingCreate {
     }
 
     const candidate = payload as Partial<ValidationError>;
-    return (
-      !!candidate.errors &&
-      typeof candidate.errors === 'object' &&
-      typeof candidate.traceId === 'string'
-    );
+    return !!candidate.errors && typeof candidate.errors === 'object';
+  }
+
+  private logBookingError(error: HttpErrorResponse, payload: unknown): void {
+    const apiError = payload && typeof payload === 'object' ? payload : null;
+    const traceId =
+      apiError && 'traceId' in apiError && typeof apiError.traceId === 'string'
+        ? apiError.traceId
+        : null;
+    const path =
+      apiError && 'path' in apiError && typeof apiError.path === 'string'
+        ? apiError.path
+        : error.url;
+
+    console.error('[BookingCreate] Falha ao criar reserva.', {
+      identification: traceId ?? `HTTP_${error.status || 'UNKNOWN'}`,
+      traceId,
+      status: error.status,
+      statusText: error.statusText,
+      path,
+      payload,
+    });
   }
 
   private hasMessage(payload: unknown): payload is { message: string } {

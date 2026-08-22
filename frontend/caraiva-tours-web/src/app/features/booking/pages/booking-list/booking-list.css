@@ -54,11 +54,18 @@
 
 ::ng-deep .booking-edit-dialog {
   @apply overflow-hidden rounded-lg! border! border-border! bg-surface! shadow-2xl!;
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100dvh - 2rem);
 }
 ::ng-deep .booking-edit-dialog .p-dialog-header {
   @apply border-b! border-border! px-5! py-4! font-display! text-base! font-bold!;
 }
 ::ng-deep .booking-edit-dialog .p-dialog-content {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  overflow-anchor: none;
   @apply bg-surface! p-5!;
 }
 ::ng-deep .p-dialog-mask {
@@ -72,9 +79,6 @@
 
   ::ng-deep .booking-edit-dialog {
     height: calc(100dvh - 2rem);
-    max-height: calc(100dvh - 2rem);
-    display: flex;
-    flex-direction: column;
   }
 
   ::ng-deep .booking-edit-dialog .p-dialog-header {
@@ -82,11 +86,7 @@
   }
 
   ::ng-deep .booking-edit-dialog .p-dialog-content {
-    min-height: 0;
     flex: 1 1 auto;
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    overflow-anchor: none;
     @apply p-4!;
   }
 }

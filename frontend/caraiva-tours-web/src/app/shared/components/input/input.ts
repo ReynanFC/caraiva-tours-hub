@@ -82,6 +82,14 @@ export class Input {
     }
   }
 
+  protected phoneChange(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const formattedPhone = this.formatPhoneInput(input.value);
+
+    input.value = formattedPhone;
+    this.change(formattedPhone);
+  }
+
   protected blur(): void {
     this.onTouched();
   }
@@ -100,6 +108,22 @@ export class Input {
 
   setDisabledState(disabled: boolean): void {
     this.disabled = disabled;
+  }
+
+  private formatPhoneInput(value: string): string {
+    const digits = value.replace(/\D/g, '').slice(0, 11);
+
+    if (digits.length <= 2) {
+      return digits ? `(${digits}` : '';
+    }
+
+    const ddd = digits.slice(0, 2);
+    const number = digits.slice(2);
+    const prefixLength = digits.length === 11 ? 5 : 4;
+    const prefix = number.slice(0, prefixLength);
+    const suffix = number.slice(prefixLength);
+
+    return `(${ddd}) ${prefix}${suffix ? `-${suffix}` : ''}`;
   }
 
   private onChange: (value: string | number | null) => void = () => undefined;

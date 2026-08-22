@@ -2,7 +2,7 @@ import { Service } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 
 import { formatLocalDateTime } from '../../../shared/utils/date.utils';
-import { formatBrazilianPhone } from '../../../shared/utils/phone.utils';
+import { BRAZILIAN_PHONE_PATTERN, formatBrazilianPhone } from '../../../shared/utils/phone.utils';
 import { CreateBookingRequest } from '../models/booking.model';
 
 type MemberForm = FormGroup<{
@@ -20,7 +20,11 @@ export class BookingFormService {
       }),
       phone: new FormControl('', {
         nonNullable: true,
-        validators: [Validators.required, Validators.maxLength(20)],
+        validators: [
+          Validators.required,
+          Validators.maxLength(20),
+          Validators.pattern(BRAZILIAN_PHONE_PATTERN),
+        ],
       }),
       email: new FormControl('', {
         nonNullable: false,
@@ -35,7 +39,7 @@ export class BookingFormService {
     pickup: new FormGroup({
       cep: new FormControl('', {
         nonNullable: false,
-        validators: [Validators.pattern(/^\d{9}$/)],
+        validators: [Validators.maxLength(9)],
       }),
       locationName: new FormControl('', {
         nonNullable: true,

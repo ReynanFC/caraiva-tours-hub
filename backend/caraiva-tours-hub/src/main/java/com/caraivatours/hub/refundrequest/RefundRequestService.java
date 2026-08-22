@@ -5,6 +5,7 @@ import com.caraivatours.hub.booking.Booking;
 import com.caraivatours.hub.booking.BookingRepository;
 import com.caraivatours.hub.booking.enums.BookingStatus;
 import com.caraivatours.hub.booking.event.BookingStatusChangedEvent;
+import com.caraivatours.hub.booking.statushistory.StatusHistoryRepository;
 import com.caraivatours.hub.refundrequest.dto.request.CreateRefundRequestDTO;
 import com.caraivatours.hub.refundrequest.dto.request.ResolveRefundRequestDTO;
 import com.caraivatours.hub.refundrequest.dto.response.RefundBookingOptionDTO;
@@ -31,8 +32,8 @@ import java.util.List;
  *
  * <p>An employee may request cancellation only for their own booking and only one request may be
  * pending. Creation moves the booking to {@code CANCEL_REQUEST}; only an administrator can decide
- * it, and approval moves the booking to {@code CANCELLED}. Rejection currently keeps the booking
- * in review status by explicit domain behavior.</p>
+ * it, and approval moves the booking to {@code CANCELLED}. Rejection restores the status held by
+ * the booking before the cancellation request.</p>
  */
 @Service
 @Slf4j
@@ -43,6 +44,7 @@ public class RefundRequestService {
     private final RefundRequestRepository refundRequestRepository;
     private final RefundRequestMapper refundRequestMapper;
     private final BookingRepository bookingRepository;
+    private final StatusHistoryRepository statusHistoryRepository;
     private final UserService userService;
     private final ApplicationEventPublisher eventPublisher;
 
@@ -119,10 +121,12 @@ public class RefundRequestService {
         log.info("Resolving refund request ID: {} by user ID: {} with status: {}",
                 refundRequestId, adminId, request.refundStatus());
         User admin = userService.findById(adminId);
+
         if (!isAdmin(admin)) {
             log.warn("Refund request resolution denied: non-admin user ID {}", adminId);
             throw new BadRequestException("Only administrators can resolve refund requests");
         }
+
         if (request.refundStatus() == RefundStatus.PENDING) {
             log.warn("Refund request ID {} cannot be resolved with PENDING status", refundRequestId);
             throw new BadRequestException("A refund request can only be approved or rejected");
@@ -143,8 +147,17 @@ public class RefundRequestService {
             log.info("Refund request ID {} approved; booking ID {} moved to {}",
                     refundRequestId, refundRequest.getBooking().getId(), BookingStatus.CANCELLED);
         } else {
-            log.info("Refund request ID {} rejected; booking ID {} remains in {}",
-                    refundRequestId, refundRequest.getBooking().getId(), refundRequest.getBooking().getCurrentStatus());
+            Booking booking = refundRequest.getBooking();
+            BookingStatus previousStatus = statusHistoryRepository
+                    .findTopByBookingIdAndNewStatusOrderByIdDesc(booking.getId(), BookingStatus.CANCEL_REQUEST)
+                    .map(history -> history.getPreviousStatus())
+                    .orElseThrow(() -> new BadRequestException(
+                            "Previous booking status not found for refund request ID: " + refundRequestId
+                    ));
+
+            changeBookingStatus(booking, previousStatus, adminId, "Refund request rejected");
+            log.info("Refund request ID {} rejected; booking ID {} restored to {}",
+                    refundRequestId, booking.getId(), previousStatus);
         }
 
         return refundRequestMapper.toResponse(refundRequest);

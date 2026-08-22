@@ -1,7 +1,8 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { of, throwError } from 'rxjs';
+import { DialogService } from 'primeng/dynamicdialog';
+import { of, Subject, throwError } from 'rxjs';
 
 import { BookingService } from '../../services/booking';
 import { BookingList } from './booking-list';
@@ -13,9 +14,14 @@ describe('BookingList', () => {
   const bookingServiceMock = {
     getBookings: vi.fn(),
     getBookingsDetails: vi.fn(),
+    getAvailableTours: vi.fn(),
     confirmBooking: vi.fn(),
     cancelBooking: vi.fn(),
     updateBooking: vi.fn(),
+  };
+  const dialogClose = new Subject<unknown>();
+  const dialogServiceMock = {
+    open: vi.fn((_component: unknown, _config: unknown) => ({ onClose: dialogClose })),
   };
 
   beforeEach(async () => {
@@ -49,7 +55,11 @@ describe('BookingList', () => {
           useValue: { isAdmin: signal(true), userId: signal(7) },
         },
       ],
-    }).compileComponents();
+    })
+      .overrideComponent(BookingList, {
+        set: { providers: [{ provide: DialogService, useValue: dialogServiceMock }] },
+      })
+      .compileComponents();
 
     fixture = TestBed.createComponent(BookingList);
     await fixture.whenStable();
@@ -160,5 +170,35 @@ describe('BookingList', () => {
     expect(tableText).toContain('Ana Souza');
     expect(tableText).toContain('Espelho');
     expect(tableText).not.toContain('Ana Silva');
+  });
+
+  it('should update the booking with the payload returned when the edit dialog closes', async () => {
+    const booking = (fixture.componentInstance as any).bookingsResource.value().content[0];
+    const payload = { clientName: 'Ana Souza' };
+    const updatedBooking = { ...booking, clientName: 'Ana Souza' };
+    bookingServiceMock.getBookingsDetails.mockReturnValue(
+      of({ members: [], history: [], pickup: {} }),
+    );
+    bookingServiceMock.getAvailableTours.mockReturnValue(of({ content: [] }));
+    bookingServiceMock.updateBooking.mockReturnValue(of(updatedBooking));
+
+    await (fixture.componentInstance as any).openEditDialog(booking);
+
+    expect(dialogServiceMock.open).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({
+        inputValues: expect.objectContaining({ booking, tours: [] }),
+      }),
+    );
+    expect(
+      (dialogServiceMock.open.mock.calls.at(-1)?.[1] as { inputValues: Record<string, unknown> })
+        .inputValues,
+    ).not.toHaveProperty('onSave');
+
+    dialogClose.next(payload);
+
+    await vi.waitFor(() => {
+      expect(bookingServiceMock.updateBooking).toHaveBeenCalledWith(booking.id, payload);
+    });
   });
 });

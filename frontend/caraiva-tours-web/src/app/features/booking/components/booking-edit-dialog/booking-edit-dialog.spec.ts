@@ -7,7 +7,6 @@ import { BookingEditDialog } from './booking-edit-dialog';
 
 describe('BookingEditDialog', () => {
   let fixture: ComponentFixture<BookingEditDialog>;
-  const onSave = vi.fn();
   const close = vi.fn();
   const imgbbMock = { uploadImage: vi.fn() };
 
@@ -56,7 +55,6 @@ describe('BookingEditDialog', () => {
         category: { id: 1, name: 'Praia' },
       },
     ]);
-    fixture.componentRef.setInput('onSave', onSave);
     fixture.detectChanges();
   });
 
@@ -66,7 +64,7 @@ describe('BookingEditDialog', () => {
 
     await (fixture.componentInstance as any).save();
 
-    expect(onSave).toHaveBeenCalledWith(
+    expect(close).toHaveBeenCalledWith(
       expect.objectContaining({
         members: [{ name: 'João Silva', isLapChild: false }],
       }),
@@ -78,7 +76,7 @@ describe('BookingEditDialog', () => {
 
     (fixture.componentInstance as any).save();
 
-    expect(onSave).not.toHaveBeenCalled();
+    expect(close).not.toHaveBeenCalled();
   });
 
   it('should initialize and submit the pickup location', async () => {
@@ -87,7 +85,7 @@ describe('BookingEditDialog', () => {
     (fixture.componentInstance as any).pickup.referencePoint = 'Em frente ao mercado';
     await (fixture.componentInstance as any).save();
 
-    expect(onSave).toHaveBeenCalledWith(
+    expect(close).toHaveBeenCalledWith(
       expect.objectContaining({
         pickup: {
           cep: '45810-000',
@@ -104,9 +102,7 @@ describe('BookingEditDialog', () => {
 
     await (fixture.componentInstance as any).save();
 
-    expect(onSave).toHaveBeenCalledWith(
-      expect.objectContaining({ clientPhone: '(73) 99999-9999' }),
-    );
+    expect(close).toHaveBeenCalledWith(expect.objectContaining({ clientPhone: '(73) 99999-9999' }));
   });
 
   it('should upload a selected image only when saving', async () => {
@@ -125,9 +121,18 @@ describe('BookingEditDialog', () => {
     await (fixture.componentInstance as any).save();
 
     expect(imgbbMock.uploadImage).toHaveBeenCalledWith(file);
-    expect(onSave).toHaveBeenCalledWith(
-      expect.objectContaining({ pixPaymentUrl: imageUrl }),
-    );
+    expect(close).toHaveBeenCalledWith(expect.objectContaining({ pixPaymentUrl: imageUrl }));
+  });
+
+  it('should open the hidden file input through a button without focusing it', () => {
+    const input: HTMLInputElement = fixture.nativeElement.querySelector('#pixProof');
+    const selectButton: HTMLButtonElement = fixture.nativeElement.querySelector('.upload-dropzone');
+    const inputClick = vi.spyOn(input, 'click');
+
+    selectButton.click();
+
+    expect(inputClick).toHaveBeenCalledOnce();
+    expect(getComputedStyle(input).display).toBe('none');
   });
 
   it('should upload only the last selected image', async () => {

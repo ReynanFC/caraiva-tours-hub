@@ -16,6 +16,7 @@ import { definePreset } from '@primeuix/themes';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { authInterceptor } from './core/interceptor/auth-interceptor';
 import { initSession } from './core/auth/guard/session-init';
+import { environment } from '../environment/environment';
 
 registerLocaleData(localePt);
 
@@ -52,6 +53,7 @@ export const appConfig: ApplicationConfig = {
           darkModeSelector: false,
         },
       },
+      license: environment.primeUILicense
     }),
   ],
 };

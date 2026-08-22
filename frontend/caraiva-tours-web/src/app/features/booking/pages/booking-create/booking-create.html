@@ -25,6 +25,13 @@
             autocomplete="tel-national"
             maxlength="20"
           />
+          @if (bookingForm.controls.client.controls.phone.touched) {
+            @if (bookingForm.controls.client.controls.phone.hasError('required')) {
+              <small class="field-error">Informe o telefone do responsável.</small>
+            } @else if (bookingForm.controls.client.controls.phone.hasError('pattern')) {
+              <small class="field-error">Informe um telefone válido.</small>
+            }
+          }
         </div>
 
         <div class="form-field">
@@ -311,9 +318,6 @@
               <li>{{ error }}</li>
             }
           </ul>
-          @if (bookingErrorTraceId()) {
-            <small>Código de suporte: {{ bookingErrorTraceId() }}</small>
-          }
         </div>
       }
 

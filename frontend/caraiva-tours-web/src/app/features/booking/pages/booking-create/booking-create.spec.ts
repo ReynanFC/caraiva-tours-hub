@@ -42,6 +42,10 @@ describe('BookingCreate', () => {
     await fixture.whenStable();
   });
 
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it('should create', () => {
     expect(fixture.componentInstance).toBeTruthy();
   });
@@ -74,6 +78,37 @@ describe('BookingCreate', () => {
 
     expect(phoneInput.maxLength).toBe(20);
     expect(phoneInput.placeholder).toBe('(00) 00000-0000');
+  });
+
+  it('should preserve the digits of landline and mobile phone numbers', () => {
+    const phoneInput: HTMLInputElement = fixture.nativeElement.querySelector('#phone');
+    const phoneControl = fixture.componentInstance.bookingForm.controls.client.controls.phone;
+
+    phoneInput.value = '71 8778-3688';
+    phoneInput.dispatchEvent(new Event('input'));
+    expect(phoneInput.value).toBe('(71) 8778-3688');
+    expect(phoneControl.value).toBe('(71) 8778-3688');
+
+    phoneInput.value = '71 98778-3688';
+    phoneInput.dispatchEvent(new Event('input'));
+    expect(phoneInput.value).toBe('(71) 98778-3688');
+    expect(phoneControl.value).toBe('(71) 98778-3688');
+  });
+
+  it('should validate the phone with the same pattern used by the backend', () => {
+    const phone = fixture.componentInstance.bookingForm.controls.client.controls.phone;
+
+    phone.setValue('(73) 99999-9999');
+    expect(phone.hasError('pattern')).toBe(false);
+
+    phone.setValue('(73) 3333-4444');
+    expect(phone.hasError('pattern')).toBe(false);
+
+    phone.setValue('(00) 99999-9999');
+    expect(phone.hasError('pattern')).toBe(true);
+
+    phone.setValue('(73) 9999-999');
+    expect(phone.hasError('pattern')).toBe(true);
   });
 
   it('should upload a Pix proof only when submitting the booking', async () => {
@@ -181,9 +216,10 @@ describe('BookingCreate', () => {
     expect(summary.total()).toBe(200.05);
   });
 
-  it('should display validation messages and trace ID returned by the backend', async () => {
+  it('should display validation messages and log the trace ID returned by the backend', async () => {
     const component = fixture.componentInstance;
     const traceId = 'a3f0c8b2-5f84-4aa1-92cb-b6041433e74b';
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => undefined);
     component.bookingForm.patchValue({
       client: { name: 'Maria Souza', phone: '(73) 99999-9999' },
       tourId: 1,
@@ -217,6 +253,10 @@ describe('BookingCreate', () => {
     const alert: HTMLElement = fixture.nativeElement.querySelector('.booking-submit-error');
     expect(alert.textContent).toContain('O passeio selecionado não está disponível.');
     expect(alert.textContent).toContain('A data do passeio deve estar no futuro.');
-    expect(alert.textContent).toContain(traceId);
+    expect(alert.textContent).not.toContain(traceId);
+    expect(consoleError).toHaveBeenCalledWith(
+      '[BookingCreate] Falha ao criar reserva.',
+      expect.objectContaining({ identification: traceId, traceId, status: 400 }),
+    );
   });
 });

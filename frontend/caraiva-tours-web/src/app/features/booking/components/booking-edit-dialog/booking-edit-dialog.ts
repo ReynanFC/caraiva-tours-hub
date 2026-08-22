@@ -30,7 +30,6 @@ export class BookingEditDialog {
   readonly booking = input.required<BookingSummary>();
   readonly details = input.required<BookingDetails>();
   readonly tours = input.required<TourSummary[]>();
-  readonly onSave = input.required<(request: UpdateBookingRequest) => void>();
 
   protected clientName = '';
   protected clientPhone = '';
@@ -103,9 +102,7 @@ export class BookingEditDialog {
 
     const request: UpdateBookingRequest = {
       clientName: this.clientName.trim() || null,
-      clientPhone: this.clientPhone.trim()
-        ? formatBrazilianPhone(this.clientPhone)
-        : null,
+      clientPhone: this.clientPhone.trim() ? formatBrazilianPhone(this.clientPhone) : null,
       tourId: this.tourId,
       scheduleDate: this.scheduleDate || null,
       members: this.members.map((member) => ({ ...member, name: member.name.trim() })),
@@ -119,7 +116,6 @@ export class BookingEditDialog {
       },
     };
 
-    await this.onSave()(request);
-    this.dialogRef.close();
+    this.dialogRef.close(request);
   }
 }
