@@ -1,4 +1,18 @@
 services:
+
+  caraiva-frontend:
+    container_name: caraiva-tours-frontend
+    restart: always
+    image: ${DOCKERHUB_USERNAME:-local}/caraiva-tours-frontend:${IMAGE_TAG:-latest}
+    build:
+      context: ./frontend/caraiva-tours-web
+    ports:
+      - "80:80"
+    depends_on:
+      - caraiva-backend
+    networks:
+      - caraiva-network
+
   postgres-db:
     image: postgres:16-alpine
     container_name: caraiva-tours-db
@@ -41,6 +55,7 @@ services:
   caraiva-backend:
     container_name: caraiva-tours-backend
     restart: always
+    image: ${DOCKERHUB_USERNAME:-local}/caraiva-tours-backend:${IMAGE_TAG:-latest}
     build:
       context: ./backend/caraiva-tours-hub/
     env_file:

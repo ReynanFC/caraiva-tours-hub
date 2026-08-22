@@ -1,0 +1,61 @@
+name: Frontend Docker image
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: frontend-docker-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+  IMAGE_TAG: sha-${{ github.sha }}
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Prepare Docker Compose
+        run: touch .env
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/caraiva-tours-web/package-lock.json
+
+      - name: Build frontend
+        working-directory: frontend/caraiva-tours-web
+        run: |
+          npm ci
+          npm run build
+
+      - name: Log in to Docker Hub
+        if: github.event_name == 'push'
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build frontend image
+        run: docker compose build caraiva-frontend
+
+      - name: Push frontend image
+        if: github.event_name == 'push'
+        run: |
+          docker compose push caraiva-frontend
+          docker tag \
+            "${DOCKERHUB_USERNAME}/caraiva-tours-frontend:${IMAGE_TAG}" \
+            "${DOCKERHUB_USERNAME}/caraiva-tours-frontend:latest"
+          docker push "${DOCKERHUB_USERNAME}/caraiva-tours-frontend:latest"
