@@ -24,6 +24,15 @@ A aplicação usa detecção de mudanças zoneless. Portanto, estados visuais de
 
 ## Como executar
 
+Crie `src/environment/environment.ts` com as chaves usadas pelo frontend. O arquivo é ignorado pelo Git para evitar o versionamento de segredos:
+
+```typescript
+export const environment = {
+  imgbbApiKey: 'sua-chave-do-imgbb',
+  primeUILicense: 'sua-chave-de-licenca-primeui',
+};
+```
+
 Instale as dependências:
 
 ```bash

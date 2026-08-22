@@ -129,6 +129,7 @@ Para construir o frontend, crie o arquivo local `frontend/caraiva-tours-web/src/
 ```typescript
 export const environment = {
   imgbbApiKey: 'sua-chave-do-imgbb',
+  primeUILicense: 'sua-chave-de-licenca-primeui',
 };
 ```
 
@@ -168,7 +169,7 @@ Ao receber alterações na branch `main`, os workflows do GitHub Actions:
 2. constroem as imagens usando os Dockerfiles do backend e do frontend;
 3. publicam no Docker Hub as tags `latest` e `sha-<commit>`.
 
-Os workflows utilizam os secrets `DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN` e `IMGBB_API_KEY` configurados no repositório. Esses valores pertencem ao processo de build/publicação no GitHub e não precisam ser copiados para o `.env` ao executar imagens já publicadas.
+Os workflows utilizam os secrets `DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN`, `IMGBB_API_KEY` e `PRIMEUI_KEY` configurados no repositório. `IMGBB_API_KEY` e `PRIMEUI_KEY` são usados para gerar o `environment.ts` durante o build do frontend. Esses valores pertencem ao processo de build/publicação no GitHub e não precisam ser copiados para o `.env` ao executar imagens já publicadas.
 
 ## Documentação
 
