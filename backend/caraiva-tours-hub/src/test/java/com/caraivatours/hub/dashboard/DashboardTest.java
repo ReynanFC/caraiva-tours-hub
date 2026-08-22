@@ -3,6 +3,7 @@ package com.caraivatours.hub.dashboard;
 import com.caraivatours.hub.AbstractIntegrationTest;
 import com.caraivatours.hub.auth.PermissionRepository;
 import com.caraivatours.hub.auth.entity.Permission;
+import com.caraivatours.hub.auth.entity.enums.UserRole;
 import com.caraivatours.hub.booking.Booking;
 import com.caraivatours.hub.booking.BookingRepository;
 import com.caraivatours.hub.booking.embeddable.FinancialSnapshot;
@@ -45,7 +46,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static com.caraivatours.hub.support.fixtures.BookingTestDataBuilder.aBooking;
 import static com.caraivatours.hub.support.fixtures.CategoryTourTestDataBuilder.aCategoryTour;
 import static com.caraivatours.hub.support.fixtures.ClientTestDataBuilder.aClient;
-import static com.caraivatours.hub.support.fixtures.PermissionTestDataBuilder.aPermission;
 import static com.caraivatours.hub.support.fixtures.PickupLocationTestDataBuilder.aPickupLocation;
 import static com.caraivatours.hub.support.fixtures.TourTestDataBuilder.aTour;
 import static com.caraivatours.hub.support.fixtures.UserTestDataBuilder.aUser;
@@ -571,7 +571,7 @@ class DashboardTest extends AbstractIntegrationTest {
 
     private User saveUser() {
         String suffix = UUID.randomUUID().toString();
-        Permission permission = permissionRepository.save(aPermission().build());
+        Permission permission = requirePermission(UserRole.EMPLOYEE);
         User user = aUser()
                 .withEmail("dashboard-" + suffix + "@example.com")
                 .withPermission(permission)
@@ -580,6 +580,11 @@ class DashboardTest extends AbstractIntegrationTest {
         user.setUserName("dashboard-" + suffix);
         user.setCreatedAt(null);
         return userRepository.save(user);
+    }
+
+    private Permission requirePermission(UserRole role) {
+        return permissionRepository.findByRole(role)
+                .orElseThrow(() -> new AssertionError("Seeded permission not found: " + role));
     }
 
     private Tour saveTour(String name) {

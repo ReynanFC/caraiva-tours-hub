@@ -47,7 +47,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static com.caraivatours.hub.support.fixtures.BookingTestDataBuilder.aBooking;
 import static com.caraivatours.hub.support.fixtures.CategoryTourTestDataBuilder.aCategoryTour;
 import static com.caraivatours.hub.support.fixtures.ClientTestDataBuilder.aClient;
-import static com.caraivatours.hub.support.fixtures.PermissionTestDataBuilder.aPermission;
 import static com.caraivatours.hub.support.fixtures.PickupLocationTestDataBuilder.aPickupLocation;
 import static com.caraivatours.hub.support.fixtures.RefundRequestTestDataBuilder.aRefundRequest;
 import static com.caraivatours.hub.support.fixtures.TourTestDataBuilder.aTour;
@@ -721,9 +720,7 @@ class RefundRequestTest extends AbstractIntegrationTest {
 
     private User saveUser(UserRole role) {
         int sequence = DATA_SEQUENCE.incrementAndGet();
-        Permission permission = permissionRepository.saveAndFlush(aPermission()
-                .withRole(role)
-                .build());
+        Permission permission = requirePermission(role);
         User user = aUser()
                 .withEmail("user." + sequence + "@example.com")
                 .withPermission(permission)
@@ -733,6 +730,11 @@ class RefundRequestTest extends AbstractIntegrationTest {
         user.setUserName("user-" + sequence);
         user.setCreatedAt(null);
         return userRepository.saveAndFlush(user);
+    }
+
+    private Permission requirePermission(UserRole role) {
+        return permissionRepository.findByRole(role)
+                .orElseThrow(() -> new AssertionError("Seeded permission not found: " + role));
     }
 
     private Booking saveBooking(BookingStatus status, User attendant) {

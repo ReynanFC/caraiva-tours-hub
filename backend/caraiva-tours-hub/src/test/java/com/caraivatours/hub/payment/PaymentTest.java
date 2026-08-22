@@ -3,6 +3,7 @@ package com.caraivatours.hub.payment;
 import com.caraivatours.hub.AbstractIntegrationTest;
 import com.caraivatours.hub.auth.PermissionRepository;
 import com.caraivatours.hub.auth.entity.Permission;
+import com.caraivatours.hub.auth.entity.enums.UserRole;
 import com.caraivatours.hub.booking.Booking;
 import com.caraivatours.hub.booking.BookingRepository;
 import com.caraivatours.hub.booking.embeddable.FinancialSnapshot;
@@ -47,7 +48,6 @@ import static com.caraivatours.hub.support.fixtures.BookingTestDataBuilder.aBook
 import static com.caraivatours.hub.support.fixtures.CategoryTourTestDataBuilder.aCategoryTour;
 import static com.caraivatours.hub.support.fixtures.ClientTestDataBuilder.aClient;
 import static com.caraivatours.hub.support.fixtures.PaymentTestDataBuilder.aPayment;
-import static com.caraivatours.hub.support.fixtures.PermissionTestDataBuilder.aPermission;
 import static com.caraivatours.hub.support.fixtures.PickupLocationTestDataBuilder.aPickupLocation;
 import static com.caraivatours.hub.support.fixtures.TourTestDataBuilder.aTour;
 import static com.caraivatours.hub.support.fixtures.UserTestDataBuilder.aUser;
@@ -678,7 +678,7 @@ class PaymentTest extends AbstractIntegrationTest {
         int sequence = DATA_SEQUENCE.incrementAndGet();
         String suffix = sequence + "-" + UUID.randomUUID();
 
-        Permission permission = permissionRepository.save(aPermission().build());
+        Permission permission = requirePermission(UserRole.EMPLOYEE);
         User attendant = aUser()
                 .withEmail("attendant-" + suffix + "@example.com")
                 .withPermission(permission)
@@ -722,6 +722,11 @@ class PaymentTest extends AbstractIntegrationTest {
         booking.setCreatedAt(null);
         booking.setUpdatedAt(null);
         return bookingRepository.saveAndFlush(booking);
+    }
+
+    private Permission requirePermission(UserRole role) {
+        return permissionRepository.findByRole(role)
+                .orElseThrow(() -> new AssertionError("Seeded permission not found: " + role));
     }
 
     private Payment attachPayment(Booking booking, BigDecimal amount, String receiptUrl) {

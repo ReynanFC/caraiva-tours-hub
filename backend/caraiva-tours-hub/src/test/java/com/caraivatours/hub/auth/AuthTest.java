@@ -69,7 +69,11 @@ class AuthTest extends AbstractIntegrationTest {
             @Test
             @DisplayName("should save and find a permission by id")
             void shouldSaveAndFindPermissionById() {
-                Permission permission = savePermission(UserRole.ADMIN);
+                permissionRepository.delete(requirePermission(UserRole.ADMIN));
+                permissionRepository.flush();
+                Permission permission = permissionRepository.saveAndFlush(
+                        aPermission().withRole(UserRole.ADMIN).build()
+                );
 
                 assertThat(permissionRepository.findById(permission.getId()))
                         .isPresent()
@@ -88,8 +92,7 @@ class AuthTest extends AbstractIntegrationTest {
             @Test
             @DisplayName("should return the permission for an existing role")
             void shouldReturnPermissionForExistingRole() {
-                Permission employeePermission = savePermission(UserRole.EMPLOYEE);
-                savePermission(UserRole.ADMIN);
+                Permission employeePermission = requirePermission(UserRole.EMPLOYEE);
 
                 assertThat(permissionRepository.findByRole(UserRole.EMPLOYEE))
                         .isPresent()
@@ -103,7 +106,8 @@ class AuthTest extends AbstractIntegrationTest {
             @Test
             @DisplayName("should return empty when role is not persisted")
             void shouldReturnEmptyWhenRoleIsNotPersisted() {
-                savePermission(UserRole.ADMIN);
+                permissionRepository.delete(requirePermission(UserRole.EMPLOYEE));
+                permissionRepository.flush();
 
                 assertThat(permissionRepository.findByRole(UserRole.EMPLOYEE)).isEmpty();
             }
@@ -306,10 +310,9 @@ class AuthTest extends AbstractIntegrationTest {
         }
     }
 
-    private Permission savePermission(UserRole role) {
-        return permissionRepository.saveAndFlush(
-                aPermission().withRole(role).build()
-        );
+    private Permission requirePermission(UserRole role) {
+        return permissionRepository.findByRole(role)
+                .orElseThrow(() -> new AssertionError("Seeded permission not found: " + role));
     }
 
     private User saveUser(
@@ -318,7 +321,7 @@ class AuthTest extends AbstractIntegrationTest {
             boolean enabled,
             UserRole role
     ) {
-        Permission permission = savePermission(role);
+        Permission permission = requirePermission(role);
         return saveUser(
                 aUser()
                         .withEmail(email)

@@ -33,7 +33,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.caraivatours.hub.support.fixtures.PermissionTestDataBuilder.aPermission;
 import static com.caraivatours.hub.support.fixtures.UserTestDataBuilder.aUser;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -487,7 +486,6 @@ class UserTest extends AbstractIntegrationTest {
             @Test
             @DisplayName("should create enabled user with inaccessible credential and send password setup link")
             void shouldCreateEnabledUserWithInaccessibleCredentialAndSendPasswordSetupLink() {
-                savePermission(UserRole.EMPLOYEE);
                 UserRegistrationDTO request = registration(
                         "new.user",
                         "new.user@example.com",
@@ -543,6 +541,8 @@ class UserTest extends AbstractIntegrationTest {
             @Test
             @DisplayName("should reject registration when role permission is not configured")
             void shouldRejectRegistrationWhenPermissionIsMissing() {
+                permissionRepository.delete(requirePermission(UserRole.ADMIN));
+                permissionRepository.flush();
                 UserRegistrationDTO request = registration(
                         "new.user",
                         "new.user@example.com",
@@ -767,7 +767,7 @@ class UserTest extends AbstractIntegrationTest {
             boolean enabled,
             UserRole role
     ) {
-        Permission permission = savePermission(role);
+        Permission permission = requirePermission(role);
         User user = aUser()
                 .withEmail(email)
                 .withPassword(passwordEncoder.encode(rawPassword))
@@ -780,10 +780,9 @@ class UserTest extends AbstractIntegrationTest {
         return userRepository.saveAndFlush(user);
     }
 
-    private Permission savePermission(UserRole role) {
-        return permissionRepository.saveAndFlush(aPermission()
-                .withRole(role)
-                .build());
+    private Permission requirePermission(UserRole role) {
+        return permissionRepository.findByRole(role)
+                .orElseThrow(() -> new AssertionError("Seeded permission not found: " + role));
     }
 
     private UserRegistrationDTO registration(
